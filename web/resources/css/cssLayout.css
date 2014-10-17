@@ -97,6 +97,11 @@
     
 }
 
+#otsake {
+    margin-left: 16%;
+    font-size: 300%;
+}
+
 .fb-login-button {
     float: right;
 }

@@ -14,10 +14,10 @@
         
     <style>
       #map_canvas {
-        width: 500px;
+        width: 600px;
         height: 400px;
         position: relative;
-        margin: 50px 0px 0px 200px;
+        margin: 0px 0px 0px 200px;
       }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -76,41 +76,15 @@
         <div>
             <div id="left">
                 <h:form>
-                <p:panelMenu style="width:20vw">
-                    <p:submenu label="Ajoneuvot">
-                        <p:menuitem value="Autot" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Kaksipyöräiset" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Veneet" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Muut" actionListener="#{hubbabubbaa}" />
-                    </p:submenu>
-                    <p:submenu label="Kodin elektroniikka">
-                        <p:menuitem value="TV ja video" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Musiikkilaitteet" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Puhelimet" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Pelikonsolit" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Tietotekniikka" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Kamerat" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Kodinkoneet" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Muut" actionListener="#{hubbabubbaa}" />
-                    </p:submenu>
-                    <p:submenu label="Musiikki">
-                        <p:menuitem value="CD-levyt" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Muut tallenteet" actionListener="#{hubbabubbaa}" />
-                    </p:submenu>
-                    <p:submenu label="Vaatetus">
-                        <p:menuitem value="Naisten vaatetus" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Miesten vaatetus" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Nuorten vaatetus (146 - 170 cm)" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Lasten vaatetus (86 – 140 cm)" actionListener="#{hubbabubbaa}" />
-                        <p:menuitem value="Vauvan vaatetus" actionListener="#{hubbabubbaa}" />
-                    </p:submenu>
-                </p:panelMenu>
-                </h:form>
-                <br></br><br></br>                
+                    <p:panelMenu style="width:20vw" model="#{hubbabubbaa}" />
+                </h:form>                
             </div>
             
             <div id="content" class="left_content">
-                <br></br><br></br>
+                <br></br>
+                <div id="otsake">
+                    <p>Tervetuloa Oma Seutu Kirppikselle</p>
+                </div>
                 <div id="map_canvas"></div>                
             </div>
             
