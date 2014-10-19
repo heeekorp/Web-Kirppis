@@ -1,74 +1,71 @@
 
 #top {
     position: relative;
-    background-color: #ffffff;
-    color: black;
-    padding: 5px;
+    background-color: #036fab;
+    color: white;
     margin: 0px 0px 0px 0px;
-    height: 10vh;
-    background-image: url("../images/omaseutukirppis3.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 53%;
+    height: 15vh;
 }
 
 #top_left {
-    height: 10vh;
-    width: 20vw;
+    float: left;
+    background-color: #ffffff;
+    width: 20%;
+    height: 100%;
 }
 
 #top_center {
-    position: relative;
-    height: 10vh;
-    width: 60vw;
-    margin: 0px 0px 0px 0px;
+    float: right;
+    background-color: #ffffff;
+    width: 60%;
+    height: 100%;
     background-image: url("../images/omaseutukirppis3.png");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 53%;
+    background-size: 100%;
 }
 
 #top_right {
-    
+    float: right;
+    background-color: #ffffff;
+    width: 20%;
+    height: 100%;
 }
 
 #bottom {
     position: relative;
-    background-color: #c2dfef;
-    padding: 5px;
+    bottom: 0;
+    background-color: #ffffff;
     margin: 0px 0px 0px 0px;
-    height: 10vh;
+    height: 15vh;
+    font-size: 16pt;
 }
 
 #left {
     float: left;
     background-color: #ffffff;
-    padding: 5px;
-    width: 20vw;
-    height: 80vh;
+    width: 20%;
+    height: auto;
 }
 
 #right {
     float: right;
     background-color: #ece3a5;
     padding: 5px;
-    width: 0px;
+    width: 150px;
 }
 
 .center_content {
     position: relative;
-    background-color: #dddddd;
+    background-color: #ffffff;
     padding: 5px;
 }
 
 .left_content {
     background-color: #ffffff;
-    padding: 5px;
-    margin-left: 170px;
-    height: 80vh;
-    //background-image: url("../images/omaseutukirppis3.png");
-    //background-repeat: no-repeat;
-    //background-position: top center;
+    margin-left: 20%;
+    width: 80%;
+    height: auto;
 }
 
 .right_content {
@@ -97,11 +94,38 @@
     
 }
 
-#otsake {
-    margin-left: 16%;
-    font-size: 300%;
+form {
+    display: block;
+    padding-top: 15px;
+}
+button {
+    float: right;
+}
+span {
+    display: block;
+    overflow: hidden;
+}
+input {
+    width: 95%;
+    height: 1.4em;
 }
 
-.fb-login-button {
-    float: right;
+#fblogin {
+    margin-top: 3%;
+    margin-left: 25%;
+}
+
+div.container1 
+{
+    height: auto;
+    position: relative 
+}
+div.container1 p 
+{
+    font-size: 16pt;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%) 
 }
