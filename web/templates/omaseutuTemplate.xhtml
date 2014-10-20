@@ -87,17 +87,8 @@
                 <!-- Tämä on sivun keski, eli Content osio, jonka asetukset tulee cssLayout.css -tiedoston luokasta .left_content -->
                 <!-- Content -osio skaalautuu siinä olevan sisällön mukaan, eli kun sisältöä tulee lisää, -->
                 <!-- se kasvattaa automaattisesti pituutta ja alapalkki (bottom) siirtyy alemmaksi sen mukaan. -->
-                <br></br>
-                <br></br>
-                <div class="container1">
-                <p>Tervetuloa OmaSeutuKirppis -palveluun!</p>
-                </div>
-                <br></br>
-                <br></br>
-                <div align="center">
-                <div id="map_canvas"></div>
-                </div>
-                <br></br>                
+                <ui:insert name="content">
+                </ui:insert>               
             </div>
         </div>
         <div id="bottom">

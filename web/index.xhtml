@@ -12,10 +12,17 @@
     </h:head>
     <h:body>
         
-        <ui:composition template="templates/omaseutuTemplate.xhtml" />
+        <ui:composition template="templates/omaseutuTemplate.xhtml">
+        
+        <ui:define name="content">
+            <div align="center">
+            <h2>This is page1 content</h2>
+            </div>
+        </ui:define>    
         
         Hello from Facelets
         <p:button value="Submit"></p:button>
+        </ui:composition>
     </h:body>
 </html>
 
