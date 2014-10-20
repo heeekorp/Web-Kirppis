@@ -58,9 +58,12 @@
             </div>            
         </div>
         <div>
-            <div id="left">
+            <div id="left" class="left">
                 <!-- Tämä on sivun vasen reuna, jonka asetukset tulee cssLayout.css -tiedoston osiosta #left -->
-                <p:panelMenu style="width:20vw" model="#{hubbabubbaa}" />
+                <!--<p:panelMenu style="width:20vw" model="#{hubbabubbaa}" />-->
+                <ui:insert name="left">
+                </ui:insert>
+                
             </div>
             <div id="content" class="left_content">
                 <!-- Tämä on sivun keski, eli Content osio, jonka asetukset tulee cssLayout.css -tiedoston luokasta .left_content -->

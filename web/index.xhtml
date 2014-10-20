@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <h:outputStylesheet name="./css/default.css"/>
@@ -34,14 +35,32 @@
     <h:body>
         
         <ui:composition template="templates/omaseutuTemplate.xhtml">
-        
-        <ui:define name="content">
+
+        <ui:define name="left">            
+            <h:form>  
+            <c:forEach var="paa" items="#{kirppisBean.kirppisService.paakategoriat}">
+                <p:panelMenu style="width: 100%;">
+                    <p:submenu label="#{paa.paakategoriannimi}">
+                        <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}">
+                            <p:submenu label="#{vali.valikategoriannimi}">
+                                <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
+                                    <p:menuitem value="#{ala.alakategorianimi}" ajax="false" />
+                                </c:forEach>
+                            </p:submenu>
+                        </c:forEach>
+                    </p:submenu>
+                </p:panelMenu>
+            </c:forEach>
+            </h:form>        
+        </ui:define>                    
+           
+        <ui:define name="content">            
             <div align="center">
             <h2>This is page1 content</h2>
             <div id="map_canvas"></div>
             </div>
-        </ui:define>    
-        
+        </ui:define>
+            
         Hello from Facelets
         <p:button value="Submit"></p:button>
         </ui:composition>
