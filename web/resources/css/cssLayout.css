@@ -34,18 +34,21 @@
 
 #bottom {
     position: relative;
-    bottom: 0;
+    /* bottom: 0; */
     background-color: #ffffff;
-    margin: 0px 0px 0px 0px;
+    margin-top: auto;
     height: 15vh;
     font-size: 12pt;
+    clear: left;
 }
 
 #left {
+    position: relative;
     float: left;
     background-color: #ffffff;
     width: 20%;
     height: auto;
+    padding: 5px;
 }
 
 #right {
