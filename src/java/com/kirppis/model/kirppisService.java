@@ -123,5 +123,9 @@ public class kirppisService implements Serializable {
         this.PaakategoriatLista = Paakategoriat;
     }
 
+    public String haeIlmoituslista() {
+        
+        return "listasivu";
+    }
 
 }

@@ -33,12 +33,12 @@
 }
 
 #bottom {
-    position: relative;
-    /* bottom: 0; */
-    background-color: #ffffff;
+    position: relative; //position: absolute; niin bottom on alareunassa pysyvästi kiinni
+    bottom: 0;
+    background-color: #D2B48C;  //http://www.w3schools.com/cssref/css_colornames.asp
     margin-top: auto;
-    height: 15vh;
-    font-size: 12pt;
+    height: auto;
+    font-size: 10pt;
     clear: left;
 }
 
@@ -49,6 +49,7 @@
     width: 20%;
     height: auto;
     padding: 5px;
+    min-height: 70vh;
 }
 
 #right {

@@ -6,6 +6,8 @@
 package com.kirppis.data;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -198,4 +200,22 @@ public class Ilmoitukset implements Serializable {
         return "com.kirppis.data.Ilmoitukset[ ilmoitusId=" + ilmoitusId + " ]";
     }
     
+    public String tuotteenkuntoToString(int kunto) {
+        if(kunto == 0) {
+            return "Tyydyttävä";
+        }
+        else if(kunto == 1) {
+            return "Hyvä";
+        }
+        else if(kunto == 2) {
+            return "Erinomainen";
+        }
+        else {
+            return "Uusi";
+        }
+    }
+    
+    public String ilmoitusjatettyPvmToString() {
+        return new SimpleDateFormat("dd.MM.yyyy").format(ilmoitusjatettyPvm);
+    }
 }

@@ -2,15 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <h:outputStylesheet name="./css/default.css"/>
         <h:outputStylesheet name="./css/cssLayout.css"/>
-        <title>Oma Seutu Kirppis</title>
-        
     <style>
         #map_canvas {
         width: 500px;
@@ -36,24 +32,6 @@
         
         <ui:composition template="templates/omaseutuTemplate.xhtml">
 
-        <ui:define name="left">            
-            <h:form>  
-            <c:forEach var="paa" items="#{kirppisBean.kirppisService.paakategoriat}">
-                <p:panelMenu style="width: 100%;">
-                    <p:submenu label="#{paa.paakategoriannimi}">
-                        <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}">
-                            <p:submenu label="#{vali.valikategoriannimi}">
-                                <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
-                                    <p:menuitem value="#{ala.alakategorianimi}" ajax="false" />
-                                </c:forEach>
-                            </p:submenu>
-                        </c:forEach>
-                    </p:submenu>
-                </p:panelMenu>
-            </c:forEach>
-            </h:form>        
-        </ui:define>                    
-           
         <ui:define name="content">            
             <div align="center">
             <h2>Tervetuloa OmaSeutuKirppis -palveluun!</h2>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        
+    </h:head>
+    <h:body>
+        
+        <ui:composition template="templates/omaseutuTemplate.xhtml">
+
+        <ui:define name="content">            
+        
+        <!--Tulosten listaaminen ilmoitus kerrallaan-->
+        <h:form  style="margin-left: 1%;">
+            <p:dataScroller value="#{kirppisBean.kirppisService.naytettavatIlmoitukset}" var="item" chunkSize="20" >
+                
+                <h:panelGrid columns="3" cellpadding="15" >
+                    <p:outputPanel>
+                        <h:commandLink action="ilmoituksenesittely">
+                            <p:graphicImage value="#{item.kuvienpolku}" ></p:graphicImage>
+                        </h:commandLink>
+                        <br />
+                        <h:outputText value="Hinta: #{item.hinta}"></h:outputText>
+                    </p:outputPanel>
+                    <p:outputPanel>
+                        <p:panelGrid>
+                            <h:commandLink action="ilmoituksenesittely">
+                                <h:outputText value="#{item.otsikko}" style="font-weight: bold"></h:outputText>
+                            </h:commandLink>
+                            <br />
+                            <h:outputText value="#{item.kuvaus}"></h:outputText>
+                            <br />
+                            <h:outputText value="#{item.alakategoriaId.alakategorianimi}"></h:outputText>
+                            <br />
+                            <h:outputText value="Kunto: " />
+                            <h:outputText value="#{item.tuotteenkuntoToString(tuotteenkunto)}"></h:outputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    
+                    <p:outputPanel>
+                        <p:panelGrid>
+                            <h:outputText value="#{item.ilmoitusjatettyPvmToString()}"></h:outputText>
+                            <br />
+                            <h:outputText value="Etäisyys"></h:outputText>
+                            <br />
+                            <h:outputText value="Lisää muistilistalle/ poista muistilistalta"></h:outputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </h:panelGrid>
+            </p:dataScroller>
+            
+        </h:form>
+        
+        </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>
+
