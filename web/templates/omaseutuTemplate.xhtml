@@ -62,19 +62,21 @@
             <div id="left" class="left">
                 <!-- Tämä on sivun vasen reuna, jonka asetukset tulee cssLayout.css -tiedoston osiosta #left -->
                 <h:form>  
-                    <c:forEach var="paa" items="#{kirppisBean.kirppisService.paakategoriat}">
-                        <p:panelMenu style="width: 100%;">
-                            <p:submenu label="#{paa.paakategoriannimi}">
-                                <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}">
-                                    <p:submenu label="#{vali.valikategoriannimi}">
-                                        <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
-                                            <p:menuitem value="#{ala.alakategorianimi}" outcome="/listasivu" />
-                                        </c:forEach>
-                                    </p:submenu>
-                                </c:forEach>
-                            </p:submenu>
-                        </p:panelMenu>
-                    </c:forEach>
+                    <p:accordionPanel value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" activeIndex="-1">
+                    <p:tab title="#{paa.paakategoriannimi}">
+                        <p:accordionPanel value="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}" var="vali" activeIndex="-1">
+                            <p:tab title="#{vali.valikategoriannimi}">
+                                <h:dataTable var="ala" value="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
+                                    <h:column>
+                                        <h:commandLink action="/listasivu">
+                                        <h:outputText value="#{ala.alakategorianimi}"></h:outputText>
+                                        </h:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+                            </p:tab>
+                        </p:accordionPanel>
+                    </p:tab>
+                    </p:accordionPanel>
                 </h:form>   
                 <ui:insert name="left">
                 </ui:insert>
