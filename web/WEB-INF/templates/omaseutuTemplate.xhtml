@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="./css/default.css"/>
+        <h:outputStylesheet name="./css/cssLayout.css"/>
+        <title>Facelets Template</title>
+    </h:head>
+
+    <h:body>
+
+        <script>
+            window.fbAsyncInit = function () {
+                FB.init({
+                    appId: '856102604401590', //Facebook developer omakirpputori varattu id
+                    xfbml: true,
+                    version: 'v2.1'
+                });
+            };
+
+            (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) {
+                    return;
+                }
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.net/fi_FI/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+        
+        <div id="top">
+            <!-- Nämä kolme osiota kuuluu Top-osioon, eli tässä alla olevilla kolmella osiolla Header on jaettu kolmeen alueeseen -->
+            <div id="top_right">
+                <!-- Tämä on Headerin, eli yläosan, oikea puoli, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_right -->
+                <form id="fblogin" >
+                <div class="fb-login-button" onClick="window.open()" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" />
+                <br></br>
+                <p:commandButton value="Viestit" style="width: 132px; float: left" />
+                </form>
+            </div>
+            <div id="top_left">
+                <!-- Tämä on Headerin, eli yläosan, vasen puoli, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_left -->
+                <form method="post">
+                <p:commandButton value="Hae" type="button" />
+                <span><p:inputText type="text" id="searchbox" /></span>                
+                </form>
+                <p:commandButton value="Tarkennettu haku" style="width: 100%;" />
+            </div>
+            <div id="top_center">
+                <!-- Tämä on Headerin, eli yläosan, keskiosa, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_center -->
+            </div>            
+        </div>
+        <div>
+            <div id="left" class="left">
+                <!-- Tämä on sivun vasen reuna, jonka asetukset tulee cssLayout.css -tiedoston osiosta #left -->
+                <!--<p:panelMenu style="width:20vw" model="#{hubbabubbaa}" />-->
+                <ui:insert name="left">
+                </ui:insert>
+                
+            </div>
+            <div id="content" class="left_content">
+                <!-- Tämä on sivun keski, eli Content osio, jonka asetukset tulee cssLayout.css -tiedoston luokasta .left_content -->
+                <!-- Content -osio skaalautuu siinä olevan sisällön mukaan, eli kun sisältöä tulee lisää, -->
+                <!-- se kasvattaa automaattisesti pituutta ja alapalkki (bottom) siirtyy alemmaksi sen mukaan. -->
+                <ui:insert name="content">
+                </ui:insert>               
+            </div>
+        </div>
+        <div id="bottom">
+            <!-- Tämä on sivun alaosa, jonka asetukset tulee cssLayout.css -tiedoston osiosta #bottom -->
+            <p>Yhteystiedot</p>
+            <p>Palaute</p>
+        </div>
+
+    </h:body>
+
+</html>
