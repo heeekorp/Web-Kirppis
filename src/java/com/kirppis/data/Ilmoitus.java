@@ -6,7 +6,6 @@
 package com.kirppis.data;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -33,18 +32,18 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Opiframe
  */
 @Entity
-@Table(name = "ilmoitukset")
+@Table(name = "ilmoitus")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Ilmoitukset.findAll", query = "SELECT i FROM Ilmoitukset i"),
-    @NamedQuery(name = "Ilmoitukset.findByIlmoitusId", query = "SELECT i FROM Ilmoitukset i WHERE i.ilmoitusId = :ilmoitusId"),
-    @NamedQuery(name = "Ilmoitukset.findByOtsikko", query = "SELECT i FROM Ilmoitukset i WHERE i.otsikko = :otsikko"),
-    @NamedQuery(name = "Ilmoitukset.findByKuvienpolku", query = "SELECT i FROM Ilmoitukset i WHERE i.kuvienpolku = :kuvienpolku"),
-    @NamedQuery(name = "Ilmoitukset.findByHinta", query = "SELECT i FROM Ilmoitukset i WHERE i.hinta = :hinta"),
-    @NamedQuery(name = "Ilmoitukset.findByKuvaus", query = "SELECT i FROM Ilmoitukset i WHERE i.kuvaus = :kuvaus"),
-    @NamedQuery(name = "Ilmoitukset.findByTuotteenkunto", query = "SELECT i FROM Ilmoitukset i WHERE i.tuotteenkunto = :tuotteenkunto"),
-    @NamedQuery(name = "Ilmoitukset.findByIlmoitusjatettyPvm", query = "SELECT i FROM Ilmoitukset i WHERE i.ilmoitusjatettyPvm = :ilmoitusjatettyPvm")})
-public class Ilmoitukset implements Serializable {
+    @NamedQuery(name = "Ilmoitus.findAll", query = "SELECT i FROM Ilmoitus i"),
+    @NamedQuery(name = "Ilmoitus.findByIlmoitusId", query = "SELECT i FROM Ilmoitus i WHERE i.ilmoitusId = :ilmoitusId"),
+    @NamedQuery(name = "Ilmoitus.findByOtsikko", query = "SELECT i FROM Ilmoitus i WHERE i.otsikko = :otsikko"),
+    @NamedQuery(name = "Ilmoitus.findByKuvienpolku", query = "SELECT i FROM Ilmoitus i WHERE i.kuvienpolku = :kuvienpolku"),
+    @NamedQuery(name = "Ilmoitus.findByHinta", query = "SELECT i FROM Ilmoitus i WHERE i.hinta = :hinta"),
+    @NamedQuery(name = "Ilmoitus.findByKuvaus", query = "SELECT i FROM Ilmoitus i WHERE i.kuvaus = :kuvaus"),
+    @NamedQuery(name = "Ilmoitus.findByTuotteenkunto", query = "SELECT i FROM Ilmoitus i WHERE i.tuotteenkunto = :tuotteenkunto"),
+    @NamedQuery(name = "Ilmoitus.findByIlmoitusjatettyPvm", query = "SELECT i FROM Ilmoitus i WHERE i.ilmoitusjatettyPvm = :ilmoitusjatettyPvm")})
+public class Ilmoitus implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -74,21 +73,21 @@ public class Ilmoitukset implements Serializable {
     private Date ilmoitusjatettyPvm;
     @JoinColumn(name = "myyjanId", referencedColumnName = "kayttajaId")
     @ManyToOne(optional = false)
-    private Kayttajat myyjanId;
+    private Kayttaja myyjanId;
     @JoinColumn(name = "alakategoriaId", referencedColumnName = "alakategoriaId")
     @ManyToOne(optional = false)
-    private Alakategoriat alakategoriaId;
+    private Alakategoria alakategoriaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ilmoitusId")
-    private Collection<Viestit> viestitCollection;
+    private Collection<Viesti> viestiCollection;
 
-    public Ilmoitukset() {
+    public Ilmoitus() {
     }
 
-    public Ilmoitukset(Integer ilmoitusId) {
+    public Ilmoitus(Integer ilmoitusId) {
         this.ilmoitusId = ilmoitusId;
     }
 
-    public Ilmoitukset(Integer ilmoitusId, String otsikko, Date ilmoitusjatettyPvm) {
+    public Ilmoitus(Integer ilmoitusId, String otsikko, Date ilmoitusjatettyPvm) {
         this.ilmoitusId = ilmoitusId;
         this.otsikko = otsikko;
         this.ilmoitusjatettyPvm = ilmoitusjatettyPvm;
@@ -150,29 +149,29 @@ public class Ilmoitukset implements Serializable {
         this.ilmoitusjatettyPvm = ilmoitusjatettyPvm;
     }
 
-    public Kayttajat getMyyjanId() {
+    public Kayttaja getMyyjanId() {
         return myyjanId;
     }
 
-    public void setMyyjanId(Kayttajat myyjanId) {
+    public void setMyyjanId(Kayttaja myyjanId) {
         this.myyjanId = myyjanId;
     }
 
-    public Alakategoriat getAlakategoriaId() {
+    public Alakategoria getAlakategoriaId() {
         return alakategoriaId;
     }
 
-    public void setAlakategoriaId(Alakategoriat alakategoriaId) {
+    public void setAlakategoriaId(Alakategoria alakategoriaId) {
         this.alakategoriaId = alakategoriaId;
     }
 
     @XmlTransient
-    public Collection<Viestit> getViestitCollection() {
-        return viestitCollection;
+    public Collection<Viesti> getViestiCollection() {
+        return viestiCollection;
     }
 
-    public void setViestitCollection(Collection<Viestit> viestitCollection) {
-        this.viestitCollection = viestitCollection;
+    public void setViestiCollection(Collection<Viesti> viestiCollection) {
+        this.viestiCollection = viestiCollection;
     }
 
     @Override
@@ -185,10 +184,10 @@ public class Ilmoitukset implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Ilmoitukset)) {
+        if (!(object instanceof Ilmoitus)) {
             return false;
         }
-        Ilmoitukset other = (Ilmoitukset) object;
+        Ilmoitus other = (Ilmoitus) object;
         if ((this.ilmoitusId == null && other.ilmoitusId != null) || (this.ilmoitusId != null && !this.ilmoitusId.equals(other.ilmoitusId))) {
             return false;
         }
@@ -197,8 +196,9 @@ public class Ilmoitukset implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Ilmoitukset[ ilmoitusId=" + ilmoitusId + " ]";
+        return "com.kirppis.data.Ilmoitus[ ilmoitusId=" + ilmoitusId + " ]";
     }
+   
     
     public String tuotteenkuntoToString(int kunto) {
         if(kunto == 0) {
@@ -218,4 +218,5 @@ public class Ilmoitukset implements Serializable {
     public String ilmoitusjatettyPvmToString() {
         return new SimpleDateFormat("dd.MM.yyyy").format(ilmoitusjatettyPvm);
     }
+    
 }

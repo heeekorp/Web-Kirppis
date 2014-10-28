@@ -5,10 +5,10 @@
  */
 package com.kirppis.model;
 
-import com.kirppis.data.Alakategoriat;
-import com.kirppis.data.Ilmoitukset;
-import com.kirppis.data.Paakategoriat;
-import com.kirppis.data.Valikategoriat;
+import com.kirppis.data.Alakategoria;
+import com.kirppis.data.Ilmoitus;
+import com.kirppis.data.Paakategoria;
+import com.kirppis.data.Valikategoria;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -32,14 +32,14 @@ public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
     
-    private Ilmoitukset NaytettavaIlmoitus;
+    private Ilmoitus NaytettavaIlmoitus;
     
-    private List<Ilmoitukset>KaikkiIlmoituksetLista;
-    private List<Ilmoitukset>NaytettavatIlmoituksetLista;
+    private List<Ilmoitus>KaikkiIlmoituksetLista;
+    private List<Ilmoitus>NaytettavatIlmoituksetLista;
     
-    private List<Paakategoriat>PaakategoriatLista;
-    private List<Valikategoriat>ValikategoriatLista;
-    private List<Alakategoriat>AlakategoriatLista;
+    private List<Paakategoria>PaakategoriatLista;
+    private List<Valikategoria>ValikategoriatLista;
+    private List<Alakategoria>AlakategoriatLista;
    
     /**
      * 
@@ -64,10 +64,10 @@ public class kirppisService implements Serializable {
             System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
             trans.begin();
             //blogService.setBlogikirjoitukset(eManageri.createQuery("Select e from artikkeli e").getResultList());
-            KaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitukset e").getResultList();
-            PaakategoriatLista = eManageri.createQuery("Select paa from Paakategoriat paa").getResultList();
-            ValikategoriatLista = eManageri.createQuery("Select vali from Valikategoriat vali").getResultList();
-            AlakategoriatLista = eManageri.createQuery("Select ala from Alakategoriat ala").getResultList();
+            KaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitus e").getResultList();
+            PaakategoriatLista = eManageri.createQuery("Select paa from Paakategoria paa").getResultList();
+            ValikategoriatLista = eManageri.createQuery("Select vali from Valikategoria vali").getResultList();
+            AlakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
             trans.commit();
             System.out.println("Ilmoitukset haettu onnistuneesti!");
         }
@@ -76,9 +76,9 @@ public class kirppisService implements Serializable {
         }    
     }
     
-    public List<Valikategoriat> haeValigatekoriat(int paagatekoriaId){
-        List<Valikategoriat>NaytettavatValikategoriat = new ArrayList<>();
-        for(Valikategoriat v : ValikategoriatLista){
+    public List<Valikategoria> haeValigatekoriat(int paagatekoriaId){
+        List<Valikategoria>NaytettavatValikategoriat = new ArrayList<>();
+        for(Valikategoria v : ValikategoriatLista){
             if(v.getPaakategoriaId().getPaakategoriaId() == paagatekoriaId){
                 NaytettavatValikategoriat.add(v);
             }
@@ -87,9 +87,9 @@ public class kirppisService implements Serializable {
         return NaytettavatValikategoriat;
     }
     
-    public List<Alakategoriat> haeAlagatekoriat(int valikategoriaId){
-        List<Alakategoriat>NaytettavatAlakategoriat = new ArrayList<>();
-        for(Alakategoriat a : AlakategoriatLista){
+    public List<Alakategoria> haeAlagatekoriat(int valikategoriaId){
+        List<Alakategoria>NaytettavatAlakategoriat = new ArrayList<>();
+        for(Alakategoria a : AlakategoriatLista){
             if(a.getValikategoriaId().getValikategoriaId() == valikategoriaId){
                 NaytettavatAlakategoriat.add(a);
             }
@@ -101,28 +101,28 @@ public class kirppisService implements Serializable {
     /**
      * @return the KaikkiIlmoituksetLista
      */
-    public List<Ilmoitukset> getKaikkiIlmoituksetLista() {
+    public List<Ilmoitus> getKaikkiIlmoituksetLista() {
         return KaikkiIlmoituksetLista;
     }
 
     /**
      * @param KaikkiIlmoituksetLista the KaikkiIlmoituksetLista to set
      */
-    public void setKaikkiIlmoituksetLista(List<Ilmoitukset> KaikkiIlmoituksetLista) {
+    public void setKaikkiIlmoituksetLista(List<Ilmoitus> KaikkiIlmoituksetLista) {
         this.KaikkiIlmoituksetLista = KaikkiIlmoituksetLista;
     }
 
     /**
-     * @return the Paakategoriat
+     * @return the Paakategoria
      */
-    public List<Paakategoriat> getPaakategoriat() {
+    public List<Paakategoria> getPaakategoriat() {
         return PaakategoriatLista;
     }
 
     /**
-     * @param Paakategoriat the Paakategoriat to set
+     * @param Paakategoriat the Paakategoria to set
      */
-    public void setPaakategoriat(List<Paakategoriat> Paakategoriat) {
+    public void setPaakategoriat(List<Paakategoria> Paakategoriat) {
         this.PaakategoriatLista = Paakategoriat;
     }
 
@@ -131,7 +131,7 @@ public class kirppisService implements Serializable {
     }
     
     public String NaytaIlmoitus(int NaytettavanIlmoituksenID){
-        for(Ilmoitukset item: KaikkiIlmoituksetLista){
+        for(Ilmoitus item: KaikkiIlmoituksetLista){
             if(item.getIlmoitusId() == NaytettavanIlmoituksenID){
                 setNaytettavaIlmoitus(item);
                 break;
@@ -146,13 +146,15 @@ public class kirppisService implements Serializable {
       
         NaytettavatIlmoituksetLista = new ArrayList<>();
         
-        for(Ilmoitukset il: KaikkiIlmoituksetLista){
+        for(Ilmoitus il: KaikkiIlmoituksetLista){
             if(il.getAlakategoriaId().getAlakategoriaId() == AlagategoriaId)
                 NaytettavatIlmoituksetLista.add(il);
         }
         
-        if(NaytettavatIlmoituksetLista.isEmpty())
+        if(NaytettavatIlmoituksetLista.isEmpty()){
+            System.out.println("Ilmoituksia ei löytynyt!");
             return "ilmoituksiaeiloytynyt";
+        }
         
         return "listasivu";
     }
@@ -160,21 +162,21 @@ public class kirppisService implements Serializable {
     /**
      * @return the NaytettavaIlmoitus
      */
-    public Ilmoitukset getNaytettavaIlmoitus() {
+    public Ilmoitus getNaytettavaIlmoitus() {
         return NaytettavaIlmoitus;
     }
 
     /**
      * @param NaytettavaIlmoitus the NaytettavaIlmoitus to set
      */
-    public void setNaytettavaIlmoitus(Ilmoitukset NaytettavaIlmoitus) {
+    public void setNaytettavaIlmoitus(Ilmoitus NaytettavaIlmoitus) {
         this.NaytettavaIlmoitus = NaytettavaIlmoitus;
     }
 
     /**
      * @return the NaytettavatIlmoituksetLista
      */
-    public List<Ilmoitukset> getNaytettavatIlmoituksetLista() {
+    public List<Ilmoitus> getNaytettavatIlmoituksetLista() {
         return NaytettavatIlmoituksetLista;
     }
 

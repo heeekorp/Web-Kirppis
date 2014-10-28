@@ -27,16 +27,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Opiframe
  */
 @Entity
-@Table(name = "viestit")
+@Table(name = "viesti")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Viestit.findAll", query = "SELECT v FROM Viestit v"),
-    @NamedQuery(name = "Viestit.findByViestiId", query = "SELECT v FROM Viestit v WHERE v.viestiId = :viestiId"),
-    @NamedQuery(name = "Viestit.findByViestiluettu", query = "SELECT v FROM Viestit v WHERE v.viestiluettu = :viestiluettu"),
-    @NamedQuery(name = "Viestit.findByLahetysaika", query = "SELECT v FROM Viestit v WHERE v.lahetysaika = :lahetysaika"),
-    @NamedQuery(name = "Viestit.findByViestinrunko", query = "SELECT v FROM Viestit v WHERE v.viestinrunko = :viestinrunko"),
-    @NamedQuery(name = "Viestit.findByJulkinenviesti", query = "SELECT v FROM Viestit v WHERE v.julkinenviesti = :julkinenviesti")})
-public class Viestit implements Serializable {
+    @NamedQuery(name = "Viesti.findAll", query = "SELECT v FROM Viesti v"),
+    @NamedQuery(name = "Viesti.findByViestiId", query = "SELECT v FROM Viesti v WHERE v.viestiId = :viestiId"),
+    @NamedQuery(name = "Viesti.findByViestiluettu", query = "SELECT v FROM Viesti v WHERE v.viestiluettu = :viestiluettu"),
+    @NamedQuery(name = "Viesti.findByLahetysaika", query = "SELECT v FROM Viesti v WHERE v.lahetysaika = :lahetysaika"),
+    @NamedQuery(name = "Viesti.findByViestinrunko", query = "SELECT v FROM Viesti v WHERE v.viestinrunko = :viestinrunko"),
+    @NamedQuery(name = "Viesti.findByJulkinenviesti", query = "SELECT v FROM Viesti v WHERE v.julkinenviesti = :julkinenviesti")})
+public class Viesti implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -63,19 +63,19 @@ public class Viestit implements Serializable {
     private int julkinenviesti;
     @JoinColumn(name = "ilmoitusId", referencedColumnName = "ilmoitusId")
     @ManyToOne(optional = false)
-    private Ilmoitukset ilmoitusId;
+    private Ilmoitus ilmoitusId;
     @JoinColumn(name = "lahettajaId", referencedColumnName = "kayttajaId")
     @ManyToOne(optional = false)
-    private Kayttajat lahettajaId;
+    private Kayttaja lahettajaId;
 
-    public Viestit() {
+    public Viesti() {
     }
 
-    public Viestit(Integer viestiId) {
+    public Viesti(Integer viestiId) {
         this.viestiId = viestiId;
     }
 
-    public Viestit(Integer viestiId, int viestiluettu, Date lahetysaika, String viestinrunko, int julkinenviesti) {
+    public Viesti(Integer viestiId, int viestiluettu, Date lahetysaika, String viestinrunko, int julkinenviesti) {
         this.viestiId = viestiId;
         this.viestiluettu = viestiluettu;
         this.lahetysaika = lahetysaika;
@@ -123,19 +123,19 @@ public class Viestit implements Serializable {
         this.julkinenviesti = julkinenviesti;
     }
 
-    public Ilmoitukset getIlmoitusId() {
+    public Ilmoitus getIlmoitusId() {
         return ilmoitusId;
     }
 
-    public void setIlmoitusId(Ilmoitukset ilmoitusId) {
+    public void setIlmoitusId(Ilmoitus ilmoitusId) {
         this.ilmoitusId = ilmoitusId;
     }
 
-    public Kayttajat getLahettajaId() {
+    public Kayttaja getLahettajaId() {
         return lahettajaId;
     }
 
-    public void setLahettajaId(Kayttajat lahettajaId) {
+    public void setLahettajaId(Kayttaja lahettajaId) {
         this.lahettajaId = lahettajaId;
     }
 
@@ -149,10 +149,10 @@ public class Viestit implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Viestit)) {
+        if (!(object instanceof Viesti)) {
             return false;
         }
-        Viestit other = (Viestit) object;
+        Viesti other = (Viesti) object;
         if ((this.viestiId == null && other.viestiId != null) || (this.viestiId != null && !this.viestiId.equals(other.viestiId))) {
             return false;
         }
@@ -161,7 +161,7 @@ public class Viestit implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Viestit[ viestiId=" + viestiId + " ]";
+        return "com.kirppis.data.Viesti[ viestiId=" + viestiId + " ]";
     }
     
 }

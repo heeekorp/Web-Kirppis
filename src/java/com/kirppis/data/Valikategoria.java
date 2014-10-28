@@ -28,13 +28,13 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Opiframe
  */
 @Entity
-@Table(name = "valikategoriat")
+@Table(name = "valikategoria")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Valikategoriat.findAll", query = "SELECT v FROM Valikategoriat v"),
-    @NamedQuery(name = "Valikategoriat.findByValikategoriaId", query = "SELECT v FROM Valikategoriat v WHERE v.valikategoriaId = :valikategoriaId"),
-    @NamedQuery(name = "Valikategoriat.findByValikategoriannimi", query = "SELECT v FROM Valikategoriat v WHERE v.valikategoriannimi = :valikategoriannimi")})
-public class Valikategoriat implements Serializable {
+    @NamedQuery(name = "Valikategoria.findAll", query = "SELECT v FROM Valikategoria v"),
+    @NamedQuery(name = "Valikategoria.findByValikategoriaId", query = "SELECT v FROM Valikategoria v WHERE v.valikategoriaId = :valikategoriaId"),
+    @NamedQuery(name = "Valikategoria.findByValikategoriannimi", query = "SELECT v FROM Valikategoria v WHERE v.valikategoriannimi = :valikategoriannimi")})
+public class Valikategoria implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -46,20 +46,20 @@ public class Valikategoriat implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "valikategoriannimi")
     private String valikategoriannimi;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "valikategoriaId")
+    private Collection<Alakategoria> alakategoriaCollection;
     @JoinColumn(name = "paakategoriaId", referencedColumnName = "paakategoriaId")
     @ManyToOne(optional = false)
-    private Paakategoriat paakategoriaId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "valikategoriaId")
-    private Collection<Alakategoriat> alakategoriatCollection;
+    private Paakategoria paakategoriaId;
 
-    public Valikategoriat() {
+    public Valikategoria() {
     }
 
-    public Valikategoriat(Integer valikategoriaId) {
+    public Valikategoria(Integer valikategoriaId) {
         this.valikategoriaId = valikategoriaId;
     }
 
-    public Valikategoriat(Integer valikategoriaId, String valikategoriannimi) {
+    public Valikategoria(Integer valikategoriaId, String valikategoriannimi) {
         this.valikategoriaId = valikategoriaId;
         this.valikategoriannimi = valikategoriannimi;
     }
@@ -80,21 +80,21 @@ public class Valikategoriat implements Serializable {
         this.valikategoriannimi = valikategoriannimi;
     }
 
-    public Paakategoriat getPaakategoriaId() {
+    @XmlTransient
+    public Collection<Alakategoria> getAlakategoriaCollection() {
+        return alakategoriaCollection;
+    }
+
+    public void setAlakategoriaCollection(Collection<Alakategoria> alakategoriaCollection) {
+        this.alakategoriaCollection = alakategoriaCollection;
+    }
+
+    public Paakategoria getPaakategoriaId() {
         return paakategoriaId;
     }
 
-    public void setPaakategoriaId(Paakategoriat paakategoriaId) {
+    public void setPaakategoriaId(Paakategoria paakategoriaId) {
         this.paakategoriaId = paakategoriaId;
-    }
-
-    @XmlTransient
-    public Collection<Alakategoriat> getAlakategoriatCollection() {
-        return alakategoriatCollection;
-    }
-
-    public void setAlakategoriatCollection(Collection<Alakategoriat> alakategoriatCollection) {
-        this.alakategoriatCollection = alakategoriatCollection;
     }
 
     @Override
@@ -107,10 +107,10 @@ public class Valikategoriat implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Valikategoriat)) {
+        if (!(object instanceof Valikategoria)) {
             return false;
         }
-        Valikategoriat other = (Valikategoriat) object;
+        Valikategoria other = (Valikategoria) object;
         if ((this.valikategoriaId == null && other.valikategoriaId != null) || (this.valikategoriaId != null && !this.valikategoriaId.equals(other.valikategoriaId))) {
             return false;
         }
@@ -119,7 +119,7 @@ public class Valikategoriat implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Valikategoriat[ valikategoriaId=" + valikategoriaId + " ]";
+        return "com.kirppis.data.Valikategoria[ valikategoriaId=" + valikategoriaId + " ]";
     }
     
 }

@@ -26,18 +26,18 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Opiframe
  */
 @Entity
-@Table(name = "kayttajat")
+@Table(name = "kayttaja")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Kayttajat.findAll", query = "SELECT k FROM Kayttajat k"),
-    @NamedQuery(name = "Kayttajat.findByKayttajaId", query = "SELECT k FROM Kayttajat k WHERE k.kayttajaId = :kayttajaId"),
-    @NamedQuery(name = "Kayttajat.findByFacabookkayttajatili", query = "SELECT k FROM Kayttajat k WHERE k.facabookkayttajatili = :facabookkayttajatili"),
-    @NamedQuery(name = "Kayttajat.findByPostinumero", query = "SELECT k FROM Kayttajat k WHERE k.postinumero = :postinumero"),
-    @NamedQuery(name = "Kayttajat.findByPuhelinnumero", query = "SELECT k FROM Kayttajat k WHERE k.puhelinnumero = :puhelinnumero"),
-    @NamedQuery(name = "Kayttajat.findByPuhelinnumeronaytetaan", query = "SELECT k FROM Kayttajat k WHERE k.puhelinnumeronaytetaan = :puhelinnumeronaytetaan"),
-    @NamedQuery(name = "Kayttajat.findBySahkoposti", query = "SELECT k FROM Kayttajat k WHERE k.sahkoposti = :sahkoposti"),
-    @NamedQuery(name = "Kayttajat.findBySahkopostinaytetaan", query = "SELECT k FROM Kayttajat k WHERE k.sahkopostinaytetaan = :sahkopostinaytetaan")})
-public class Kayttajat implements Serializable {
+    @NamedQuery(name = "Kayttaja.findAll", query = "SELECT k FROM Kayttaja k"),
+    @NamedQuery(name = "Kayttaja.findByKayttajaId", query = "SELECT k FROM Kayttaja k WHERE k.kayttajaId = :kayttajaId"),
+    @NamedQuery(name = "Kayttaja.findByFacabookkayttajatili", query = "SELECT k FROM Kayttaja k WHERE k.facabookkayttajatili = :facabookkayttajatili"),
+    @NamedQuery(name = "Kayttaja.findByPostinumero", query = "SELECT k FROM Kayttaja k WHERE k.postinumero = :postinumero"),
+    @NamedQuery(name = "Kayttaja.findByPuhelinnumero", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumero = :puhelinnumero"),
+    @NamedQuery(name = "Kayttaja.findByPuhelinnumeronaytetaan", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumeronaytetaan = :puhelinnumeronaytetaan"),
+    @NamedQuery(name = "Kayttaja.findBySahkoposti", query = "SELECT k FROM Kayttaja k WHERE k.sahkoposti = :sahkoposti"),
+    @NamedQuery(name = "Kayttaja.findBySahkopostinaytetaan", query = "SELECT k FROM Kayttaja k WHERE k.sahkopostinaytetaan = :sahkopostinaytetaan")})
+public class Kayttaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -65,18 +65,18 @@ public class Kayttajat implements Serializable {
     @Column(name = "sahkopostinaytetaan")
     private Integer sahkopostinaytetaan;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "myyjanId")
-    private Collection<Ilmoitukset> ilmoituksetCollection;
+    private Collection<Ilmoitus> ilmoitusCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lahettajaId")
-    private Collection<Viestit> viestitCollection;
+    private Collection<Viesti> viestiCollection;
 
-    public Kayttajat() {
+    public Kayttaja() {
     }
 
-    public Kayttajat(Integer kayttajaId) {
+    public Kayttaja(Integer kayttajaId) {
         this.kayttajaId = kayttajaId;
     }
 
-    public Kayttajat(Integer kayttajaId, String facabookkayttajatili, int postinumero, int puhelinnumeronaytetaan) {
+    public Kayttaja(Integer kayttajaId, String facabookkayttajatili, int postinumero, int puhelinnumeronaytetaan) {
         this.kayttajaId = kayttajaId;
         this.facabookkayttajatili = facabookkayttajatili;
         this.postinumero = postinumero;
@@ -140,21 +140,21 @@ public class Kayttajat implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Ilmoitukset> getIlmoituksetCollection() {
-        return ilmoituksetCollection;
+    public Collection<Ilmoitus> getIlmoitusCollection() {
+        return ilmoitusCollection;
     }
 
-    public void setIlmoituksetCollection(Collection<Ilmoitukset> ilmoituksetCollection) {
-        this.ilmoituksetCollection = ilmoituksetCollection;
+    public void setIlmoitusCollection(Collection<Ilmoitus> ilmoitusCollection) {
+        this.ilmoitusCollection = ilmoitusCollection;
     }
 
     @XmlTransient
-    public Collection<Viestit> getViestitCollection() {
-        return viestitCollection;
+    public Collection<Viesti> getViestiCollection() {
+        return viestiCollection;
     }
 
-    public void setViestitCollection(Collection<Viestit> viestitCollection) {
-        this.viestitCollection = viestitCollection;
+    public void setViestiCollection(Collection<Viesti> viestiCollection) {
+        this.viestiCollection = viestiCollection;
     }
 
     @Override
@@ -167,10 +167,10 @@ public class Kayttajat implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Kayttajat)) {
+        if (!(object instanceof Kayttaja)) {
             return false;
         }
-        Kayttajat other = (Kayttajat) object;
+        Kayttaja other = (Kayttaja) object;
         if ((this.kayttajaId == null && other.kayttajaId != null) || (this.kayttajaId != null && !this.kayttajaId.equals(other.kayttajaId))) {
             return false;
         }
@@ -179,7 +179,7 @@ public class Kayttajat implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Kayttajat[ kayttajaId=" + kayttajaId + " ]";
+        return "com.kirppis.data.Kayttaja[ kayttajaId=" + kayttajaId + " ]";
     }
     
 }

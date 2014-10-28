@@ -26,13 +26,13 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Opiframe
  */
 @Entity
-@Table(name = "paakategoriat")
+@Table(name = "paakategoria")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Paakategoriat.findAll", query = "SELECT p FROM Paakategoriat p"),
-    @NamedQuery(name = "Paakategoriat.findByPaakategoriaId", query = "SELECT p FROM Paakategoriat p WHERE p.paakategoriaId = :paakategoriaId"),
-    @NamedQuery(name = "Paakategoriat.findByPaakategoriannimi", query = "SELECT p FROM Paakategoriat p WHERE p.paakategoriannimi = :paakategoriannimi")})
-public class Paakategoriat implements Serializable {
+    @NamedQuery(name = "Paakategoria.findAll", query = "SELECT p FROM Paakategoria p"),
+    @NamedQuery(name = "Paakategoria.findByPaakategoriaId", query = "SELECT p FROM Paakategoria p WHERE p.paakategoriaId = :paakategoriaId"),
+    @NamedQuery(name = "Paakategoria.findByPaakategoriannimi", query = "SELECT p FROM Paakategoria p WHERE p.paakategoriannimi = :paakategoriannimi")})
+public class Paakategoria implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -45,16 +45,16 @@ public class Paakategoriat implements Serializable {
     @Column(name = "paakategoriannimi")
     private String paakategoriannimi;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "paakategoriaId")
-    private Collection<Valikategoriat> valikategoriatCollection;
+    private Collection<Valikategoria> valikategoriaCollection;
 
-    public Paakategoriat() {
+    public Paakategoria() {
     }
 
-    public Paakategoriat(Integer paakategoriaId) {
+    public Paakategoria(Integer paakategoriaId) {
         this.paakategoriaId = paakategoriaId;
     }
 
-    public Paakategoriat(Integer paakategoriaId, String paakategoriannimi) {
+    public Paakategoria(Integer paakategoriaId, String paakategoriannimi) {
         this.paakategoriaId = paakategoriaId;
         this.paakategoriannimi = paakategoriannimi;
     }
@@ -76,12 +76,12 @@ public class Paakategoriat implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Valikategoriat> getValikategoriatCollection() {
-        return valikategoriatCollection;
+    public Collection<Valikategoria> getValikategoriaCollection() {
+        return valikategoriaCollection;
     }
 
-    public void setValikategoriatCollection(Collection<Valikategoriat> valikategoriatCollection) {
-        this.valikategoriatCollection = valikategoriatCollection;
+    public void setValikategoriaCollection(Collection<Valikategoria> valikategoriaCollection) {
+        this.valikategoriaCollection = valikategoriaCollection;
     }
 
     @Override
@@ -94,10 +94,10 @@ public class Paakategoriat implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Paakategoriat)) {
+        if (!(object instanceof Paakategoria)) {
             return false;
         }
-        Paakategoriat other = (Paakategoriat) object;
+        Paakategoria other = (Paakategoria) object;
         if ((this.paakategoriaId == null && other.paakategoriaId != null) || (this.paakategoriaId != null && !this.paakategoriaId.equals(other.paakategoriaId))) {
             return false;
         }
@@ -106,7 +106,7 @@ public class Paakategoriat implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Paakategoriat[ paakategoriaId=" + paakategoriaId + " ]";
+        return "com.kirppis.data.Paakategoria[ paakategoriaId=" + paakategoriaId + " ]";
     }
     
 }

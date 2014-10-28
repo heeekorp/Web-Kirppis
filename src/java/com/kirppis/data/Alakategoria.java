@@ -28,13 +28,13 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Opiframe
  */
 @Entity
-@Table(name = "alakategoriat")
+@Table(name = "alakategoria")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Alakategoriat.findAll", query = "SELECT a FROM Alakategoriat a"),
-    @NamedQuery(name = "Alakategoriat.findByAlakategoriaId", query = "SELECT a FROM Alakategoriat a WHERE a.alakategoriaId = :alakategoriaId"),
-    @NamedQuery(name = "Alakategoriat.findByAlakategorianimi", query = "SELECT a FROM Alakategoriat a WHERE a.alakategorianimi = :alakategorianimi")})
-public class Alakategoriat implements Serializable {
+    @NamedQuery(name = "Alakategoria.findAll", query = "SELECT a FROM Alakategoria a"),
+    @NamedQuery(name = "Alakategoria.findByAlakategoriaId", query = "SELECT a FROM Alakategoria a WHERE a.alakategoriaId = :alakategoriaId"),
+    @NamedQuery(name = "Alakategoria.findByAlakategorianimi", query = "SELECT a FROM Alakategoria a WHERE a.alakategorianimi = :alakategorianimi")})
+public class Alakategoria implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -48,18 +48,18 @@ public class Alakategoriat implements Serializable {
     private String alakategorianimi;
     @JoinColumn(name = "valikategoriaId", referencedColumnName = "valikategoriaId")
     @ManyToOne(optional = false)
-    private Valikategoriat valikategoriaId;
+    private Valikategoria valikategoriaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alakategoriaId")
-    private Collection<Ilmoitukset> ilmoituksetCollection;
+    private Collection<Ilmoitus> ilmoitusCollection;
 
-    public Alakategoriat() {
+    public Alakategoria() {
     }
 
-    public Alakategoriat(Integer alakategoriaId) {
+    public Alakategoria(Integer alakategoriaId) {
         this.alakategoriaId = alakategoriaId;
     }
 
-    public Alakategoriat(Integer alakategoriaId, String alakategorianimi) {
+    public Alakategoria(Integer alakategoriaId, String alakategorianimi) {
         this.alakategoriaId = alakategoriaId;
         this.alakategorianimi = alakategorianimi;
     }
@@ -80,21 +80,21 @@ public class Alakategoriat implements Serializable {
         this.alakategorianimi = alakategorianimi;
     }
 
-    public Valikategoriat getValikategoriaId() {
+    public Valikategoria getValikategoriaId() {
         return valikategoriaId;
     }
 
-    public void setValikategoriaId(Valikategoriat valikategoriaId) {
+    public void setValikategoriaId(Valikategoria valikategoriaId) {
         this.valikategoriaId = valikategoriaId;
     }
 
     @XmlTransient
-    public Collection<Ilmoitukset> getIlmoituksetCollection() {
-        return ilmoituksetCollection;
+    public Collection<Ilmoitus> getIlmoitusCollection() {
+        return ilmoitusCollection;
     }
 
-    public void setIlmoituksetCollection(Collection<Ilmoitukset> ilmoituksetCollection) {
-        this.ilmoituksetCollection = ilmoituksetCollection;
+    public void setIlmoitusCollection(Collection<Ilmoitus> ilmoitusCollection) {
+        this.ilmoitusCollection = ilmoitusCollection;
     }
 
     @Override
@@ -107,10 +107,10 @@ public class Alakategoriat implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Alakategoriat)) {
+        if (!(object instanceof Alakategoria)) {
             return false;
         }
-        Alakategoriat other = (Alakategoriat) object;
+        Alakategoria other = (Alakategoria) object;
         if ((this.alakategoriaId == null && other.alakategoriaId != null) || (this.alakategoriaId != null && !this.alakategoriaId.equals(other.alakategoriaId))) {
             return false;
         }
@@ -119,7 +119,7 @@ public class Alakategoriat implements Serializable {
 
     @Override
     public String toString() {
-        return "com.kirppis.data.Alakategoriat[ alakategoriaId=" + alakategoriaId + " ]";
+        return "com.kirppis.data.Alakategoria[ alakategoriaId=" + alakategoriaId + " ]";
     }
     
 }

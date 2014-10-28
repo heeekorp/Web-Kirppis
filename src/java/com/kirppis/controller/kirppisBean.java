@@ -5,7 +5,7 @@ package com.kirppis.controller;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.kirppis.data.Ilmoitukset;
+import com.kirppis.data.Ilmoitus;
 import com.kirppis.model.kirppisService;
 import com.kirppis.model.kirppisServiceQualifier;
 import javax.inject.Named;
