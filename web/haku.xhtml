@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        
+    </h:head>
+    <h:body>
+        
+        <ui:composition template="templates/omaseutuTemplate.xhtml">
+
+        <ui:define name="content">            
+        
+        <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+             
+            <p style="font-weight: bold; font-size: large">Tarkennettu haku
+                <h:panelGrid columns="2" >
+                    <p:commandButton value="Tyhjennä" />
+                    <p:commandButton value="Hae" />
+                </h:panelGrid>
+            </p>
+            
+            <p>Hakusana: <p:inputText /></p>
+            <p>Postinumero: <p:inputText /></p>
+            
+            <p>Etäisyys (km): </p>
+            <p:selectOneMenu id="etaisyys">
+                <f:selectItem itemLabel="" itemValue="0" />
+                <f:selectItem itemLabel="1 km" itemValue="1" />
+                <f:selectItem itemLabel="2 km" itemValue="2" />
+                <f:selectItem itemLabel="5 km" itemValue="5" />
+                <f:selectItem itemLabel="10 km" itemValue="10" />
+                <f:selectItem itemLabel="20 km" itemValue="20" />
+                <f:selectItem itemLabel="50 km" itemValue="50" />
+                <f:selectItem itemLabel="100 km" itemValue="100" />
+            </p:selectOneMenu>
+            
+            <p>Kategoria: </p> 
+            <p:selectOneMenu>
+                <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paakategoria" itemLabel="#{paakategoria.paakategoriannimi}"/>
+            </p:selectOneMenu>
+            
+            <p>Hae ilmoitukset ajalta: </p>
+            <p:selectOneMenu id="ajalta">
+                <f:selectItem itemLabel="Kaikki" itemValue="0" />
+                <f:selectItem itemLabel="Tämä päivä" itemValue="1" />
+                <f:selectItem itemLabel="Viikko" itemValue="7" />
+                <f:selectItem itemLabel="Kaksi viikkoa" itemValue="14" />
+            </p:selectOneMenu>
+            
+            <p>Tuotteen kunto: </p>
+            <p:selectOneMenu id="kunto">
+                <f:selectItem itemLabel="Kaikki" itemValue="4" />
+                <f:selectItem itemLabel="Uusi" itemValue="3" />
+                <f:selectItem itemLabel="Erinomainen" itemValue="2" />
+                <f:selectItem itemLabel="Hyvä" itemValue="1" />
+                <f:selectItem itemLabel="Tyydyttävä" itemValue="0" />
+            </p:selectOneMenu>
+            
+            <h:panelGrid columns="2" >
+                <p:commandButton value="Tyhjennä" />
+                <p:commandButton value="Hae" />
+            </h:panelGrid>
+        </h:panelGrid>
+            
+        </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>
+

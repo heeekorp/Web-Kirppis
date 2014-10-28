@@ -14,24 +14,22 @@
         <ui:define name="content">            
         
         <!--Tulosten listaaminen ilmoitus kerrallaan-->
-        <h:form  style="margin-left: 1%;">
-            <p:dataScroller value="#{kirppisBean.kirppisService.naytettavatIlmoitukset}" var="item" chunkSize="20" >
-                
-                <h:panelGrid columns="3" cellpadding="15" >
+        <h:form  style="margin-left: 3%; width: 95%">
+            <p:dataScroller value="#{kirppisBean.kirppisService.naytettavatIlmoituksetLista}" var="item" chunkSize="20" >
+                 
+                <h:panelGrid columns="3" cellpadding="15">
                     <p:outputPanel>
                         <h:commandLink action="ilmoituksenesittely">
-                            <p:graphicImage value="#{item.kuvienpolku}" ></p:graphicImage>
+                            <p:graphicImage name="images/kuva1.jpg" style="height: 80px;"></p:graphicImage>
                         </h:commandLink>
                         <br />
                         <h:outputText value="Hinta: #{item.hinta}"></h:outputText>
                     </p:outputPanel>
                     <p:outputPanel>
                         <p:panelGrid>
-                            <h:commandLink action="ilmoituksenesittely">
+                            <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
                                 <h:outputText value="#{item.otsikko}" style="font-weight: bold"></h:outputText>
                             </h:commandLink>
-                            <br />
-                            <h:outputText value="#{item.kuvaus}"></h:outputText>
                             <br />
                             <h:outputText value="#{item.alakategoriaId.alakategorianimi}"></h:outputText>
                             <br />

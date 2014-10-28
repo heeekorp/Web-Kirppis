@@ -2,19 +2,79 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
-        
+   
     </h:head>
     <h:body>
         
         <ui:composition template="templates/omaseutuTemplate.xhtml">
 
         <ui:define name="content">            
-        
+            
+            <div style="padding-left: 5%;">
+            
+                <h2>#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}</h2>
+
+                <p:galleria value="#{kirppisBean.images}" var="image" autoPlay="false" showCaption="false" style="text-align: center;" panelWidth="500" panelHeight="300">
+                <h:outputLink value="javax.faces.resource/images/#{image}" title="#{image}" target="blank"> 
+                [Näytä kuva täysikokoisena]<br />
+                 </h:outputLink>
+
+                <h:graphicImage name="images/#{image}" style="
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                height: 95%;"
+                alt="Image Description for #{image}" title="#{image}"  onclick="chooseImage('#{image}')" />
+                </p:galleria>
+            
+                <table>
+                    <tr>
+                        <td><b>Ilmoitus jätetty:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusjatettyPvmToString()}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hinta:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.hinta} €</td>
+                    </tr>
+                    <tr>
+                        <td><b>Kategoria:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.alakategorianimi}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Kuvaus:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.kuvaus}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Tuotteen kunto:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.tuotteenkuntoToString(tuotteenkunto)}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Ilmoitus jätetty: </b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusjatettyPvmToString()}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Myyjä:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.facabookkayttajatili}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Myyjän puh:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumero}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Myyjän sähköposti:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.sahkoposti}</td>
+                    </tr>
+                </table>
+           </div>
+
+            
         </ui:define>
 
         </ui:composition>
+
     </h:body>
 </html>
 

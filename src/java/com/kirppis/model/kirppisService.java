@@ -32,7 +32,10 @@ public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
     
-    private List<Ilmoitukset>NaytettavatIlmoitukset;
+    private Ilmoitukset NaytettavaIlmoitus;
+    
+    private List<Ilmoitukset>KaikkiIlmoituksetLista;
+    private List<Ilmoitukset>NaytettavatIlmoituksetLista;
     
     private List<Paakategoriat>PaakategoriatLista;
     private List<Valikategoriat>ValikategoriatLista;
@@ -51,7 +54,7 @@ public class kirppisService implements Serializable {
         this.trans = trans;
         this.eManageri = eManageri;
         
-        NaytettavatIlmoitukset = new ArrayList<>();
+        KaikkiIlmoituksetLista = new ArrayList<>();
         PaakategoriatLista = new ArrayList<>();
         ValikategoriatLista = new ArrayList<>();
         AlakategoriatLista = new ArrayList<>();
@@ -61,7 +64,7 @@ public class kirppisService implements Serializable {
             System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
             trans.begin();
             //blogService.setBlogikirjoitukset(eManageri.createQuery("Select e from artikkeli e").getResultList());
-            NaytettavatIlmoitukset = eManageri.createQuery("Select e from Ilmoitukset e").getResultList();
+            KaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitukset e").getResultList();
             PaakategoriatLista = eManageri.createQuery("Select paa from Paakategoriat paa").getResultList();
             ValikategoriatLista = eManageri.createQuery("Select vali from Valikategoriat vali").getResultList();
             AlakategoriatLista = eManageri.createQuery("Select ala from Alakategoriat ala").getResultList();
@@ -96,17 +99,17 @@ public class kirppisService implements Serializable {
     }
     
     /**
-     * @return the NaytettavatIlmoitukset
+     * @return the KaikkiIlmoituksetLista
      */
-    public List<Ilmoitukset> getNaytettavatIlmoitukset() {
-        return NaytettavatIlmoitukset;
+    public List<Ilmoitukset> getKaikkiIlmoituksetLista() {
+        return KaikkiIlmoituksetLista;
     }
 
     /**
-     * @param NaytettavatIlmoitukset the NaytettavatIlmoitukset to set
+     * @param KaikkiIlmoituksetLista the KaikkiIlmoituksetLista to set
      */
-    public void setNaytettavatIlmoitukset(List<Ilmoitukset> NaytettavatIlmoitukset) {
-        this.NaytettavatIlmoitukset = NaytettavatIlmoitukset;
+    public void setKaikkiIlmoituksetLista(List<Ilmoitukset> KaikkiIlmoituksetLista) {
+        this.KaikkiIlmoituksetLista = KaikkiIlmoituksetLista;
     }
 
     /**
@@ -124,8 +127,55 @@ public class kirppisService implements Serializable {
     }
 
     public String haeIlmoituslista() {
+        return "listasivu";
+    }
+    
+    public String NaytaIlmoitus(int NaytettavanIlmoituksenID){
+        for(Ilmoitukset item: KaikkiIlmoituksetLista){
+            if(item.getIlmoitusId() == NaytettavanIlmoituksenID){
+                setNaytettavaIlmoitus(item);
+                break;
+            }
+        }
+        System.out.println("Näytetään ilmoitus: " + NaytettavanIlmoituksenID);
+        return "ilmoituksenesittely";
+    }
+    
+    public String NaytaIlmoitusListasivu(int AlagategoriaId){
+        System.out.println("Näytetetään ilmoitukset kategorialle: " + AlagategoriaId);
+      
+        NaytettavatIlmoituksetLista = new ArrayList<>();
+        
+        for(Ilmoitukset il: KaikkiIlmoituksetLista){
+            if(il.getAlakategoriaId().getAlakategoriaId() == AlagategoriaId)
+                NaytettavatIlmoituksetLista.add(il);
+        }
+        
+        if(NaytettavatIlmoituksetLista.isEmpty())
+            return "ilmoituksiaeiloytynyt";
         
         return "listasivu";
+    }
+
+    /**
+     * @return the NaytettavaIlmoitus
+     */
+    public Ilmoitukset getNaytettavaIlmoitus() {
+        return NaytettavaIlmoitus;
+    }
+
+    /**
+     * @param NaytettavaIlmoitus the NaytettavaIlmoitus to set
+     */
+    public void setNaytettavaIlmoitus(Ilmoitukset NaytettavaIlmoitus) {
+        this.NaytettavaIlmoitus = NaytettavaIlmoitus;
+    }
+
+    /**
+     * @return the NaytettavatIlmoituksetLista
+     */
+    public List<Ilmoitukset> getNaytettavatIlmoituksetLista() {
+        return NaytettavatIlmoituksetLista;
     }
 
 }

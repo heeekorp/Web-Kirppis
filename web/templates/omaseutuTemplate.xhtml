@@ -14,7 +14,7 @@
     </h:head>
 
     <h:body>
-
+        
         <script>
             window.fbAsyncInit = function () {
                 FB.init({
@@ -44,6 +44,7 @@
                 <div class="fb-login-button" onClick="window.open()" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" />
                 <br></br>
                 <p:commandButton value="Viestit" style="width: 132px; float: left" />
+                <p:button outcome="ilmoituksenlisays" value="Lisaa Ilmoitus" style="width: 132px; float: left"></p:button>
                 </form>
             </div>
             <div id="top_left">
@@ -52,7 +53,7 @@
                 <p:commandButton value="Hae" type="button" />
                 <span><p:inputText type="text" id="searchbox" /></span>                
                 </form>
-                <p:commandButton value="Tarkennettu haku" style="width: 100%;" />
+                <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
             </div>
             <div id="top_center">
                 <!-- Tämä on Headerin, eli yläosan, keskiosa, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_center -->
@@ -62,21 +63,19 @@
             <div id="left" class="left">
                 <!-- Tämä on sivun vasen reuna, jonka asetukset tulee cssLayout.css -tiedoston osiosta #left -->
                 <h:form>  
-                    <p:accordionPanel value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" activeIndex="-1">
-                    <p:tab title="#{paa.paakategoriannimi}">
-                        <p:accordionPanel value="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}" var="vali" activeIndex="-1">
-                            <p:tab title="#{vali.valikategoriannimi}">
-                                <h:dataTable var="ala" value="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
-                                    <h:column>
-                                        <h:commandLink action="/listasivu">
-                                        <h:outputText value="#{ala.alakategorianimi}"></h:outputText>
-                                        </h:commandLink>
-                                    </h:column>
-                                </h:dataTable>
-                            </p:tab>
-                        </p:accordionPanel>
-                    </p:tab>
-                    </p:accordionPanel>
+                <c:forEach var="paa" items="#{kirppisBean.kirppisService.paakategoriat}">
+                <p:panelMenu style="width: 100%;">
+                    <p:submenu label="#{paa.paakategoriannimi}">
+                        <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}">
+                            <p:submenu label="#{vali.valikategoriannimi}">
+                                <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
+                                    <p:menuitem action="#{kirppisBean.kirppisService.NaytaIlmoitusListasivu(ala.alakategoriaId)}" value="#{ala.alakategorianimi}" ajax="false"/>
+                                </c:forEach>
+                            </p:submenu>
+                        </c:forEach>
+                    </p:submenu>
+                </p:panelMenu>
+                </c:forEach>                
                 </h:form>   
                 <ui:insert name="left">
                 </ui:insert>
