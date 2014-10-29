@@ -13,6 +13,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -44,8 +46,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Ilmoitus.findByTuotteenkunto", query = "SELECT i FROM Ilmoitus i WHERE i.tuotteenkunto = :tuotteenkunto"),
     @NamedQuery(name = "Ilmoitus.findByIlmoitusjatettyPvm", query = "SELECT i FROM Ilmoitus i WHERE i.ilmoitusjatettyPvm = :ilmoitusjatettyPvm")})
 public class Ilmoitus implements Serializable {
+    @Size(max = 2000)
+    @Column(name = "lisatieto")
+    private String lisatieto;
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @NotNull
     @Column(name = "ilmoitusId")
@@ -217,6 +223,14 @@ public class Ilmoitus implements Serializable {
     
     public String ilmoitusjatettyPvmToString() {
         return new SimpleDateFormat("dd.MM.yyyy").format(ilmoitusjatettyPvm);
+    }
+
+    public String getLisatieto() {
+        return lisatieto;
+    }
+
+    public void setLisatieto(String lisatieto) {
+        this.lisatieto = lisatieto;
     }
     
 }

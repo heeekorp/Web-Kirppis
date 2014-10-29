@@ -6,7 +6,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>Oma Seutu Kirppis - Ilmoituksen lisäys</title>
+        
     </h:head>
     <h:body>
         
@@ -18,110 +18,81 @@
                
         <h:form>             
             
-        <h2>Luo uusi ilmoitus</h2> 
-        <br></br>
-             
-            
-        <h:outputText value="Otsikko:" style="font-weight: bold"></h:outputText><p:inputText style="width: 500px;"></p:inputText> 
-        
-        <br></br>
-        <br></br>
-                        
-        
-        <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText>
-        <h:outputText value="Lisää kuva"></h:outputText>
-        <p:fileUpload value="#{fileUploadView.file}" mode="simple" style="height: 25px;" />
-        
-        <br></br>
-        <br></br>
+            <h2>Luo uusi ilmoitus</h2> 
+            <br></br>
 
-        
-        <h:outputText value="Hinta:" style="font-weight: bold"></h:outputText><p:inputText value="" style="width: 150px;"></p:inputText> 
-        
-        <br></br>
-        <br></br>
-        
-        <h:outputText value="Kuvausteksti:" style="font-weight: bold"></h:outputText>
-                
-        
-        <p:inputTextarea style="height: 300px;width: 500px;"/>
-        
-        <br></br>
-        <br></br>
-        
-        <h:outputText value="Kategoria:" style="font-weight: bold"></h:outputText>
-        
-        
-        <p:accordionPanel value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" activeIndex="-1" style="width: 510px;">
-                    <p:tab title="#{paa.paakategoriannimi}">
-                        <p:accordionPanel value="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}" var="vali" activeIndex="-1">
-                            <p:tab title="#{vali.valikategoriannimi}">
-                                <h:dataTable var="ala" value="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
-                                    <h:column>
-                                        <h:commandLink action="/listasivu">
-                                        <h:outputText value="#{ala.alakategorianimi}"></h:outputText>
-                                        </h:commandLink>
-                                    </h:column>
-                                </h:dataTable>
-                            </p:tab>
-                        </p:accordionPanel>
-                    </p:tab>
-                    </p:accordionPanel>
-         
-        <br></br>
-        
-        <h:outputText value="Kategoriasta riippuvat kentät:" style="font-weight: bold"></h:outputText>
-                
-        <br></br>
-        <br></br>
+            <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText>
+            <p:inputText style="width: 500px;" value="#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}" ></p:inputText> 
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText>
+            <p:fileUpload value="#{fileUploadView.file}" mode="simple" style="height: 25px;" />
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText>
+            <h:panelGrid columns="2">
+                <p:inputText value="#{kirppisBean.kirppisService.uusiIlmoitus.hinta}" style="width: 150px;"></p:inputText>
+                <h:outputText value="€" style="font-weight: bold"></h:outputText>
+            </h:panelGrid>
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText>
+            <p:inputTextarea value="#{kirppisBean.kirppisService.uusiIlmoitus.kuvaus}" style="height: 300px;width: 500px;"/>
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText>
             
-        <h:outputText value="Puhelinnumero:" style="font-weight: bold"></h:outputText>                       
-        <p:inputText style="width: 500px;"></p:inputText>           
-        <br></br>
-        <p:selectBooleanCheckbox value="#{selectBooleanView.value1}" />            
-        <h:outputText value="Näkyy ilmoituksessa"></h:outputText>
-            
-        <br></br>
-        <br></br>
-            
-        <h:outputText value="Sähköposti:" style="font-weight: bold"></h:outputText>            
-        <p:inputText style="width: 500px;"></p:inputText>     
-        <br></br>
-        <p:selectBooleanCheckbox value="#{selectBooleanView.value1}" />            
-        <h:outputText value="Näkyy ilmoituksessa"></h:outputText>
-            
-        <br></br>    
-        <br></br>
-        
-        <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText>
-        
-        <br></br>  
-        
-        <p:inputTextarea style="height: 100px;width: 500px;" />
-        
-        <br></br>
-        <br></br>       
-                   
-        
-        <h:outputText value="Tuotteen kunto:" style="font-weight: bold"></h:outputText>
-        
-        <br></br>
-        
-        <p:selectOneListbox id="basic" value="#{selectOneView.option}">
-            <f:selectItem itemLabel="Erinomainen" itemValue="1" />
-            <f:selectItem itemLabel="Hyvä" itemValue="2" />
-            <f:selectItem itemLabel="Tyydyttävä" itemValue="3" />
-        </p:selectOneListbox>
-        
-         
-               
-        <br></br>
-        
-        <h:panelGrid columns="2">
-            <p:commandButton value="Tallenna luonnos"></p:commandButton>
-            <p:commandButton value="Julkaise ilmoitus"></p:commandButton>            
-        </h:panelGrid>
-        
+            <br></br>
+            <br></br>
+
+            <h:outputText value="Puhelinnumero:" style="font-weight: bold"></h:outputText>                       
+            <p:inputText  style="width: 500px;"></p:inputText> 
+            <br></br>
+            <p:selectBooleanCheckbox />            
+            <h:outputText value="Näkyy ilmoituksessa"></h:outputText>
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="Sähköposti:" style="font-weight: bold"></h:outputText>            
+            <p:inputText style="width: 500px;"></p:inputText>     
+            <br></br>
+            <p:selectBooleanCheckbox />            
+            <h:outputText value="Näkyy ilmoituksessa"></h:outputText>
+
+            <br></br>    
+            <br></br>
+
+            <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText>
+            <p:inputTextarea style="height: 100px;width: 500px;" />
+
+            <br></br>
+            <br></br>       
+
+            <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText>
+            <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkunto}">
+                <f:selectItem itemLabel="Valitse..." itemValue="" />
+                <f:selectItem itemLabel="Uusi" itemValue="3" />
+                <f:selectItem itemLabel="Erinomainen" itemValue="2" />
+                <f:selectItem itemLabel="Hyvä" itemValue="1" />
+                <f:selectItem itemLabel="Tyydyttävä" itemValue="0" />
+            </p:selectOneMenu>
+
+            <br></br>
+
+            <h:panelGrid columns="2">
+                <p:commandButton value="Tallenna luonnos" action="#{kirppisBean.kirppisService.tallennaUusiIlmoitusLuonnos()}" ajax="false" />
+                <p:button value="Julkaise ilmoitus" />
+            </h:panelGrid>
+
         </h:form>
         
         </div>

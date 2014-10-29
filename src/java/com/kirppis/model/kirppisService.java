@@ -14,6 +14,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -27,19 +28,24 @@ import javax.transaction.UserTransaction;
  * @author Opiframe
  */
 @Named(value = "kirppisService")
-@SessionScoped
+@ViewScoped
 public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
     
     private Ilmoitus NaytettavaIlmoitus;
+    private Ilmoitus UusiIlmoitus = new Ilmoitus();
     
     private List<Ilmoitus>KaikkiIlmoituksetLista;
     private List<Ilmoitus>NaytettavatIlmoituksetLista;
+    private List<Ilmoitus>IlmoitusLuonnosLista;
     
     private List<Paakategoria>PaakategoriatLista;
     private List<Valikategoria>ValikategoriatLista;
     private List<Alakategoria>AlakategoriatLista;
+    
+    private int valittuPaakategoriaID;
+    private List<Valikategoria>ValittuValikategoriaLista;
    
     /**
      * 
@@ -180,4 +186,60 @@ public class kirppisService implements Serializable {
         return NaytettavatIlmoituksetLista;
     }
 
+    /**
+     * @return the UusiIlmoitus
+     */
+    public Ilmoitus getUusiIlmoitus() {
+        return UusiIlmoitus;
+    }
+
+    /**
+     * @param UusiIlmoitus the UusiIlmoitus to set
+     */
+    public void setUusiIlmoitus(Ilmoitus UusiIlmoitus) {
+        this.UusiIlmoitus = UusiIlmoitus;
+    }
+
+    public void tallennaUusiIlmoitusLuonnos() {
+        IlmoitusLuonnosLista.add(UusiIlmoitus);
+        // ilmoitusId = null
+    }
+    
+    public List<Valikategoria> HaeValittuValikategoria(int PaakategoriaID){
+        ValittuValikategoriaLista = new ArrayList<>();
+        for(Valikategoria vali: ValikategoriatLista){
+            if(vali.getPaakategoriaId().getPaakategoriaId() == PaakategoriaID){
+                ValittuValikategoriaLista.add(vali);
+            }
+        }
+        return ValittuValikategoriaLista;
+    }
+
+    /**
+     * @return the valittuPaakategoriaID
+     */
+    public int getValittuPaakategoriaID() {
+        return valittuPaakategoriaID;
+    }
+
+    /**
+     * @param valittuPaakategoriaID the valittuPaakategoriaID to set
+     */
+    public void setValittuPaakategoriaID(int valittuPaakategoriaID) {
+        this.valittuPaakategoriaID = valittuPaakategoriaID;
+    }
+
+    /**
+     * @return the IlmoitusLuonnosLista
+     */
+    public List<Ilmoitus> getIlmoitusLuonnosLista() {
+        return IlmoitusLuonnosLista;
+    }
+
+    /**
+     * @param IlmoitusLuonnosLista the IlmoitusLuonnosLista to set
+     */
+    public void setIlmoitusLuonnosLista(List<Ilmoitus> IlmoitusLuonnosLista) {
+        this.IlmoitusLuonnosLista = IlmoitusLuonnosLista;
+    }
 }
