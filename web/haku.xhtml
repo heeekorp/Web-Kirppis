@@ -14,57 +14,72 @@
 
         <ui:define name="content">            
         
-        <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+        <h:form>
+            
+            <h3 style="font-weight: bold; font-size: large">Tarkennettu haku</h3>
+            
+            <h:panelGrid columns="2"  style="margin-bottom:10px" cellpadding="5">
              
-            <p style="font-weight: bold; font-size: large">Tarkennettu haku
+                <br></br>
+
+                <p>Hakusana: <p:inputText /></p>
+                <p>Postinumero: <p:inputText /></p>
+
+                <p>Etäisyys (km): </p>
+                <p:selectOneMenu id="etaisyys" style="min-width: 200px;">
+                    <f:selectItem itemLabel="" itemValue="0" />
+                    <f:selectItem itemLabel="1 km" itemValue="1" />
+                    <f:selectItem itemLabel="2 km" itemValue="2" />
+                    <f:selectItem itemLabel="5 km" itemValue="5" />
+                    <f:selectItem itemLabel="10 km" itemValue="10" />
+                    <f:selectItem itemLabel="20 km" itemValue="20" />
+                    <f:selectItem itemLabel="50 km" itemValue="50" />
+                    <f:selectItem itemLabel="100 km" itemValue="100" />
+                </p:selectOneMenu>
+
+                <p>Kategoria: </p> 
+                <p:selectOneMenu id="Paamenu" value = "#{kirppisBean.kirppisService.valittuPaakategoriaID}" style="min-width: 200px;">
+                    <f:selectItem itemLabel="Valitse..." itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" itemValue="#{paa.paakategoriaId}" itemLabel="#{paa.paakategoriannimi}" />
+                    <f:ajax render="Valimenu Alamenu" execute="Paamenu"></f:ajax>
+                </p:selectOneMenu>
+                <br />
+                <p:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.valittuValigategoriaID}" style="min-width: 200px;">
+                    <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{kirppisBean.kirppisService.haeValittuValikategoria()}" var="vali" itemValue="#{vali.valikategoriaId}" itemLabel="#{vali.valikategoriannimi}" />
+                    <f:ajax render="Alamenu" execute="Valimenu"></f:ajax>
+                </p:selectOneMenu>
+                <br />
+                <p:selectOneMenu id ="Alamenu" style="min-width: 200px;">
+                    <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{kirppisBean.kirppisService.haeValittuAlakategoria()}" var="ala" itemValue="#{ala.alakategoriaId}" itemLabel="#{ala.alakategorianimi}" />
+                </p:selectOneMenu>
+
+                <p>Hae ilmoitukset ajalta: </p>
+                <p:selectOneMenu id="ajalta" style="min-width: 200px;">
+                    <f:selectItem itemLabel="Kaikki" itemValue="0" />
+                    <f:selectItem itemLabel="Tämä päivä" itemValue="1" />
+                    <f:selectItem itemLabel="Viikko" itemValue="7" />
+                    <f:selectItem itemLabel="Kaksi viikkoa" itemValue="14" />
+                </p:selectOneMenu>
+
+                <p>Tuotteen kunto: </p>
+                <p:selectOneMenu id="kunto" style="min-width: 200px;">
+                    <f:selectItem itemLabel="Kaikki" itemValue="4" />
+                    <f:selectItem itemLabel="Uusi" itemValue="3" />
+                    <f:selectItem itemLabel="Erinomainen" itemValue="2" />
+                    <f:selectItem itemLabel="Hyvä" itemValue="1" />
+                    <f:selectItem itemLabel="Tyydyttävä" itemValue="0" />
+                </p:selectOneMenu>
+
                 <h:panelGrid columns="2" >
                     <p:commandButton value="Tyhjennä" />
                     <p:commandButton value="Hae" />
                 </h:panelGrid>
-            </p>
-            
-            <p>Hakusana: <p:inputText /></p>
-            <p>Postinumero: <p:inputText /></p>
-            
-            <p>Etäisyys (km): </p>
-            <p:selectOneMenu id="etaisyys">
-                <f:selectItem itemLabel="" itemValue="0" />
-                <f:selectItem itemLabel="1 km" itemValue="1" />
-                <f:selectItem itemLabel="2 km" itemValue="2" />
-                <f:selectItem itemLabel="5 km" itemValue="5" />
-                <f:selectItem itemLabel="10 km" itemValue="10" />
-                <f:selectItem itemLabel="20 km" itemValue="20" />
-                <f:selectItem itemLabel="50 km" itemValue="50" />
-                <f:selectItem itemLabel="100 km" itemValue="100" />
-            </p:selectOneMenu>
-            
-            <p>Kategoria: </p> 
-            <p:selectOneMenu>
-                <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paakategoria" itemLabel="#{paakategoria.paakategoriannimi}"/>
-            </p:selectOneMenu>
-            
-            <p>Hae ilmoitukset ajalta: </p>
-            <p:selectOneMenu id="ajalta">
-                <f:selectItem itemLabel="Kaikki" itemValue="0" />
-                <f:selectItem itemLabel="Tämä päivä" itemValue="1" />
-                <f:selectItem itemLabel="Viikko" itemValue="7" />
-                <f:selectItem itemLabel="Kaksi viikkoa" itemValue="14" />
-            </p:selectOneMenu>
-            
-            <p>Tuotteen kunto: </p>
-            <p:selectOneMenu id="kunto">
-                <f:selectItem itemLabel="Kaikki" itemValue="4" />
-                <f:selectItem itemLabel="Uusi" itemValue="3" />
-                <f:selectItem itemLabel="Erinomainen" itemValue="2" />
-                <f:selectItem itemLabel="Hyvä" itemValue="1" />
-                <f:selectItem itemLabel="Tyydyttävä" itemValue="0" />
-            </p:selectOneMenu>
-            
-            <h:panelGrid columns="2" >
-                <p:commandButton value="Tyhjennä" />
-                <p:commandButton value="Hae" />
+                
             </h:panelGrid>
-        </h:panelGrid>
+        
+        </h:form>
             
         </ui:define>
 

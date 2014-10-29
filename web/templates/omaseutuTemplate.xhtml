@@ -44,7 +44,7 @@
                 <div class="fb-login-button" onClick="window.open()" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" />
                 <br></br>
                 <p:commandButton value="Viestit" style="width: 132px; float: left" />
-                <p:button outcome="ilmoituksenlisays" value="Lisaa Ilmoitus" style="width: 132px; float: left"></p:button>
+                <p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" style="width: 132px; float: left"></p:button>
                 </form>
             </div>
             <div id="top_left">
@@ -55,9 +55,12 @@
                 </form>
                 <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
             </div>
+                    
+            <a href="index.xhtml">
             <div id="top_center">
                 <!-- Tämä on Headerin, eli yläosan, keskiosa, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_center -->
             </div>            
+            </a>
         </div>
         <div id="content">
             <div id="left" class="left">
@@ -91,8 +94,9 @@
         </div>
             <div id="bottom">
             <!-- Tämä on sivun alaosa, jonka asetukset tulee cssLayout.css -tiedoston osiosta #bottom -->
-            <p>Yhteystiedot</p>
-            <p>Palaute</p>
+            <p align="center">
+                <a href="index.xhtml">Etusivu</a> | <a href="#">Yhteystiedot</a> | <a href="#">Palaute</a>
+            </p>
         </div>
 
     </h:body>

@@ -45,7 +45,9 @@ public class kirppisService implements Serializable {
     private List<Alakategoria>AlakategoriatLista;
     
     private int valittuPaakategoriaID;
+    private int valittuValigategoriaID;
     private List<Valikategoria>ValittuValikategoriaLista;
+    private List<Alakategoria>ValittuAlakategoriaLista;
    
     /**
      * 
@@ -100,7 +102,6 @@ public class kirppisService implements Serializable {
                 NaytettavatAlakategoriat.add(a);
             }
         }
-        
         return NaytettavatAlakategoriat;
     }
     
@@ -205,16 +206,6 @@ public class kirppisService implements Serializable {
         // ilmoitusId = null
     }
     
-    public List<Valikategoria> HaeValittuValikategoria(int PaakategoriaID){
-        ValittuValikategoriaLista = new ArrayList<>();
-        for(Valikategoria vali: ValikategoriatLista){
-            if(vali.getPaakategoriaId().getPaakategoriaId() == PaakategoriaID){
-                ValittuValikategoriaLista.add(vali);
-            }
-        }
-        return ValittuValikategoriaLista;
-    }
-
     /**
      * @return the valittuPaakategoriaID
      */
@@ -242,4 +233,70 @@ public class kirppisService implements Serializable {
     public void setIlmoitusLuonnosLista(List<Ilmoitus> IlmoitusLuonnosLista) {
         this.IlmoitusLuonnosLista = IlmoitusLuonnosLista;
     }
+
+    /**
+     * @return the valittuValigategoriaID
+     */
+    public int getValittuValigategoriaID() {
+        return valittuValigategoriaID;
+    }
+
+    /**
+     * @param valittuValigategoriaID the valittuValigategoriaID to set
+     */
+    public void setValittuValigategoriaID(int valittuValigategoriaID) {
+        this.valittuValigategoriaID = valittuValigategoriaID;
+    }
+
+    /**
+     * @return the ValittuValikategoriaLista
+     */
+    public List<Valikategoria> getValittuValikategoriaLista() {
+        return ValittuValikategoriaLista;
+    }
+
+    /**
+     * @param ValittuValikategoriaLista the ValittuValikategoriaLista to set
+     */
+    public void setValittuValikategoriaLista(List<Valikategoria> ValittuValikategoriaLista) {
+        this.ValittuValikategoriaLista = ValittuValikategoriaLista;
+    }
+
+    /**
+     * @return the ValittuAlakategoriaLista
+     */
+    public List<Alakategoria> getValittuAlakategoriaLista() {
+        return ValittuAlakategoriaLista;
+    }
+
+    /**
+     * @param ValittuAlakategoriaLista the ValittuAlakategoriaLista to set
+     */
+    public void setValittuAlakategoriaLista(List<Alakategoria> ValittuAlakategoriaLista) {
+        this.ValittuAlakategoriaLista = ValittuAlakategoriaLista;
+    }
+    
+    // Valikategoriat selectOneMenuun
+    public List<Valikategoria> haeValittuValikategoria(){
+        valittuValigategoriaID = 0;
+        ValittuValikategoriaLista = new ArrayList<>();
+        for(Valikategoria vali: ValikategoriatLista){
+            if(vali.getPaakategoriaId().getPaakategoriaId() == valittuPaakategoriaID){
+                ValittuValikategoriaLista.add(vali);
+            }
+        }
+        return ValittuValikategoriaLista;
+    }
+    
+    //Alakategoriat selectOneMenuun
+    public List<Alakategoria> haeValittuAlakategoria(){
+        ValittuAlakategoriaLista = new ArrayList<>();
+        for(Alakategoria ala: AlakategoriatLista){
+            if(ala.getValikategoriaId().getValikategoriaId() == valittuValigategoriaID){
+                ValittuAlakategoriaLista.add(ala);
+            }
+        }
+        return ValittuAlakategoriaLista;
+    }
+
 }
