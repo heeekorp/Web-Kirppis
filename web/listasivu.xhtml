@@ -23,7 +23,7 @@
                             <p:graphicImage name="images/#{kirppisBean.kirppisService.haeIlmoituksenOletuskuva(item.ilmoitusId)}" style="height: 80px;" />
                         </h:commandLink>
                         <br />
-                        <h:outputText value="Hinta: #{item.hinta} €" style="font-weight: bold" />
+                        <h:outputText value="Hinta: #{item.hintaToString()} €" style="font-weight: bold" />
                     </p:outputPanel>
                     <p:outputPanel>
                         <p:panelGrid style="width: 550px;">

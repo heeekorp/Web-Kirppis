@@ -233,4 +233,9 @@ public class Ilmoitus implements Serializable {
         this.lisatieto = lisatieto;
     }
     
+    public String hintaToString() {
+        return hinta + "0";
+    }
+    
+    
 }

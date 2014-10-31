@@ -184,5 +184,8 @@ public class Kayttaja implements Serializable {
     public String toString() {
         return "com.kirppis.data.Kayttaja[ kayttajaId=" + kayttajaId + " ]";
     }
-    
+        
+    public String puhelinnumeroToString() {
+        return "+358" + puhelinnumero;
+    }
 }
