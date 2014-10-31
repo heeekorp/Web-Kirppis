@@ -24,20 +24,13 @@ import javax.inject.Inject;
 @SessionScoped
 public class kirppisBean implements Serializable {
     @Inject @kirppisServiceQualifier private kirppisService kirppisService;
-    private List<String> images;
+    
     /**
      * Creates a new instance of kirppisBean
     **/
     public kirppisBean() {
     }
-    @PostConstruct
-    public void init() {
-        images = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            getImages().add("kuva" + i + ".jpg");
-            System.out.println("kuva" + i + ".jpg");
-        }
-    }
+    
      
     /**
      * @return the kirppisService
@@ -53,11 +46,4 @@ public class kirppisBean implements Serializable {
         this.kirppisService = kirppisService;
     }
 
-    /**
-     * @return the images
-     */
-    public List<String> getImages() {
-        return images;
-    }
-    
 }

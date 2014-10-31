@@ -18,33 +18,31 @@
             <p:dataScroller value="#{kirppisBean.kirppisService.naytettavatIlmoituksetLista}" var="item" chunkSize="20" >
                  
                 <h:panelGrid columns="3" cellpadding="15">
-                    <p:outputPanel>
-                        <h:commandLink action="ilmoituksenesittely">
-                            <p:graphicImage name="images/kuva1.jpg" style="height: 80px;"></p:graphicImage>
+                    <p:outputPanel style="width: 120px;">
+                        <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
+                            <p:graphicImage name="images/#{kirppisBean.kirppisService.haeIlmoituksenOletuskuva(item.ilmoitusId)}" style="height: 80px;" />
                         </h:commandLink>
                         <br />
-                        <h:outputText value="Hinta: #{item.hinta} €"></h:outputText>
+                        <h:outputText value="Hinta: #{item.hinta} €" style="font-weight: bold" />
                     </p:outputPanel>
                     <p:outputPanel>
-                        <p:panelGrid>
+                        <p:panelGrid style="width: 550px;">
                             <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
-                                <h:outputText value="#{item.otsikko}" style="font-weight: bold"></h:outputText>
+                                <h:outputText value="#{item.otsikko}" />
                             </h:commandLink>
                             <br />
-                            <h:outputText value="#{item.alakategoriaId.alakategorianimi}"></h:outputText>
                             <br />
-                            <h:outputText value="Kunto: " />
-                            <h:outputText value="#{item.tuotteenkuntoToString(tuotteenkunto)}"></h:outputText>
+                            <h:outputText value="Kunto: #{item.tuotteenkuntoToString(item.tuotteenkunto)}" />
+                            <br />
+                            <h:outputText value="Etäisyys / sijainti"></h:outputText>
                         </p:panelGrid>
                     </p:outputPanel>
                     
                     <p:outputPanel>
                         <p:panelGrid>
-                            <h:outputText value="#{item.ilmoitusjatettyPvmToString()}"></h:outputText>
+                            <h:outputText value="#{item.ilmoitusjatettyPvmToString()}" style="font-weight: bold" />
                             <br />
-                            <h:outputText value="Etäisyys"></h:outputText>
-                            <br />
-                            <h:outputText value="Lisää muistilistalle/ poista muistilistalta"></h:outputText>
+                            <h:outputText value="Lisää muistilistalle / poista muistilistalta" />                            
                         </p:panelGrid>
                     </p:outputPanel>
                 </h:panelGrid>

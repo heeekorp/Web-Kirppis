@@ -17,7 +17,7 @@
             
                 <h2>#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}</h2>
 
-                <p:galleria value="#{kirppisBean.images}" var="image" autoPlay="false" showCaption="false" style="text-align: center;" panelWidth="500" panelHeight="300">
+                <p:galleria value="#{kirppisBean.kirppisService.ilmoituksenKuvat}" var="image" autoPlay="false" showCaption="false" style="text-align: center;" panelWidth="500" panelHeight="300">
                 <h:outputLink value="javax.faces.resource/images/#{image}" title="#{image}" target="blank"> 
                 [Näytä kuva täysikokoisena]<br />
                  </h:outputLink>

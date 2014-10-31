@@ -10,7 +10,6 @@ import com.kirppis.data.Ilmoitus;
 import com.kirppis.data.Paakategoria;
 import com.kirppis.data.Valikategoria;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +35,21 @@ public class kirppisService implements Serializable {
     private Ilmoitus NaytettavaIlmoitus;
     private Ilmoitus UusiIlmoitus = new Ilmoitus();
     
-    private List<Ilmoitus>KaikkiIlmoituksetLista;
-    private List<Ilmoitus>NaytettavatIlmoituksetLista;
-    private List<Ilmoitus>IlmoitusLuonnosLista;
+    private List<Ilmoitus>KaikkiIlmoituksetLista = new ArrayList<>();
+    private List<Ilmoitus>NaytettavatIlmoituksetLista = new ArrayList<>();
+    private List<Ilmoitus>IlmoitusLuonnosLista = new ArrayList<>();
     
-    private List<Paakategoria>PaakategoriatLista;
-    private List<Valikategoria>ValikategoriatLista;
-    private List<Alakategoria>AlakategoriatLista;
+    private List<Paakategoria>PaakategoriatLista = new ArrayList<>();
+    private List<Valikategoria>ValikategoriatLista = new ArrayList<>();
+    private List<Alakategoria>AlakategoriatLista = new ArrayList<>();
     
     private int valittuPaakategoriaID;
     private int valittuValigategoriaID;
     private List<Valikategoria>ValittuValikategoriaLista;
     private List<Alakategoria>ValittuAlakategoriaLista;
    
+    private List<String> ilmoituksenKuvat = new ArrayList<>();
+    
     /**
      * 
      * 
@@ -62,22 +63,15 @@ public class kirppisService implements Serializable {
         this.trans = trans;
         this.eManageri = eManageri;
         
-        KaikkiIlmoituksetLista = new ArrayList<>();
-        PaakategoriatLista = new ArrayList<>();
-        ValikategoriatLista = new ArrayList<>();
-        AlakategoriatLista = new ArrayList<>();
-        
         try {
-            //this.blogikirjoitukset = new ArrayList<>();
             System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
             trans.begin();
-            //blogService.setBlogikirjoitukset(eManageri.createQuery("Select e from artikkeli e").getResultList());
             KaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitus e").getResultList();
             PaakategoriatLista = eManageri.createQuery("Select paa from Paakategoria paa").getResultList();
             ValikategoriatLista = eManageri.createQuery("Select vali from Valikategoria vali").getResultList();
             AlakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
             trans.commit();
-            System.out.println("Ilmoitukset haettu onnistuneesti!");
+            System.out.println("Ilmoitukset ja kategoriat haettu onnistuneesti!");
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -91,7 +85,6 @@ public class kirppisService implements Serializable {
                 NaytettavatValikategoriat.add(v);
             }
         }
-        
         return NaytettavatValikategoriat;
     }
     
@@ -162,7 +155,6 @@ public class kirppisService implements Serializable {
             System.out.println("Ilmoituksia ei löytynyt!");
             return "ilmoituksiaeiloytynyt";
         }
-        
         return "listasivu";
     }
 
@@ -299,4 +291,34 @@ public class kirppisService implements Serializable {
         return ValittuAlakategoriaLista;
     }
 
+    /**
+     * @return the ilmoituksenKuvat
+     */
+    public List<String> getIlmoituksenKuvat() {
+        ilmoituksenKuvat.clear();
+        String kuvat = NaytettavaIlmoitus.getKuvienpolku();
+        String split[]= kuvat.split("\\s+");
+        for(int i = 0; i < split.length; i++) {
+            ilmoituksenKuvat.add(split[i]);
+        }
+        return ilmoituksenKuvat;
+    }
+
+    /**
+     * @param ilmoituksenKuvat the ilmoituksenKuvat to set
+     */
+    public void setIlmoituksenKuvat(List<String> ilmoituksenKuvat) {
+        this.ilmoituksenKuvat = ilmoituksenKuvat;
+    }
+
+    public String haeIlmoituksenOletuskuva(int id) {
+        for(Ilmoitus i : NaytettavatIlmoituksetLista) {
+            if(i.getIlmoitusId().equals(id)) {
+                String kuvat = i.getKuvienpolku();
+                String oletuskuva[]= kuvat.split("\\s+");
+                return oletuskuva[0];
+            }
+        }
+        return "default-picture.jpg";
+    }
 }
