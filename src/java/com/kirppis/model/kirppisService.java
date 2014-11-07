@@ -11,7 +11,9 @@ import com.kirppis.data.Paakategoria;
 import com.kirppis.data.Valikategoria;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
@@ -32,24 +34,38 @@ public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
     
-    private Ilmoitus NaytettavaIlmoitus;
-    private Ilmoitus UusiIlmoitus = new Ilmoitus();
+    private String paivamaaraTanaan;
+    private Ilmoitus naytettavaIlmoitus;
+    private Ilmoitus uusiIlmoitus = new Ilmoitus();
     
-    private List<Ilmoitus>KaikkiIlmoituksetLista = new ArrayList<>();
-    private List<Ilmoitus>NaytettavatIlmoituksetLista = new ArrayList<>();
-    private List<Ilmoitus>IlmoitusLuonnosLista = new ArrayList<>();
+    private String hakusana;
+    private int postinumero;
+    private int etaisyys;
+    private int pKategoria;
+    private int vKategoria;
+    private int aKategoria;
+    private int ilmoituksetAjalta;
+    private int kunto;
+    private int myyja;
     
-    private List<Paakategoria>PaakategoriatLista = new ArrayList<>();
-    private List<Valikategoria>ValikategoriatLista = new ArrayList<>();
-    private List<Alakategoria>AlakategoriatLista = new ArrayList<>();
-    
-    private int valittuPaakategoriaID;
-    private int valittuValigategoriaID;
-    private List<Valikategoria>ValittuValikategoriaLista;
-    private List<Alakategoria>ValittuAlakategoriaLista;
-   
+    private List<Ilmoitus>haunTuloksetLista = new ArrayList<>();
+    private List<Ilmoitus>kaikkiIlmoituksetLista = new ArrayList<>();
+    private List<Ilmoitus>ilmoitusLuonnosLista = new ArrayList<>();
     private List<String> ilmoituksenKuvat = new ArrayList<>();
     
+    private List<Paakategoria>paakategoriatLista = new ArrayList<>();
+    private List<Valikategoria>valikategoriatLista = new ArrayList<>();
+    private List<Alakategoria>alakategoriatLista = new ArrayList<>();    
+    private int valittuPaakategoriaID;
+    private int valittuValikategoriaID;
+    private int valittuAlakategoriaID;
+    private List<Valikategoria>valittuValikategoriaLista;
+    private List<Alakategoria>valittuAlakategoriaLista;
+   
+        
+    /*************************************************************************
+     *  Konstruktorit - alkaa
+     *************************************************************************/
     /**
      * 
      * 
@@ -59,6 +75,11 @@ public class kirppisService implements Serializable {
      
     }
 
+    /**
+     * 
+     * @param trans
+     * @param eManageri 
+     */
     public kirppisService(UserTransaction trans, EntityManager eManageri) {
         this.trans = trans;
         this.eManageri = eManageri;
@@ -66,21 +87,37 @@ public class kirppisService implements Serializable {
         try {
             System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
             trans.begin();
-            KaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitus e").getResultList();
-            PaakategoriatLista = eManageri.createQuery("Select paa from Paakategoria paa").getResultList();
-            ValikategoriatLista = eManageri.createQuery("Select vali from Valikategoria vali").getResultList();
-            AlakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
+            kaikkiIlmoituksetLista = eManageri.createQuery("Select e from Ilmoitus e").getResultList();
+            paakategoriatLista = eManageri.createQuery("Select paa from Paakategoria paa").getResultList();
+            valikategoriatLista = eManageri.createQuery("Select vali from Valikategoria vali").getResultList();
+            alakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
             trans.commit();
             System.out.println("Ilmoitukset ja kategoriat haettu onnistuneesti!");
+            
+            // Haetaan kuluva päivämäärä
+            paivamaaraTanaan = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
         }    
     }
     
-    public List<Valikategoria> haeValigatekoriat(int paagatekoriaId){
+    /*************************************************************************
+     *  Konstruktorit - loppuu
+     *************************************************************************/
+    
+    /*************************************************************************
+     * Kategorioihin liittyvät funktiot - alkaa
+     *************************************************************************/
+    
+    /**
+     * Haetaan välikategoriat parametrina tulevan pääkategorian mukaan
+     * @param paagatekoriaId
+     * @return 
+     */
+    public List<Valikategoria> haeValikategoriatPaakategorianMukaan(int paagatekoriaId){
         List<Valikategoria>NaytettavatValikategoriat = new ArrayList<>();
-        for(Valikategoria v : ValikategoriatLista){
+        for(Valikategoria v : valikategoriatLista){
             if(v.getPaakategoriaId().getPaakategoriaId() == paagatekoriaId){
                 NaytettavatValikategoriat.add(v);
             }
@@ -88,9 +125,14 @@ public class kirppisService implements Serializable {
         return NaytettavatValikategoriat;
     }
     
-    public List<Alakategoria> haeAlagatekoriat(int valikategoriaId){
+    /**
+     * Haetaan alakategoriat parametrina tulevan välikategorian mukaan
+     * @param valikategoriaId
+     * @return 
+     */
+    public List<Alakategoria> haeAlakategoriatValikategorianMukaan(int valikategoriaId){
         List<Alakategoria>NaytettavatAlakategoriat = new ArrayList<>();
-        for(Alakategoria a : AlakategoriatLista){
+        for(Alakategoria a : alakategoriatLista){
             if(a.getValikategoriaId().getValikategoriaId() == valikategoriaId){
                 NaytettavatAlakategoriat.add(a);
             }
@@ -99,39 +141,176 @@ public class kirppisService implements Serializable {
     }
     
     /**
-     * @return the KaikkiIlmoituksetLista
+     * Valikategoriat selectOneMenuun
+     * @return 
      */
-    public List<Ilmoitus> getKaikkiIlmoituksetLista() {
-        return KaikkiIlmoituksetLista;
+    public List<Valikategoria> haeValittuValikategoria(){
+        valittuValikategoriaID = 0;
+        valittuValikategoriaLista = new ArrayList<>();
+        for(Valikategoria vali: valikategoriatLista){
+            if(vali.getPaakategoriaId().getPaakategoriaId() == valittuPaakategoriaID){
+                valittuValikategoriaLista.add(vali);
+            }
+        }
+        return valittuValikategoriaLista;
     }
-
+    
     /**
-     * @param KaikkiIlmoituksetLista the KaikkiIlmoituksetLista to set
+     * Alakategoriat selectOneMenuun
+     * @return 
      */
-    public void setKaikkiIlmoituksetLista(List<Ilmoitus> KaikkiIlmoituksetLista) {
-        this.KaikkiIlmoituksetLista = KaikkiIlmoituksetLista;
+    public List<Alakategoria> haeValittuAlakategoria(){
+        valittuAlakategoriaID = 0;
+        valittuAlakategoriaLista = new ArrayList<>();
+        for(Alakategoria ala: alakategoriatLista){
+            if(ala.getValikategoriaId().getValikategoriaId() == valittuValikategoriaID){
+                valittuAlakategoriaLista.add(ala);
+            }
+        }
+        return valittuAlakategoriaLista;
     }
 
-    /**
-     * @return the Paakategoria
-     */
-    public List<Paakategoria> getPaakategoriat() {
-        return PaakategoriatLista;
+    // Kutsutaan omaseututemplatesta
+    public String alaKategoriaIdHaku(int AlakategoriaId){
+        System.out.println("Näytetetään ilmoitukset kategorialle: " + AlakategoriaId);
+      
+        for(Ilmoitus i: kaikkiIlmoituksetLista){
+            if(i.getAlakategoriaId().getAlakategoriaId() == AlakategoriaId)
+                if(!haunTuloksetLista.contains(i)) {
+                        haunTuloksetLista.add(i);
+                    }
+        }
+        
+        if(haunTuloksetLista.isEmpty()){
+            System.out.println("Ilmoituksia ei löytynyt!");
+            return "ilmoituksiaeiloytynyt";
+        }
+        return "listasivu";
+    }
+    
+    /*************************************************************************
+     * Kategorioihin liittyvät funktiot - loppuu
+     *************************************************************************/
+    
+    /*************************************************************************
+     *  Haku osuus - alkaa
+     *************************************************************************/
+
+    public String toteutaHaku() {
+        haunTuloksetLista.clear();
+        String kysely = "SELECT i FROM Ilmoitus i";
+        String taulunlinkki = "", hakuosat = "";
+        
+        // Jos kaikki hakukentät ovat tyhjiä tulosta kaikki ilmoitukset
+        if("".equals(hakusana) &&
+           postinumero == 0 &&
+           etaisyys == 0 &&
+           pKategoria == 0 &&
+           vKategoria == 0 &&
+           aKategoria == 0 &&
+           ilmoituksetAjalta == 0 &&
+           kunto == 0) {
+            System.out.println("Kaikki kentät tyhjiä!");
+        }
+           
+        // Hakukenttiin on lisätty jotain hakukriteerejä ja muodostetaan niistä SQL-kysely lähetettäväksi kantaan
+        else {  
+            if(!"".equals(hakusana)) {
+                hakuosat += " i.otsikko LIKE '%" + hakusana + "%' OR i.kuvaus LIKE '%" + hakusana + "%'";
+            }
+            if(postinumero != 0) {
+                taulunlinkki += " LEFT OUTER JOIN i.myyjanId k";
+                
+                if(hakuosat.equals("")) {
+                    hakuosat += " k.postinumero = " + postinumero;
+                }
+                else {
+                    hakuosat += " AND k.postinumero = " + postinumero;
+                }
+            }
+            if(etaisyys != 0) {
+                //Etäisyys käyttäjän omasta postinumerosta myyjän postinumeroon
+            }
+            if(pKategoria != 0) {
+                taulunlinkki += " LEFT OUTER JOIN i.alakategoriaId a LEFT OUTER JOIN a.valikategoriaId v LEFT OUTER JOIN v.paakategoriaId p";
+                
+                if(vKategoria != 0) {
+                    if(aKategoria != 0) {
+                        if(hakuosat.equals("")) {
+                            hakuosat += " i.alakategoriaId = " + aKategoria;
+                        }
+                        else {
+                            hakuosat += " AND i.alakategoriaId = " + aKategoria;
+                        }
+                    }
+                    if(hakuosat.equals("")) {
+                        hakuosat += " v.valikategoriaId = " + vKategoria;
+                    }
+                    else {
+                        hakuosat += " AND v.valikategoriaId = " + vKategoria;
+                    }
+                }
+                if(hakuosat.equals("")) {
+                    hakuosat += " p.paakategoriaId = " + pKategoria;
+                }
+                else {
+                    hakuosat += " AND p.paakategoriaId = " + pKategoria;
+                }
+            }
+            if(ilmoituksetAjalta != 0) {
+                // Määritetään miltä ajalta ilmoitukset haetaan
+            }
+            if(kunto != 0) {
+                if(hakuosat.equals("")) {
+                    hakuosat += " i.tuotteenkunto = " + kunto;
+                }
+                else {
+                    hakuosat += " AND i.tuotteenkunto = " + kunto;
+                }      
+            }
+        } 
+        
+        //Jos hakuosat ei ole tyhjä
+        if(!"".equals(hakuosat)) {
+            kysely = "SELECT i FROM Ilmoitus i" + taulunlinkki + " WHERE" + hakuosat;
+        }
+                
+        //Suorita tietokanta haku annetuilla hakukriteereillä ilmoituksista
+        try {
+            System.out.println("Haetaan ilmoitukset kannasta, kyselyllä: ");
+            System.out.println(kysely);
+            trans.begin();
+            haunTuloksetLista = eManageri.createQuery(kysely).getResultList();
+            trans.commit();
+            System.out.println("Ilmoituksia haettu onnistuneesti " + haunTuloksetLista.size() + "kpl!");
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        // Lopullinen sivun palautus
+        if(haunTuloksetLista.isEmpty()) {
+            return "ilmoituksiaeiloytynyt";
+        }
+        else {
+            return "listasivu";
+        }
     }
 
-    /**
-     * @param Paakategoriat the Paakategoria to set
-     */
-    public void setPaakategoriat(List<Paakategoria> Paakategoriat) {
-        this.PaakategoriatLista = Paakategoriat;
-    }
-
+    /*************************************************************************
+     *  Haku osuus - loppuu
+     *************************************************************************/
+    
+    /*************************************************************************
+     *  Ilmoituksen näyttämiseen liittyvät funktiot - alkaa
+     *************************************************************************/
+    
     public String haeIlmoituslista() {
         return "listasivu";
     }
     
     public String NaytaIlmoitus(int NaytettavanIlmoituksenID){
-        for(Ilmoitus item: KaikkiIlmoituksetLista){
+        for(Ilmoitus item: kaikkiIlmoituksetLista){
             if(item.getIlmoitusId() == NaytettavanIlmoituksenID){
                 setNaytettavaIlmoitus(item);
                 break;
@@ -141,63 +320,93 @@ public class kirppisService implements Serializable {
         return "ilmoituksenesittely";
     }
     
-    public String NaytaIlmoitusListasivu(int AlagategoriaId){
-        System.out.println("Näytetetään ilmoitukset kategorialle: " + AlagategoriaId);
-      
-        NaytettavatIlmoituksetLista = new ArrayList<>();
-        
-        for(Ilmoitus il: KaikkiIlmoituksetLista){
-            if(il.getAlakategoriaId().getAlakategoriaId() == AlagategoriaId)
-                NaytettavatIlmoituksetLista.add(il);
+    public String haeIlmoituksenOletuskuva(int id) {
+        for(Ilmoitus i : haunTuloksetLista) {
+            if(i.getIlmoitusId().equals(id)) {
+                String kuvat = i.getKuvienpolku();
+                String oletuskuva[]= kuvat.split("\\s+");
+                return oletuskuva[0];
+            }
         }
-        
-        if(NaytettavatIlmoituksetLista.isEmpty()){
-            System.out.println("Ilmoituksia ei löytynyt!");
-            return "ilmoituksiaeiloytynyt";
-        }
-        return "listasivu";
+        return "default-picture.jpg";
     }
-
-    /**
-     * @return the NaytettavaIlmoitus
-     */
-    public Ilmoitus getNaytettavaIlmoitus() {
-        return NaytettavaIlmoitus;
-    }
-
-    /**
-     * @param NaytettavaIlmoitus the NaytettavaIlmoitus to set
-     */
-    public void setNaytettavaIlmoitus(Ilmoitus NaytettavaIlmoitus) {
-        this.NaytettavaIlmoitus = NaytettavaIlmoitus;
-    }
-
-    /**
-     * @return the NaytettavatIlmoituksetLista
-     */
-    public List<Ilmoitus> getNaytettavatIlmoituksetLista() {
-        return NaytettavatIlmoituksetLista;
-    }
-
-    /**
-     * @return the UusiIlmoitus
-     */
-    public Ilmoitus getUusiIlmoitus() {
-        return UusiIlmoitus;
-    }
-
-    /**
-     * @param UusiIlmoitus the UusiIlmoitus to set
-     */
-    public void setUusiIlmoitus(Ilmoitus UusiIlmoitus) {
-        this.UusiIlmoitus = UusiIlmoitus;
-    }
-
+    
+    /*************************************************************************
+     *  Ilmoituksen näyttämiseen liittyvät funktiot - loppuu
+     *************************************************************************/
+    
+    /*************************************************************************
+     *  Ilmoituksen lisäämiseen liittyvät funktiot - alkaa
+     *************************************************************************/
+    
     public void tallennaUusiIlmoitusLuonnos() {
-        IlmoitusLuonnosLista.add(UusiIlmoitus);
+        ilmoitusLuonnosLista.add(uusiIlmoitus);
         // ilmoitusId = null
     }
     
+    /*************************************************************************
+     *  Ilmoituksen lisäämiseen liittyvät funktiot - loppuu
+     *************************************************************************/
+    
+    /*************************************************************************
+     *  Getterit ja setterit - alkaa
+     *************************************************************************/
+    /**
+     * @return the kaikkiIlmoituksetLista
+     */
+    public List<Ilmoitus> getkaikkiIlmoituksetLista() {
+        return kaikkiIlmoituksetLista;
+    }
+
+    /**
+     * @param kaikkiIlmoituksetLista the kaikkiIlmoituksetLista to set
+     */
+    public void setkaikkiIlmoituksetLista(List<Ilmoitus> kaikkiIlmoituksetLista) {
+        this.kaikkiIlmoituksetLista = kaikkiIlmoituksetLista;
+    }
+
+    /**
+     * @return the Paakategoria
+     */
+    public List<Paakategoria> getPaakategoriat() {
+        return paakategoriatLista;
+    }
+
+    /**
+     * @param Paakategoriat the Paakategoria to set
+     */
+    public void setPaakategoriat(List<Paakategoria> Paakategoriat) {
+        this.paakategoriatLista = Paakategoriat;
+    }
+
+    /**
+     * @return the naytettavaIlmoitus
+     */
+    public Ilmoitus getNaytettavaIlmoitus() {
+        return naytettavaIlmoitus;
+    }
+
+    /**
+     * @param NaytettavaIlmoitus the naytettavaIlmoitus to set
+     */
+    public void setNaytettavaIlmoitus(Ilmoitus NaytettavaIlmoitus) {
+        this.naytettavaIlmoitus = NaytettavaIlmoitus;
+    }
+
+    /**
+     * @return the uusiIlmoitus
+     */
+    public Ilmoitus getUusiIlmoitus() {
+        return uusiIlmoitus;
+    }
+
+    /**
+     * @param UusiIlmoitus the uusiIlmoitus to set
+     */
+    public void setUusiIlmoitus(Ilmoitus UusiIlmoitus) {
+        this.uusiIlmoitus = UusiIlmoitus;
+    }
+
     /**
      * @return the valittuPaakategoriaID
      */
@@ -210,93 +419,72 @@ public class kirppisService implements Serializable {
      */
     public void setValittuPaakategoriaID(int valittuPaakategoriaID) {
         this.valittuPaakategoriaID = valittuPaakategoriaID;
+        this.pKategoria = valittuPaakategoriaID;
     }
 
     /**
-     * @return the IlmoitusLuonnosLista
+     * @return the ilmoitusLuonnosLista
      */
     public List<Ilmoitus> getIlmoitusLuonnosLista() {
-        return IlmoitusLuonnosLista;
+        return ilmoitusLuonnosLista;
     }
 
     /**
-     * @param IlmoitusLuonnosLista the IlmoitusLuonnosLista to set
+     * @param IlmoitusLuonnosLista the ilmoitusLuonnosLista to set
      */
     public void setIlmoitusLuonnosLista(List<Ilmoitus> IlmoitusLuonnosLista) {
-        this.IlmoitusLuonnosLista = IlmoitusLuonnosLista;
+        this.ilmoitusLuonnosLista = IlmoitusLuonnosLista;
     }
 
     /**
-     * @return the valittuValigategoriaID
+     * @return the valittuValikategoriaID
      */
-    public int getValittuValigategoriaID() {
-        return valittuValigategoriaID;
+    public int getValittuValikategoriaID() {
+        return valittuValikategoriaID;
     }
 
     /**
-     * @param valittuValigategoriaID the valittuValigategoriaID to set
+     * @param valittuValikategoriaID the valittuValikategoriaID to set
      */
-    public void setValittuValigategoriaID(int valittuValigategoriaID) {
-        this.valittuValigategoriaID = valittuValigategoriaID;
+    public void setValittuValikategoriaID(int valittuValikategoriaID) {
+        this.valittuValikategoriaID = valittuValikategoriaID;
+        this.vKategoria = valittuValikategoriaID;
     }
 
     /**
-     * @return the ValittuValikategoriaLista
+     * @return the valittuValikategoriaLista
      */
     public List<Valikategoria> getValittuValikategoriaLista() {
-        return ValittuValikategoriaLista;
+        return valittuValikategoriaLista;
     }
 
     /**
-     * @param ValittuValikategoriaLista the ValittuValikategoriaLista to set
+     * @param ValittuValikategoriaLista the valittuValikategoriaLista to set
      */
     public void setValittuValikategoriaLista(List<Valikategoria> ValittuValikategoriaLista) {
-        this.ValittuValikategoriaLista = ValittuValikategoriaLista;
+        this.valittuValikategoriaLista = ValittuValikategoriaLista;
     }
 
     /**
-     * @return the ValittuAlakategoriaLista
+     * @return the valittuAlakategoriaLista
      */
     public List<Alakategoria> getValittuAlakategoriaLista() {
-        return ValittuAlakategoriaLista;
+        return valittuAlakategoriaLista;
     }
 
     /**
-     * @param ValittuAlakategoriaLista the ValittuAlakategoriaLista to set
+     * @param ValittuAlakategoriaLista the valittuAlakategoriaLista to set
      */
     public void setValittuAlakategoriaLista(List<Alakategoria> ValittuAlakategoriaLista) {
-        this.ValittuAlakategoriaLista = ValittuAlakategoriaLista;
+        this.valittuAlakategoriaLista = ValittuAlakategoriaLista;
     }
     
-    // Valikategoriat selectOneMenuun
-    public List<Valikategoria> haeValittuValikategoria(){
-        valittuValigategoriaID = 0;
-        ValittuValikategoriaLista = new ArrayList<>();
-        for(Valikategoria vali: ValikategoriatLista){
-            if(vali.getPaakategoriaId().getPaakategoriaId() == valittuPaakategoriaID){
-                ValittuValikategoriaLista.add(vali);
-            }
-        }
-        return ValittuValikategoriaLista;
-    }
-    
-    //Alakategoriat selectOneMenuun
-    public List<Alakategoria> haeValittuAlakategoria(){
-        ValittuAlakategoriaLista = new ArrayList<>();
-        for(Alakategoria ala: AlakategoriatLista){
-            if(ala.getValikategoriaId().getValikategoriaId() == valittuValigategoriaID){
-                ValittuAlakategoriaLista.add(ala);
-            }
-        }
-        return ValittuAlakategoriaLista;
-    }
-
     /**
      * @return the ilmoituksenKuvat
      */
     public List<String> getIlmoituksenKuvat() {
         ilmoituksenKuvat.clear();
-        String kuvat = NaytettavaIlmoitus.getKuvienpolku();
+        String kuvat = naytettavaIlmoitus.getKuvienpolku();
         String split[]= kuvat.split("\\s+");
         for(int i = 0; i < split.length; i++) {
             ilmoituksenKuvat.add(split[i]);
@@ -311,14 +499,176 @@ public class kirppisService implements Serializable {
         this.ilmoituksenKuvat = ilmoituksenKuvat;
     }
 
-    public String haeIlmoituksenOletuskuva(int id) {
-        for(Ilmoitus i : NaytettavatIlmoituksetLista) {
-            if(i.getIlmoitusId().equals(id)) {
-                String kuvat = i.getKuvienpolku();
-                String oletuskuva[]= kuvat.split("\\s+");
-                return oletuskuva[0];
-            }
-        }
-        return "default-picture.jpg";
+    /**
+     * @return the valittuAlakategoriaID
+     */
+    public int getValittuAlakategoriaID() {
+        return valittuAlakategoriaID;
     }
+
+    /**
+     * @param valittuAlakategoriaID the valittuAlakategoriaID to set
+     */
+    public void setValittuAlakategoriaID(int valittuAlakategoriaID) {
+        this.valittuAlakategoriaID = valittuAlakategoriaID;
+        this.aKategoria = valittuAlakategoriaID;
+    }
+
+    /**
+     * @return the paivamaaraTanaan
+     */
+    public String getPaivamaaraTanaan() {
+        return paivamaaraTanaan;
+    }
+
+    /**
+     * @param paivamaaraTanaan the paivamaaraTanaan to set
+     */
+    public void setPaivamaaraTanaan(String paivamaaraTanaan) {
+        this.paivamaaraTanaan = paivamaaraTanaan;
+    }
+
+    /**
+     * @return the hakusana
+     */
+    public String getHakusana() {
+        return hakusana;
+    }
+
+    /**
+     * @param hakusana the hakusana to set
+     */
+    public void setHakusana(String hakusana) {
+        this.hakusana = hakusana;
+    }
+
+    /**
+     * @return the postinumero
+     */
+    public int getPostinumero() {
+        return postinumero;
+    }
+
+    /**
+     * @param postinumero the postinumero to set
+     */
+    public void setPostinumero(int postinumero) {
+        this.postinumero = postinumero;
+    }
+
+    /**
+     * @return the etaisyys
+     */
+    public int getEtaisyys() {
+        return etaisyys;
+    }
+
+    /**
+     * @param etaisyys the etaisyys to set
+     */
+    public void setEtaisyys(int etaisyys) {
+        this.etaisyys = etaisyys;
+    }
+
+    /**
+     * @return the pKategoria
+     */
+    public int getpKategoria() {
+        return pKategoria;
+    }
+
+    /**
+     * @param pKategoria the pKategoria to set
+     */
+    public void setpKategoria(int pKategoria) {
+        this.pKategoria = pKategoria;
+    }
+
+    /**
+     * @return the vKategoria
+     */
+    public int getvKategoria() {
+        return vKategoria;
+    }
+
+    /**
+     * @param vKategoria the vKategoria to set
+     */
+    public void setvKategoria(int vKategoria) {
+        this.vKategoria = vKategoria;
+    }
+
+    /**
+     * @return the aKategoria
+     */
+    public int getaKategoria() {
+        return aKategoria;
+    }
+
+    /**
+     * @param aKategoria the aKategoria to set
+     */
+    public void setaKategoria(int aKategoria) {
+        this.aKategoria = aKategoria;
+    }
+
+    /**
+     * @return the ilmoituksetAjalta
+     */
+    public int getIlmoituksetAjalta() {
+        return ilmoituksetAjalta;
+    }
+
+    /**
+     * @param ilmoituksetAjalta the ilmoituksetAjalta to set
+     */
+    public void setIlmoituksetAjalta(int ilmoituksetAjalta) {
+        this.ilmoituksetAjalta = ilmoituksetAjalta;
+    }
+
+    /**
+     * @return the kunto
+     */
+    public int getKunto() {
+        return kunto;
+    }
+
+    /**
+     * @param kunto the kunto to set
+     */
+    public void setKunto(int kunto) {
+        this.kunto = kunto;
+    }
+
+    /**
+     * @return the myyja
+     */
+    public int getMyyja() {
+        return myyja;
+    }
+
+    /**
+     * @param myyja the myyja to set
+     */
+    public void setMyyja(int myyja) {
+        this.myyja = myyja;
+    }
+
+    /**
+     * @return the haunTuloksetLista
+     */
+    public List<Ilmoitus> getHaunTuloksetLista() {
+        return haunTuloksetLista;
+    }
+
+    /**
+     * @param haunTuloksetLista the haunTuloksetLista to set
+     */
+    public void setHaunTuloksetLista(List<Ilmoitus> haunTuloksetLista) {
+        this.haunTuloksetLista = haunTuloksetLista;
+    }
+    /*************************************************************************
+     *  Getterit ja setterit - loppuu
+     *************************************************************************/
+    
 }

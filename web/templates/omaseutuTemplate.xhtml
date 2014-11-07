@@ -69,10 +69,10 @@
                 <c:forEach var="paa" items="#{kirppisBean.kirppisService.paakategoriat}">
                 <p:panelMenu style="width: 100%;">
                     <p:submenu label="#{paa.paakategoriannimi}">
-                        <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValigatekoriat(paa.paakategoriaId)}">
+                        <c:forEach var="vali" items="#{kirppisBean.kirppisService.haeValikategoriatPaakategorianMukaan(paa.paakategoriaId)}">
                             <p:submenu label="#{vali.valikategoriannimi}">
-                                <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlagatekoriat(vali.valikategoriaId)}">
-                                    <p:menuitem action="#{kirppisBean.kirppisService.NaytaIlmoitusListasivu(ala.alakategoriaId)}" value="#{ala.alakategorianimi}" ajax="false"/>
+                                <c:forEach var="ala" items="#{kirppisBean.kirppisService.haeAlakategoriatValikategorianMukaan(vali.valikategoriaId)}">
+                                    <p:menuitem action="#{kirppisBean.kirppisService.alaKategoriaIdHaku(ala.alakategoriaId)}" value="#{ala.alakategorianimi}" ajax="false"/>
                                 </c:forEach>
                             </p:submenu>
                         </c:forEach>

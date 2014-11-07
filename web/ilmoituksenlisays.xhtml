@@ -55,7 +55,7 @@
                 <f:ajax render="Valimenu Alamenu" execute="Paamenu"></f:ajax>
             </p:selectOneMenu>
             <br />      
-            <p:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.valittuValigategoriaID}" style="min-width: 200px;">
+            <p:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.valittuValikategoriaID}" style="min-width: 200px;">
                 <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.haeValittuValikategoria()}" var="vali" itemValue="#{vali.valikategoriaId}" itemLabel="#{vali.valikategoriannimi}" />
                 <f:ajax render="Alamenu" execute="Valimenu"></f:ajax>
@@ -96,10 +96,10 @@
             <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText>
             <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkunto}">
                 <f:selectItem itemLabel="Valitse..." itemValue="" />
-                <f:selectItem itemLabel="Uusi" itemValue="3" />
-                <f:selectItem itemLabel="Erinomainen" itemValue="2" />
-                <f:selectItem itemLabel="Hyvä" itemValue="1" />
-                <f:selectItem itemLabel="Tyydyttävä" itemValue="0" />
+                <f:selectItem itemLabel="Uusi" itemValue="4" />
+                <f:selectItem itemLabel="Erinomainen" itemValue="3" />
+                <f:selectItem itemLabel="Hyvä" itemValue="2" />
+                <f:selectItem itemLabel="Tyydyttävä" itemValue="1" />
             </p:selectOneMenu>
 
             <br></br>

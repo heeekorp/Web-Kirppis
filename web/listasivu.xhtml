@@ -15,7 +15,7 @@
         
         <!--Tulosten listaaminen ilmoitus kerrallaan-->
         <h:form  style="margin-left: 3%; width: 95%">
-            <p:dataScroller value="#{kirppisBean.kirppisService.naytettavatIlmoituksetLista}" var="item" chunkSize="20" >
+            <p:dataScroller value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
                  
                 <h:panelGrid columns="3" cellpadding="15">
                     <p:outputPanel style="width: 120px;">
@@ -34,7 +34,7 @@
                             <br />
                             <h:outputText value="Kunto: #{item.tuotteenkuntoToString(item.tuotteenkunto)}" />
                             <br />
-                            <h:outputText value="Etäisyys / sijainti"></h:outputText>
+                            <h:outputText value="Sijainti: #{item.myyjanId.postinumero}"></h:outputText>
                         </p:panelGrid>
                     </p:outputPanel>
                     
