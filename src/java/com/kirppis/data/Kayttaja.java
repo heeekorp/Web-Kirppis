@@ -6,9 +6,7 @@
 package com.kirppis.data;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,16 +14,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Opiframe
+ * @author Hezu
  */
 @Entity
 @Table(name = "kayttaja")
@@ -33,12 +29,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Kayttaja.findAll", query = "SELECT k FROM Kayttaja k"),
     @NamedQuery(name = "Kayttaja.findByKayttajaId", query = "SELECT k FROM Kayttaja k WHERE k.kayttajaId = :kayttajaId"),
-    @NamedQuery(name = "Kayttaja.findByFacabookkayttajatili", query = "SELECT k FROM Kayttaja k WHERE k.facabookkayttajatili = :facabookkayttajatili"),
+    @NamedQuery(name = "Kayttaja.findByFacebooknimi", query = "SELECT k FROM Kayttaja k WHERE k.facebooknimi = :facebooknimi"),
     @NamedQuery(name = "Kayttaja.findByPostinumero", query = "SELECT k FROM Kayttaja k WHERE k.postinumero = :postinumero"),
-    @NamedQuery(name = "Kayttaja.findByPuhelinnumero", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumero = :puhelinnumero"),
     @NamedQuery(name = "Kayttaja.findByPuhelinnumeronaytetaan", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumeronaytetaan = :puhelinnumeronaytetaan"),
     @NamedQuery(name = "Kayttaja.findBySahkoposti", query = "SELECT k FROM Kayttaja k WHERE k.sahkoposti = :sahkoposti"),
-    @NamedQuery(name = "Kayttaja.findBySahkopostinaytetaan", query = "SELECT k FROM Kayttaja k WHERE k.sahkopostinaytetaan = :sahkopostinaytetaan")})
+    @NamedQuery(name = "Kayttaja.findBySahkopostinaytetaan", query = "SELECT k FROM Kayttaja k WHERE k.sahkopostinaytetaan = :sahkopostinaytetaan"),
+    @NamedQuery(name = "Kayttaja.findByPuhelinnumero", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumero = :puhelinnumero"),
+    @NamedQuery(name = "Kayttaja.findByFacebookid", query = "SELECT k FROM Kayttaja k WHERE k.facebookid = :facebookid")})
 public class Kayttaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,14 +47,12 @@ public class Kayttaja implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "facabookkayttajatili")
-    private String facabookkayttajatili;
+    @Column(name = "facebooknimi")
+    private String facebooknimi;
     @Basic(optional = false)
     @NotNull
     @Column(name = "postinumero")
     private int postinumero;
-    @Column(name = "puhelinnumero")
-    private Integer puhelinnumero;
     @Basic(optional = false)
     @NotNull
     @Column(name = "puhelinnumeronaytetaan")
@@ -67,10 +62,12 @@ public class Kayttaja implements Serializable {
     private String sahkoposti;
     @Column(name = "sahkopostinaytetaan")
     private Integer sahkopostinaytetaan;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "myyjanId")
-    private Collection<Ilmoitus> ilmoitusCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lahettajaId")
-    private Collection<Viesti> viestiCollection;
+    @Column(name = "puhelinnumero")
+    private Integer puhelinnumero;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "facebookid")
+    private long facebookid;
 
     public Kayttaja() {
     }
@@ -79,11 +76,12 @@ public class Kayttaja implements Serializable {
         this.kayttajaId = kayttajaId;
     }
 
-    public Kayttaja(Integer kayttajaId, String facabookkayttajatili, int postinumero, int puhelinnumeronaytetaan) {
+    public Kayttaja(Integer kayttajaId, String facebooknimi, int postinumero, int puhelinnumeronaytetaan, long facebookid) {
         this.kayttajaId = kayttajaId;
-        this.facabookkayttajatili = facabookkayttajatili;
+        this.facebooknimi = facebooknimi;
         this.postinumero = postinumero;
         this.puhelinnumeronaytetaan = puhelinnumeronaytetaan;
+        this.facebookid = facebookid;
     }
 
     public Integer getKayttajaId() {
@@ -94,12 +92,12 @@ public class Kayttaja implements Serializable {
         this.kayttajaId = kayttajaId;
     }
 
-    public String getFacabookkayttajatili() {
-        return facabookkayttajatili;
+    public String getFacebooknimi() {
+        return facebooknimi;
     }
 
-    public void setFacabookkayttajatili(String facabookkayttajatili) {
-        this.facabookkayttajatili = facabookkayttajatili;
+    public void setFacebooknimi(String facebooknimi) {
+        this.facebooknimi = facebooknimi;
     }
 
     public int getPostinumero() {
@@ -108,14 +106,6 @@ public class Kayttaja implements Serializable {
 
     public void setPostinumero(int postinumero) {
         this.postinumero = postinumero;
-    }
-
-    public Integer getPuhelinnumero() {
-        return puhelinnumero;
-    }
-
-    public void setPuhelinnumero(Integer puhelinnumero) {
-        this.puhelinnumero = puhelinnumero;
     }
 
     public int getPuhelinnumeronaytetaan() {
@@ -142,22 +132,20 @@ public class Kayttaja implements Serializable {
         this.sahkopostinaytetaan = sahkopostinaytetaan;
     }
 
-    @XmlTransient
-    public Collection<Ilmoitus> getIlmoitusCollection() {
-        return ilmoitusCollection;
+    public Integer getPuhelinnumero() {
+        return puhelinnumero;
     }
 
-    public void setIlmoitusCollection(Collection<Ilmoitus> ilmoitusCollection) {
-        this.ilmoitusCollection = ilmoitusCollection;
+    public void setPuhelinnumero(Integer puhelinnumero) {
+        this.puhelinnumero = puhelinnumero;
     }
 
-    @XmlTransient
-    public Collection<Viesti> getViestiCollection() {
-        return viestiCollection;
+    public long getFacebookid() {
+        return facebookid;
     }
 
-    public void setViestiCollection(Collection<Viesti> viestiCollection) {
-        this.viestiCollection = viestiCollection;
+    public void setFacebookid(long facebookid) {
+        this.facebookid = facebookid;
     }
 
     @Override
@@ -184,8 +172,9 @@ public class Kayttaja implements Serializable {
     public String toString() {
         return "com.kirppis.data.Kayttaja[ kayttajaId=" + kayttajaId + " ]";
     }
-        
+    
     public String puhelinnumeroToString() {
         return "+358" + puhelinnumero;
     }
+    
 }

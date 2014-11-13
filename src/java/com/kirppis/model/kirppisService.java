@@ -7,6 +7,7 @@ package com.kirppis.model;
 
 import com.kirppis.data.Alakategoria;
 import com.kirppis.data.Ilmoitus;
+import com.kirppis.data.Kayttaja;
 import com.kirppis.data.Paakategoria;
 import com.kirppis.data.Valikategoria;
 import javax.inject.Named;
@@ -33,6 +34,10 @@ import javax.transaction.UserTransaction;
 public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
+    
+    private Kayttaja kirjautunutKayttaja;
+    private String facebookIdString;
+    private boolean onkoKayttajaKirjautunut;
     
     private String paivamaaraTanaan;
     private Ilmoitus naytettavaIlmoitus;
@@ -83,6 +88,10 @@ public class kirppisService implements Serializable {
     public kirppisService(UserTransaction trans, EntityManager eManageri) {
         this.trans = trans;
         this.eManageri = eManageri;
+        
+        kirjautunutKayttaja = new Kayttaja();
+        onkoKayttajaKirjautunut = false;
+        facebookIdString = "0";
         
         try {
             System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
@@ -305,6 +314,10 @@ public class kirppisService implements Serializable {
      *  Ilmoituksen näyttämiseen liittyvät funktiot - alkaa
      *************************************************************************/
     
+    /**
+     * Ilmoituksen näyttämiseen liittyvät funktiot - alkaa
+     * @return
+     */
     public String haeIlmoituslista() {
         return "listasivu";
     }
@@ -347,6 +360,70 @@ public class kirppisService implements Serializable {
     /*************************************************************************
      *  Ilmoituksen lisäämiseen liittyvät funktiot - loppuu
      *************************************************************************/
+    
+    
+    /*************************************************************************
+    *   Kirjautumiseen ja ulos kirjautumiseen liittyvät funktiot - alkaa
+    **************************************************************************/
+    
+        public void kayttajaKirjaudu(){
+        
+        if(this.onkoKayttajaKirjautunut == true){
+            return;
+        }
+        if(kirjautunutKayttaja.getFacebookid() == 0)
+            return;
+        
+        System.out.println("Kirjaudutaan - Nimi: " + kirjautunutKayttaja.getFacebooknimi());
+        System.out.println("Kirjaudutaan - Face ID: " + kirjautunutKayttaja.getFacebookid());
+        List<Kayttaja>kayttajat = new ArrayList<>();
+        
+         try {
+            System.out.println("Haetaan facebookid:tä vastaava käyttäjä tietokannasta!");
+            trans.begin();
+            kayttajat = eManageri.createQuery("Select user from Kayttaja user WHERE USER.facebookid = " + kirjautunutKayttaja.getFacebookid()).getResultList();
+            trans.commit();
+            System.out.println("Haku onnistui!!!!");
+            if(kayttajat.isEmpty()){
+                System.out.println("FacebookId:tä vastaavaa käyttäjää ei löytynyt!");
+                lisaaKayttaja();
+            }
+            else{
+                System.out.println("FacebookId:tä vastaavaa käyttäjä löytyi tietokannasta!");
+                this.onkoKayttajaKirjautunut = true;
+                kirjautunutKayttaja = kayttajat.get(0);
+            }
+            
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }   
+    }
+    public void lisaaKayttaja(){
+       
+            try {
+            System.out.println("Lisätään uusi käyttäjä kantaan!");
+            trans.begin();
+            eManageri.persist(kirjautunutKayttaja);
+            trans.commit();
+            System.out.println("Lisäys onnistui!");
+            this.onkoKayttajaKirjautunut = true;
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+        System.out.println(e.getMessage());
+        }
+    }
+    public void kirjauduUlos(){
+        System.out.println("Kirjaudutaan ulos!");
+        kirjautunutKayttaja = new Kayttaja();
+        this.onkoKayttajaKirjautunut = false;
+    }
+    
+    /*************************************************************************
+    *   Kirjautumiseen ja ulos kirjautumiseen liittyvät funktiot - loppuu
+    **************************************************************************/
+    
+    
     
     /*************************************************************************
      *  Getterit ja setterit - alkaa
@@ -667,8 +744,54 @@ public class kirppisService implements Serializable {
     public void setHaunTuloksetLista(List<Ilmoitus> haunTuloksetLista) {
         this.haunTuloksetLista = haunTuloksetLista;
     }
+    
+    /**
+     * @return the kirjautunutKayttaja
+     */
+    public Kayttaja getKirjautunutKayttaja() {
+        return kirjautunutKayttaja;
+    }
+
+    /**
+     * @param kirjautunutKayttaja the kirjautunutKayttaja to set
+     */
+    public void setKirjautunutKayttaja(Kayttaja kirjautunutKayttaja) {
+        this.kirjautunutKayttaja = kirjautunutKayttaja;
+        
+    }
+
+    /**
+     * @return the facebookIdString
+     */
+    public String getFacebookIdString() {
+        return facebookIdString;
+    }
+
+    /**
+     * @param facebookIdString the facebookIdString to set
+     */
+    public void setFacebookIdString(String facebookIdString) {
+        this.facebookIdString = facebookIdString;
+        kirjautunutKayttaja.setFacebookid(Long.parseLong(facebookIdString));
+    }
+
+    /**
+     * @return the onkoKayttajaKirjautunut
+     */
+    public boolean isOnkoKayttajaKirjautunut() {
+        return onkoKayttajaKirjautunut;
+    }
+
+    /**
+     * @param onkoKayttajaKirjautunut the onkoKayttajaKirjautunut to set
+     */
+    public void setOnkoKayttajaKirjautunut(boolean onkoKayttajaKirjautunut) {
+        this.onkoKayttajaKirjautunut = onkoKayttajaKirjautunut;
+    }
+
+}
     /*************************************************************************
      *  Getterit ja setterit - loppuu
      *************************************************************************/
     
-}
+
