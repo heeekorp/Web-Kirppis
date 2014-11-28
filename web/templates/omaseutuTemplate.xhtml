@@ -71,8 +71,10 @@
             <div id="top_left">
                 <!-- Tämä on Headerin, eli yläosan, vasen puoli, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_left -->
                 <form method="post">
-                <p:commandButton value="Hae" type="button" />
-                <span><p:inputText type="text" id="searchbox" /></span>                
+                    <h:form>    <!-- Pakko olla tämä formi, jotta button toimii!! -->
+                        <p:commandButton value="Hae" action="#{kirppisBean.kirppisService.haeHakusanalla}" />
+                        <span><p:inputText type="text" class="searchbox" value="#{kirppisBean.kirppisService.hakusana}" /></span>                
+                    </h:form>                
                 </form>
                 <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
             </div>

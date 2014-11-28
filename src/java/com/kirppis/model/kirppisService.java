@@ -183,6 +183,9 @@ public class kirppisService implements Serializable {
     public String alaKategoriaIdHaku(int AlakategoriaId){
         System.out.println("Näytetetään ilmoitukset kategorialle: " + AlakategoriaId);
       
+        //Tyhjennä hauntulokset lista
+        haunTuloksetLista.clear();
+        
         for(Ilmoitus i: kaikkiIlmoituksetLista){
             if(i.getAlakategoriaId().getAlakategoriaId() == AlakategoriaId)
                 if(!haunTuloksetLista.contains(i)) {
@@ -205,6 +208,32 @@ public class kirppisService implements Serializable {
      *  Haku osuus - alkaa
      *************************************************************************/
 
+    public String haeHakusanalla() {
+        haunTuloksetLista.clear();
+        if(!"".equals(hakusana)) {
+            //Suorita tietokanta haku ilmoituksista annetulla hakusanalla
+            try {
+                System.out.println("Haetaan ilmoitukset kannasta, kyselyllä: ");
+                System.out.println("SELECT i FROM Ilmoitus i WHERE i.otsikko LIKE '%" + hakusana + "%' OR i.kuvaus LIKE '%" + hakusana + "%'");
+                trans.begin();
+                haunTuloksetLista = eManageri.createQuery("SELECT i FROM Ilmoitus i WHERE i.otsikko LIKE '%" + hakusana + "%' OR i.kuvaus LIKE '%" + hakusana + "%'").getResultList();
+                trans.commit();
+                System.out.println("Ilmoituksia haettu onnistuneesti " + haunTuloksetLista.size() + "kpl!");
+            }
+            catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        hakusana = "";
+        // Lopullinen sivun palautus
+        if(haunTuloksetLista.isEmpty()) {
+            return "ilmoituksiaeiloytynyt";
+        }
+        else {
+            return "listasivu";
+        }
+    }
+    
     public String toteutaHaku() {
         haunTuloksetLista.clear();
         String kysely = "SELECT i FROM Ilmoitus i";
