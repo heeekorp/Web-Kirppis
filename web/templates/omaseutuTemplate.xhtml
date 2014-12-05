@@ -49,8 +49,8 @@
                 <h:form id="fblogin" >
                     <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
                     
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">  
-                        <b style="float: left; color: black;">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                        <b style="float: left; color: black;" onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b>
                         <p:commandButton value="Viestit" style="width: 132px; float: left" />
                         <p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" style="width: 132px; float: left"></p:button>
                     </h:panelGroup>
@@ -73,10 +73,8 @@
             <div id="top_left">
                 <!-- Tämä on Headerin, eli yläosan, vasen puoli, jonka asetukset tulee cssLayout.css -tiedoston osiosta #top_left -->
                 <form method="post">
-                    <h:form>    <!-- Pakko olla tämä formi, jotta button toimii!! -->
-                        <p:commandButton value="Hae" action="#{kirppisBean.kirppisService.haeHakusanalla}" />
-                        <span><p:inputText type="text" class="searchbox" value="#{kirppisBean.kirppisService.hakusana}" /></span>                
-                    </h:form>                
+                <p:commandButton value="Hae" type="button" action="#{kirppisBean.kirppisService.haeHakusanalla}" />
+                <span><p:inputText type="text" id="searchbox" value="#{kirppisBean.kirppisService.hakusana}" /></span>                
                 </form>
                 <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
             </div>

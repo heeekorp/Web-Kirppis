@@ -74,6 +74,9 @@ public class kirppisService implements Serializable {
     private int valittuAlakategoriaID;
     private List<Valikategoria>valittuValikategoriaLista;
     private List<Alakategoria>valittuAlakategoriaLista;
+    
+    private boolean poista;
+    private List<Integer>poistolista = new ArrayList<Integer>();
    
         
     /*************************************************************************
@@ -500,6 +503,10 @@ public class kirppisService implements Serializable {
             eManageri.persist(uusiIlmoitus);
             trans.commit();
             System.out.println("Ilmoitus lisätty onnistuneesti!");
+            this.uusiIlmoitus = new Ilmoitus();
+            this.valittuPaakategoriaID = 0;
+            this.valittuValikategoriaID = 0;
+            this.valittuAlakategoriaID = 0;
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -513,10 +520,32 @@ public class kirppisService implements Serializable {
     
     /*************************************************************************
      *  Ilmoituksen poistamiseen liittyvät funktiot - alkaa
+     * @param ilmoitusId
      *************************************************************************/
     
-    public void poistaIlmoitus(int ilmoitusId) {
+    public void poistolista(int ilmoitusId) {
+        if (isPoista() == true && !poistolista.contains(ilmoitusId)) {
+            getPoistolista().add(ilmoitusId);
+        }
+        else {
+            getPoistolista().remove(ilmoitusId);
+        }
+    }
     
+    public void poistaIlmoitus() throws IOException {
+        for (int i=0; i < getPoistolista().size(); i++) {
+            try {
+                System.out.println("Poistetaan ilmoitus kannasta");
+                trans.begin();
+                eManageri.createQuery("DELETE FROM Ilmoitus WHERE ilmoitusId = " +getPoistolista().get(i)).executeUpdate();
+                trans.commit();
+            }
+            catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        kayttajanIlmoituksetHaku();
+        FacesContext.getCurrentInstance().getExternalContext().redirect("omasivu.xhtml");
     }
     
     /*************************************************************************
@@ -1018,6 +1047,34 @@ public class kirppisService implements Serializable {
      */
     public void setRekisterointiSivuNaytetaan(boolean rekisterointiSivuNaytetaan) {
         this.rekisterointiSivuNaytetaan = rekisterointiSivuNaytetaan;
+    }
+    
+    /**
+     * @return the poista
+     */
+    public boolean isPoista() {
+        return poista;
+    }
+
+    /**
+     * @param poista the poista to set
+     */
+    public void setPoista(boolean poista) {
+        this.poista = poista;
+    }
+
+    /**
+     * @return the poistolista
+     */
+    public List<Integer> getPoistolista() {
+        return poistolista;
+    }
+
+    /**
+     * @param poistolista the poistolista to set
+     */
+    public void setPoistolista(List<Integer> poistolista) {
+        this.poistolista = poistolista;
     }
 
 

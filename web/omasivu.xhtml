@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <p:commandButton value="Poista valitut" action="#{kirppisBean.kirppisService.poistaIlmoitus(ilmoitusId)}" style="float: left" />
+                                <p:commandButton value="Poista valitut" action="#{kirppisBean.kirppisService.poistaIlmoitus()}" style="float: left" />
                             </td>
                             <td>
                                 <h3>Omat ilmoitukset:</h3>
@@ -38,7 +38,9 @@
                         <h:panelGrid columns="4" cellpadding="15">
                             
                             <p:outputPanel style="width: 50px">
-                                <input type="checkbox" value="#{item.ilmoitusId}"></input>
+                                <h:selectBooleanCheckbox value="#{kirppisBean.kirppisService.poista}">
+                                    <p:ajax listener="#{kirppisBean.kirppisService.poistolista(item.ilmoitusId)}" />
+                                </h:selectBooleanCheckbox>
                             </p:outputPanel>
                             
                             <p:outputPanel style="width: 120px;">
