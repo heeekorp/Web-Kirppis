@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
    
     </h:head>
@@ -13,11 +14,15 @@
 
         <ui:define name="content">            
             
-            <div style="padding-left: 5%;">
+            <div style="padding-left: 10%; width: 50%; min-width: 500px;">
             
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.kayttajaId == kirppisBean.kirppisService.kirjautunutKayttaja.kayttajaId}">
+                    <p:commandButton value="Muokkaa ilmoitusta" action="#{kirppisBean.kirppisService.muokkaaIlmoitus()}" />
+                    <p:commandButton value="Poista ilmoitus" action="#{kirppisBean.kirppisService.poistaIlmoitus()}" />
+                </h:panelGroup>
                 <h2>#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}</h2>
 
-                <p:galleria value="#{kirppisBean.kirppisService.ilmoituksenKuvat}" var="image" autoPlay="false" showCaption="false" style="text-align: center;" panelWidth="500" panelHeight="300">
+                <p:galleria value="#{kirppisBean.kirppisService.ilmoituksenKuvat}" var="image" autoPlay="false" showCaption="false" style="text-align: center;  margin-left: auto; margin-right: auto;" panelWidth="530" panelHeight="300">
                 <h:outputLink value="javax.faces.resource/images/#{image}" title="#{image}" target="blank"> 
                 [Näytä kuva täysikokoisena]<br />
                  </h:outputLink>
@@ -30,9 +35,9 @@
                 alt="Image Description for #{image}" title="#{image}"  onclick="chooseImage('#{image}')" />
                 </p:galleria>
             
-                <table>
+                <table style="background: #f5f5f5; margin-top: 1%; width: 100%;">
                     <tr>
-                        <td><b>Ilmoitus jätetty:</b></td>
+                        <td style="width: 25%;"><b>Ilmoitus jätetty:</b></td>
                         <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusjatettyPvmToString()}</td>
                     </tr>
                     <tr>
@@ -55,22 +60,73 @@
                         <td><b>Ilmoitus jätetty: </b></td>
                         <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusjatettyPvmToString()}</td>
                     </tr>
-                    <tr>
-                        <td><b>Myyjä:</b></td>
-                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.facebooknimi}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Myyjän puh:</b></td>
-                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumeroToString()}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Myyjän sähköposti:</b></td>
-                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.sahkoposti}</td>
-                    </tr>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                        <tr>
+                            <td><b>Myyjä:</b></td>
+                            <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.facebooknimi}</td>
+                        </tr>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+                        <tr>
+                            <td><b>Myyjä:</b></td>
+                            <td>Kirjaudu sisään nähdäksesi myyjän tiedot.</td>
+                        </tr>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaPuhelin == true}">  
+                        <tr>
+                            <td><b>Myyjän puh:</b></td>
+                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.puhelinnumeroToString()}</td>
+                        </tr>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaSahkoposti == true}">
+                        <tr>
+                            <td><b>Myyjän sähköposti:</b></td>
+                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.sahkoposti}</td>
+                        </tr>
+                    </h:panelGroup>
                 </table>
+                
+                <h:form> 
+                    <b>Viestit</b>
+                    <h:dataTable style="width: 100%;" value="#{kirppisBean.kirppisService.haeIlmoituksenViestitLista()}" var="viesti">
+                    <h:column>
+                        <h:panelGroup rendered="#{kirppisBean.kirppisService.naytetaankoViesti(viesti) == true}">    
+                        <p:outputPanel style="background: #bbbbbb; margin-top: 10px; padding: 3px;">
+                            <b style="font-weight: bold;">#{viesti.lahettajaId.facebooknimi}</b>
+                            <jee style="float: right;">#{viesti.viestilahetysaikaToString()}</jee></p:outputPanel>
+                        <p:outputPanel style="background: #dddddd; padding: 10px;">#{viesti.viestinrunko}</p:outputPanel>
+                    </h:panelGroup>
+                    </h:column>
+                    </h:dataTable>
+                    
+                    <br />
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                        Lähetä viesti ilmoittajalle
+                        <p:inputTextarea id="viestinRunko" value="#{kirppisBean.kirppisService.uusiViesti.viestinrunko}" style="width: 97%;" autoResize="true" required="true" label="viestinRunko">
+                            <f:validateLength minimum="1" />
+                        </p:inputTextarea>
+                        <p:message for="viestinRunko" display="icon" />
+                        <br /><br />
+
+                        <p:selectOneMenu id="onkoViestiJulkinen" value="#{kirppisBean.kirppisService.uusiViesti.julkinenviesti}" style="float: left; margin: 1px;" required="true">
+                            <f:selectItem itemLabel="- Valitse vietin tyyppi -" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="vain ilmoittajalle" itemValue="0"/>
+                            <f:selectItem itemLabel="julkinen" itemValue="1" />
+                            <f:validateRequired  />
+                        </p:selectOneMenu>
+                         <p:message for="onkoViestiJulkinen" display="icon" />
+                        <p:commandButton value="Lähetä viesti" action="#{kirppisBean.kirppisService.lisaaViesti()}" style="float: left; margin-left: 2px;" />
+                    </h:panelGroup>
+                    
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+                        Voidaksesi lähettää viestin ilmoittajalle,
+                        sinun täytyy kirjautua omaseutukirppis.fi palveluun!<br /><br />
+                        Kirjaudu käyttämällä Facebook-tunnuksiasi.<br /><br />
+                        <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
+                    </h:panelGroup>
+                </h:form>
            </div>
 
-            
         </ui:define>
 
         </ui:composition>

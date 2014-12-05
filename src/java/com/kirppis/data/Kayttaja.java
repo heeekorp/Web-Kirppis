@@ -174,7 +174,7 @@ public class Kayttaja implements Serializable {
     }
     
     public String puhelinnumeroToString() {
-        return "+358" + puhelinnumero;
+        return "+358" + this.puhelinnumero;
     }
     
 }

@@ -222,7 +222,12 @@ public class Ilmoitus implements Serializable {
     }
     
     public String ilmoitusjatettyPvmToString() {
-        return new SimpleDateFormat("dd.MM.yyyy").format(ilmoitusjatettyPvm);
+        if(ilmoitusjatettyPvm == null) {
+            return new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+        }
+        else {
+            return new SimpleDateFormat("dd.MM.yyyy").format(ilmoitusjatettyPvm);
+        }
     }
 
     public String getLisatieto() {

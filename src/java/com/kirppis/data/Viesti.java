@@ -6,6 +6,7 @@
 package com.kirppis.data;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -72,6 +73,7 @@ public class Viesti implements Serializable {
     private Kayttaja lahettajaId;
 
     public Viesti() {
+        this.julkinenviesti = -1;
     }
 
     public Viesti(Integer viestiId) {
@@ -165,6 +167,10 @@ public class Viesti implements Serializable {
     @Override
     public String toString() {
         return "com.kirppis.data.Viesti[ viestiId=" + viestiId + " ]";
+    }
+    
+    public String viestilahetysaikaToString() {
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm").format(lahetysaika);
     }
     
 }

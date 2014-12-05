@@ -10,7 +10,7 @@
         xfbml      : true,
         status     : true,
         cookie     : true,
-        version    : 'v2.1'
+        version    : 'v2.2'
     });
     CheckLoginStatus();
 };
@@ -34,8 +34,8 @@ function CheckLoginStatus(){
         if (response.status === 'connected') {
             console.log("Olet kirjautunut!");
             console.log(onkoKirjautunut);
-            
-            if(onkoKirjautunut === "false"){
+            console.log(rekisterointi);
+            if(onkoKirjautunut === "false" && rekisterointi === "false"){
                 console.log("HaeFace!");
                 haeface();
                 //alert(document.getElementById('facebookid:hiddenFacebookID').value);
@@ -45,14 +45,14 @@ function CheckLoginStatus(){
                     facebooknimi();
                     kirjauduJS();
                     //your code to be executed after 1 seconds
-                },delay);     
+                },delay);  
             }
         }
         else {
             console.log("Et ole kirjautunut!");
             console.log(onkoKirjautunut);
-            
-            if(onkoKirjautunut === "true"){
+            console.log(rekisterointi);
+            if(onkoKirjautunut === "true" || rekisterointi === "true"){
                 console.log("Nollaa Face!");
                 document.getElementById('facebookid:hiddenFacebookID').value = "0";
                 document.getElementById('facebooknimi:hiddenNimi').value = "";
@@ -67,10 +67,10 @@ function CheckLoginStatus(){
 function kirjauduJS(){
     console.log("kirjauduJS");
     kirjaudu();
-    
+    console.log(onkoKirjautunut);
     var delay=100;//0.1 seconds
     setTimeout(function(){
-        location.reload(); 
+        //location.reload(); 
         //your code to be executed after 1 seconds
     },delay);      
 }
@@ -81,7 +81,7 @@ function kirjauduUlosJS(){
     
     var delay=100;//0.1 seconds
     setTimeout(function(){
-         location.reload();
+         //location.reload();
         //your code to be executed after 1 seconds
     },delay);  
     
