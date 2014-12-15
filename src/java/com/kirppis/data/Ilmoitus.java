@@ -241,6 +241,7 @@ public class Ilmoitus implements Serializable {
     public String hintaToString() {
         return hinta + "0";
     }
-    
-    
+  
 }
+
+

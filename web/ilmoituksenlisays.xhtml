@@ -16,7 +16,7 @@
         
         <div style="padding-left: 25px;">   
                
-        <h:form>             
+            <h:form enctype="multipart/form-data">             
             
             <h2>Luo uusi ilmoitus</h2> 
             <br></br>
@@ -28,7 +28,7 @@
             <br></br>
 
             <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText>
-            <p:fileUpload value="#{fileUploadView.file}" mode="simple" style="height: 25px;" />
+            <h:inputFile value="#{kirppisBean.kirppisService.file1}" />
 
             <br></br>
             <br></br>
@@ -64,6 +64,7 @@
             <h:selectOneMenu id ="Alamenu" value="#{kirppisBean.kirppisService.valittuAlakategoriaID}" style="min-width: 200px;">
                 <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.haeValittuAlakategoria()}" var="ala" itemValue="#{ala.alakategoriaId}" itemLabel="#{ala.alakategorianimi}" />
+                <f:ajax execute="Alamenu"></f:ajax>
             </h:selectOneMenu>
             
             <br></br>

@@ -61,7 +61,7 @@
                         <p:selectOneMenu id="Paamenu" value="#{kirppisBean.kirppisService.valittuPaakategoriaID}" style="min-width: 200px;">
                             <f:selectItem itemLabel="Valitse..." itemValue="#{null}" noSelectionOption="true" />
                             <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" itemValue="#{paa.paakategoriaId}" itemLabel="#{paa.paakategoriannimi}" />
-                            <f:ajax render="Valimenu" execute="Paamenu"></f:ajax>
+                            <f:ajax render="Valimenu Alamenu" execute="Paamenu"></f:ajax>
                         </p:selectOneMenu>
                         <br />
                         <p:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.valittuValikategoriaID}" style="min-width: 200px;">
@@ -70,10 +70,9 @@
                             <f:ajax render="Alamenu" execute="Valimenu"></f:ajax>
                         </p:selectOneMenu>
                         <br />
-                        <p:selectOneMenu id ="Alamenu" value="#{kirppisBean.kirppisService.aKategoria}" style="min-width: 200px;">
+                        <p:selectOneMenu id ="Alamenu" value="#{kirppisBean.kirppisService.valittuAlakategoriaID}" style="min-width: 200px;">
                             <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
                             <f:selectItems value="#{kirppisBean.kirppisService.haeValittuAlakategoria()}" var="ala" itemValue="#{ala.alakategoriaId}" itemLabel="#{ala.alakategorianimi}" />
-                            <f:ajax render="Alamenu" execute="Alamenu"></f:ajax>
                         </p:selectOneMenu>
                     </td>
                 </tr>

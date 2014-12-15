@@ -50,7 +50,7 @@
                     <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
                     
                     <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-                        <b style="float: left; color: black;" onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b>
+                        <b onmouseover="" style="float: left; color: black;" onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b>
                         <p:commandButton value="Viestit" style="width: 132px; float: left" />
                         <p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" style="width: 132px; float: left"></p:button>
                     </h:panelGroup>

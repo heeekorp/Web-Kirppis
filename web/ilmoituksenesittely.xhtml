@@ -87,8 +87,8 @@
                 </table>
                 
                 <h:form> 
-                    <b>Viestit</b>
-                    <h:dataTable style="width: 100%;" value="#{kirppisBean.kirppisService.haeIlmoituksenViestitLista()}" var="viesti">
+                    <b><a id="ViestitAnkkuri">Viestit</a></b>
+                    <h:dataTable style="width: 100%;" value="#{kirppisBean.kirppisService.ilmoituksenViestitLista}" var="viesti">
                     <h:column>
                         <h:panelGroup rendered="#{kirppisBean.kirppisService.naytetaankoViesti(viesti) == true}">    
                         <p:outputPanel style="background: #bbbbbb; margin-top: 10px; padding: 3px;">

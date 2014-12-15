@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"      
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <h:outputStylesheet name="./css/default.css"/>
@@ -19,7 +20,7 @@
                                 <h2>Omat sivut</h2>
                             </td>
                             <td>
-                                <p:commandButton value="Muuta omia tietoja ja asetuksia" />
+                                <p:commandButton value="Muuta omia tietoja ja asetuksia" action="muutatietoja.xhtml?faces-redirect=true" />
                             </td>
                         </tr>
                         <tr>
@@ -33,9 +34,17 @@
                     </table>
                     #{kirppisBean.kirppisService.kayttajanIlmoituksetHaku()}
                     
-                    <p:dataScroller value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
-                        
-                        <h:panelGrid columns="4" cellpadding="15">
+                    <b style="font-size: 15px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
+                    <p:selectOneMenu id="listanJarjestys" value="#{kirppisBean.kirppisService.ilmoitusListanJarjestys}">
+                        <f:selectItem itemLabel="Uusin ensin" itemValue="1"/>
+                        <f:selectItem itemLabel="Edullisin ensin" itemValue="2" />
+                        <f:selectItem itemLabel="Kallein ensin" itemValue="3" />
+                        <f:ajax event="change" render="Ilmoituslista" execute="listanJarjestys" listener="#{kirppisBean.kirppisService.jarjestaHauntulokseLista()}"></f:ajax>
+                    </p:selectOneMenu>
+                    
+                    <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
+                           #{kirppisBean.kirppisService.asetaLukemattomienViestienMaara(item.ilmoitusId)}
+                        <h:panelGrid columns="4" cellpadding="15" >
                             
                             <p:outputPanel style="width: 50px">
                                 <h:selectBooleanCheckbox value="#{kirppisBean.kirppisService.poista}">
@@ -69,9 +78,13 @@
                                 <p:panelGrid>
                                     <h:outputText value="#{item.ilmoitusjatettyPvmToString()}" style="font-weight: bold" />
                                     <br />
-                                    <p:commandButton value="Viestit" style="width: 90px" />                            
+                                   
+                                    <h:panelGroup rendered="#{kirppisBean.kirppisService.lukemattomienViestienMaara > 0}">  
+                                        <h:outputText value="Ilmoituksella on uusia viestejä(#{kirppisBean.kirppisService.lukemattomienViestienMaara})" style="color: black;"/>                   
+                                    </h:panelGroup>
                                 </p:panelGrid>
                             </p:outputPanel>
+                            
                         </h:panelGrid>
                     </p:dataScroller>
                     

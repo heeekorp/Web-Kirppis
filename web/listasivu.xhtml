@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         
     </h:head>
@@ -15,7 +16,15 @@
         
         <!--Tulosten listaaminen ilmoitus kerrallaan-->
         <h:form  style="margin-left: 3%; width: 95%">
-            <p:dataScroller value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
+            <b style="font-size: 15px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
+            <p:selectOneMenu id="listanJarjestys" value="#{kirppisBean.kirppisService.ilmoitusListanJarjestys}">
+                <f:selectItem itemLabel="Uusin ensin" itemValue="1"/>
+                <f:selectItem itemLabel="Edullisin ensin" itemValue="2" />
+                <f:selectItem itemLabel="Kallein ensin" itemValue="3" />
+                <f:ajax event="change" render="Ilmoituslista" execute="listanJarjestys" listener="#{kirppisBean.kirppisService.jarjestaHauntulokseLista()}"></f:ajax>
+            </p:selectOneMenu>
+            
+            <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
                  
                 <h:panelGrid columns="3" cellpadding="15">
                     <p:outputPanel style="width: 120px;">
