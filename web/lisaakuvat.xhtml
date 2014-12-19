@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+   
+    </h:head>
+    <h:body>
+        <ui:composition template="templates/omaseutuTemplate.xhtml">
+
+        <ui:define name="content">  
+            
+            <h2>Lisää kuvat ilmoitukseen</h2>
+            
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() != 0}">
+            <h3>Lisätyt kuvat:</h3>
+            
+                <h:dataTable id="kuviennimet" value="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet}" var="kuva">
+                    <h:column> 
+                        <h:outputText value="#{kuva}"/>
+                    </h:column>   
+                </h:dataTable>
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() == 0}">
+                <b>Ei lisättyjä kuvia</b>
+            </h:panelGroup>
+            
+            <h:form id="uploadform" enctype="multipart/form-data" onsubmit="uploadFile()">             
+
+            <h:inputFile id="file" label="file" value="#{kirppisBean.kirppisService.kuvaTiedosto}" 
+                        style="height: 25px; width: 250px; margin-right: 5px; font-weight: bold;" required="true">
+                <f:validator validatorId="FileUploadValidator" />            
+            </h:inputFile>
+            
+             <!-- Primefaces commandButton ei toimi tässä! -->
+            <h:commandButton value="Lataa kuva" onclick="uploadFile()" style="height: 25px; width: 85px;">
+                <f:ajax event="click" listener="#{kirppisBean.kirppisService.lisaaKuva()}" render="uploadform kuviennimet" execute="file "/>
+            </h:commandButton>
+            
+            <div class = "content1" id = "content1"></div>
+           
+            <h:message style="color: red" for="file" /><br />
+             
+        </h:form>
+            
+        <p:button value="Esikatselu" outcome="ilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
+        
+        <script>          
+            function uploadFile() {
+                document.getElementById("content1").innerHTML = ('<img src="javax.faces.resource/images/upload.gif" style="height: 50px; width: 50px;" /><br/><b>Kuvaa ladataan serverille!</b>');
+            }
+
+        </script>
+
+        </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

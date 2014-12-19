@@ -16,20 +16,26 @@
         
         <div style="padding-left: 25px;">   
                
-            <h:form>             
+            <h:form enctype="multipart/form-data">             
             
-            <h2>Luo uusi ilmoitus</h2> 
+            <h2>Muokkaa ilmoitusta</h2> 
             <br></br>
 
             <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText>
-            <p:inputText style="width: 500px;" value="#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}" ></p:inputText> 
+            <p:inputText style="width: 500px;" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}" ></p:inputText> 
+
+            <br></br>
+            <br></br>
+
+            <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText>
+            <h:inputFile value="#{kirppisBean.kirppisService.kuvaTiedosto}" />
 
             <br></br>
             <br></br>
 
             <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText>
             <h:panelGrid columns="2">
-                <p:inputText value="#{kirppisBean.kirppisService.uusiIlmoitus.hinta}" style="width: 150px;"></p:inputText>
+                <p:inputText value="#{kirppisBean.kirppisService.naytettavaIlmoitus.hinta}" style="width: 150px;"></p:inputText>
                 <h:outputText value="€" style="font-weight: bold"></h:outputText>
             </h:panelGrid>
 
@@ -37,29 +43,31 @@
             <br></br>
 
             <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText>
-            <p:inputTextarea value="#{kirppisBean.kirppisService.uusiIlmoitus.kuvaus}" style="height: 300px;width: 500px;"/>
+            <p:inputTextarea value="#{kirppisBean.kirppisService.naytettavaIlmoitus.kuvaus}" style="height: 300px;width: 500px;"/>
 
             <br></br>
             <br></br>
 
             <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText>
-            <p:selectOneMenu id="Paamenu" value = "#{kirppisBean.kirppisService.valittuPaakategoriaID}" style="min-width: 200px;">
-                <f:selectItem itemLabel="Valitse..." itemValue="#{null}" noSelectionOption="true" />
+            <h:selectOneMenu id="Paamenu" value = "#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId.paakategoriaId}" style="min-width: 200px;">
+                <f:selectItem itemLabel="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId.paakategoriaId.paakategoriannimi}" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" itemValue="#{paa.paakategoriaId}" itemLabel="#{paa.paakategoriannimi}" />
                 <f:ajax render="Valimenu Alamenu" execute="Paamenu"></f:ajax>
-            </p:selectOneMenu>
-            <br />      
-            <p:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.valittuValikategoriaID}" style="min-width: 200px;">
-                <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
+            </h:selectOneMenu>
+            <br />   
+            <!-- Ei toimi vielä -->
+            <h:selectOneMenu id="Valimenu" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId}" style="min-width: 200px;">
+                <f:selectItem itemLabel="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId.valikategoriannimi}" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.haeValittuValikategoria()}" var="vali" itemValue="#{vali.valikategoriaId}" itemLabel="#{vali.valikategoriannimi}" />
-                <f:ajax render="Alamenu" execute="Valimenu"></f:ajax>
-            </p:selectOneMenu>
-            <br />          
-            <p:selectOneMenu id ="Alamenu" value="#{kirppisBean.kirppisService.valittuAlakategoriaID}" style="min-width: 200px;">
-                <f:selectItem itemLabel="Kaikki" itemValue="#{null}" noSelectionOption="true" />
+                <f:ajax render="Alamenu" execute="Valimenu"></f:ajax> 
+            </h:selectOneMenu>
+            <br />   
+            <!-- Ei toimi vielä -->
+            <h:selectOneMenu id ="Alamenu" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId}" style="min-width: 200px;">
+                <f:selectItem itemLabel="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.alakategorianimi}" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.haeValittuAlakategoria()}" var="ala" itemValue="#{ala.alakategoriaId}" itemLabel="#{ala.alakategorianimi}" />
                 <f:ajax execute="Alamenu"></f:ajax>
-            </p:selectOneMenu>
+            </h:selectOneMenu>
             
             <br></br>
             <br></br>
@@ -85,13 +93,13 @@
             <br></br>
 
             <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText>
-            <p:inputTextarea style="height: 100px;width: 500px;" value="#{kirppisBean.kirppisService.uusiIlmoitus.lisatieto}" />
+            <p:inputTextarea value="#{kirppisBean.kirppisService.naytettavaIlmoitus.lisatieto}" style="height: 100px;width: 500px;" />
 
             <br></br>
             <br></br>       
 
             <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText>
-            <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkunto}">
+            <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.tuotteenkunto}">
                 <f:selectItem itemLabel="Valitse..." itemValue="" />
                 <f:selectItem itemLabel="Uusi" itemValue="4" />
                 <f:selectItem itemLabel="Erinomainen" itemValue="3" />
@@ -101,11 +109,13 @@
 
             <br></br>
             <br></br>
-
-            <h:panelGrid columns="1">
-                <p:commandButton value="Lisää kuvat" action="#{kirppisBean.kirppisService.lueIlmoituksentiedot()}" />
+            <h:form>
+            <h:panelGrid columns="2">
+                <h:commandButton value="Peruuta" action="ilmoituksenesittely" />
+                <!-- Ei toimi vielä -->
+                <h:commandButton value="Julkaise ilmoitus" action="#{kirppisBean.kirppisService.julkaiseUusiIlmoitus()}" />
             </h:panelGrid>
-
+            </h:form>
         </h:form>
         
         </div>
@@ -116,4 +126,6 @@
           
     </h:body>
 </html>
+
+
 

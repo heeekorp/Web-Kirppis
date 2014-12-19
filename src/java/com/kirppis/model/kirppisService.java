@@ -13,6 +13,7 @@ import com.kirppis.data.Valikategoria;
 import com.kirppis.data.Viesti;
 import com.kirppis.data.hintaComparator;
 import com.kirppis.data.pvmComparator;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -83,9 +85,11 @@ public class kirppisService implements Serializable {
     private boolean poista;
     private List<Integer>poistolista = new ArrayList<>();
     
-    private Part file1;
-   
-        
+    private Part kuvaTiedosto;
+    private List<Part> kuvaTiedostot = new ArrayList<>();
+    private List<String> lisattyjenKuvatiedostojenNimet = new ArrayList<>();
+    private String kuvienPolkuServerilla;
+    
     /*************************************************************************
      *  Konstruktorit - alkaa
      *************************************************************************/
@@ -112,14 +116,18 @@ public class kirppisService implements Serializable {
         rekisterointiSivuNaytetaan = false;
         facebookIdString = "0";
         
+        ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        kuvienPolkuServerilla = ctx.getRealPath("/") + "resources\\images\\";
+        
+        System.out.println("polku on --> " + kuvienPolkuServerilla);
         try {
-            System.out.println("Haetaan ilmoitukset ja kategoriat kannasta!");
+            System.out.println("Haetaan kategoriat kannasta!");
             trans.begin();
             paakategoriatLista = eManageri.createQuery("Select paa from Paakategoria paa").getResultList();
             valikategoriatLista = eManageri.createQuery("Select vali from Valikategoria vali").getResultList();
             alakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
             trans.commit();
-            System.out.println("Ilmoitukset ja kategoriat haettu onnistuneesti!");
+            System.out.println("Kategoriat haettu onnistuneesti!");
             
             // Haetaan kuluva päivämäärä
             paivamaaraTanaan = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
@@ -256,7 +264,7 @@ public class kirppisService implements Serializable {
         if(ilmoitusListanJarjestys == 1){// uusin eka
             Collections.sort(haunTuloksetLista, new pvmComparator());
         }
-        if(ilmoitusListanJarjestys == 2){ // edullisin eks
+        if(ilmoitusListanJarjestys == 2){ // edullisin eka
             Collections.sort(haunTuloksetLista, new hintaComparator());
         }
         if(ilmoitusListanJarjestys == 3){ // kallein eka
@@ -374,7 +382,18 @@ public class kirppisService implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().redirect("listasivu.xhtml");
         }
     }
-
+    // Tyhjennä hakusivu
+    public void tyhjennaHaku() throws IOException {
+        this.hakusana="";
+        this.postinumero=0;
+        this.etaisyys=0;
+        this.valittuPaakategoriaID=0;
+        this.valittuAlakategoriaID=0;
+        this.valittuValikategoriaID=0;
+        this.ilmoituksetAjalta=0;
+        this.kunto=0;
+        FacesContext.getCurrentInstance().getExternalContext().redirect("haku.xhtml");
+    }
     /*************************************************************************
      *  Haku osuus - loppuu
      *************************************************************************/
@@ -522,23 +541,27 @@ public class kirppisService implements Serializable {
      * @throws java.io.IOException
      *************************************************************************/
     
-    public void luoEsikatselu() throws IOException {
-        System.out.println("Luo esikatselu");
-        
-        if(file1 == null){
-            uusiIlmoitus.setKuvienpolku("default-picture.jpg");
-        }
-
+    public void lueIlmoituksentiedot() throws IOException {
+        System.out.println("Luetaan käyttäjän antamat ilmoituksen tiedot!");
+       
         for(Alakategoria a : valittuAlakategoriaLista) {
             if(a.getAlakategoriaId().equals(valittuAlakategoriaID)) {
                 uusiIlmoitus.setAlakategoriaId(a);
                 break;
             }
         }
+       
         uusiIlmoitus.setMyyjanId(kirjautunutKayttaja);
         uusiIlmoitus.setIlmoitusjatettyPvm(new Date());
-  
-        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenesikatselu.xhtml");
+        
+        FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+    }
+    // Funktio lisää käyttäjän lataaman kuvatiedoston listaan. 
+    public void lisaaKuva() throws IOException {        
+        kuvaTiedostot.add(kuvaTiedosto);
+        lisattyjenKuvatiedostojenNimet.add(haeTiedostonNimi(kuvaTiedosto));
+        kuvaTiedosto = null;
+        FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
     }
     
     public void tallennaUusiIlmoitusLuonnos() {
@@ -546,58 +569,79 @@ public class kirppisService implements Serializable {
         // ilmoitusId = null
         // Luo uusi luonnokset taulu kantaan!!
     }
-    
+    // Funktio tallentaa uuden ilmoituksen tietokantaan. Käyttäjän lataamat kuvat tallennetaan serverille.
     public void julkaiseUusiIlmoitus() throws IOException {
+        if(kuvaTiedostot.isEmpty()){ // mikäli käyttäjä ei ladannut yhtään kuvaa!
+            uusiIlmoitus.setKuvienpolku("default-picture.jpg");
+        } 
         try {
             System.out.println("Lisätään uusi ilmoitus!");
             trans.begin();
             eManageri.persist(uusiIlmoitus);
             
-            if(file1 != null){ // Mikäli kuvatiedosto ei ole tyhjä, aseteaan kuvienpolku tietokantaan.
+            if(!kuvaTiedostot.isEmpty()){ // Mikäli käyttäjä latasi kuvia, aseteaan kuvien polku tietokantaan.
+                String polku = "";
+                int kuvaNro = 0;
+                // Käydään läpi kuvatiedostot lista. 
+                //Lisätään kuvan nimi kuvienpolku kenttään muodossa "ilmoitusId"-"kuvan järjestysnumero"."kuvan tiedostotyyppi", ja loppuun tyhjä väli.
+                for(Part kuva : kuvaTiedostot){
+                    kuvaNro++;
+                    polku = polku + uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + haeTiedostontyyppi(kuva) + " ";
+                }
+                // Päivitetään kuvienpolku tietokantaan.
                 Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, uusiIlmoitus.getIlmoitusId());
-                muokattavaIlmoitus.setKuvienpolku(uusiIlmoitus.getIlmoitusId() +"-1." + haeTiedostotyyppi(file1));
+                muokattavaIlmoitus.setKuvienpolku(polku);
                 eManageri.merge(muokattavaIlmoitus);
-            }
-            
+            }      
             trans.commit();
             System.out.println("Ilmoitus lisätty onnistuneesti!");
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
         }
-        
-        if(file1 != null){ // tallennataan kuva serverille!
-        tallennaKuva(uusiIlmoitus.getIlmoitusId() + "-1." + haeTiedostotyyppi(file1));
+        // Tallentaan kuvat serverille.
+        System.out.println("Tallennataan kuvat serverille!");
+        int kuvaNro = 0;
+        // Tallennetaan kuvat kuvalistasta samalla nimeämis logiikalla kuin yllä kuvienpolku. 
+        for(Part kuva : kuvaTiedostot){
+            kuvaNro++;
+            tallennaKuva(kuva, uusiIlmoitus.getIlmoitusId() + "-" +  kuvaNro + "." + haeTiedostontyyppi(kuva) );
         }
-        
+        // nollataan muuttujat;
         this.valittuPaakategoriaID = 0;
         this.valittuValikategoriaID = 0;
         this.valittuAlakategoriaID = 0;
-        file1 = null;
+        kuvaTiedosto = null;
+        kuvaTiedostot = new ArrayList<>(); 
+        lisattyjenKuvatiedostojenNimet = new ArrayList<>();
         this.uusiIlmoitus = new Ilmoitus();
         
-        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituslisattyonnistuneesti.xhtml");
+        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituslisattyonnistuneesti.xhtml");       
     }
-    
-    public void tallennaKuva(String kuvannimi) throws IOException{
+    // Funktio tallentaa kuvan serverille.
+    public void tallennaKuva(Part kuvaTiedosto, String kuvannimi) throws IOException{
         try ( 
-            InputStream inputStream = file1.getInputStream(); 
-            FileOutputStream outputStream = new FileOutputStream("C:\\kirppisBitpocket2\\omaseutukirppis_projekti\\web\\resources\\images\\" + kuvannimi)) {
+            InputStream inputStream = kuvaTiedosto.getInputStream(); 
+            FileOutputStream outputStream = new FileOutputStream(kuvienPolkuServerilla + kuvannimi)) {
+
             byte[] buffer = new byte[4096];
             int bytesRead = 0;
+          
             while(true) {
                 bytesRead = inputStream.read(buffer);
+               
                 if(bytesRead > 0) {
                     outputStream.write(buffer, 0, bytesRead);
                 }else {
                     break;
                 }
             }
+            System.out.println(kuvannimi + " tallennettu serverille!");
         }
     }
-    
-    private static String haeTiedostotyyppi(Part part) {  
-        for (String cd : part.getHeader("content-disposition").split(";")) {  
+    // Funktio hakee kuvan tiedostotyypin kuvatiedoston headerista.
+    private static String haeTiedostontyyppi(Part tiedosto) {  
+        for (String cd : tiedosto.getHeader("content-disposition").split(";")) { 
             if (cd.trim().startsWith("filename")) {  
                 String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");  
                 filename = filename.substring(filename.lastIndexOf('/') + 1).substring(filename.lastIndexOf('\\') + 1); // MSIE fix.  
@@ -606,17 +650,40 @@ public class kirppisService implements Serializable {
             }  
         }  
         return null;  
-    }  
-    
+    }
+    // Funktio hakee kuvatiedoston nimen tiedoston headerista. 
+    private static  String haeTiedostonNimi(Part tiedosto){
+        for (String cd : tiedosto.getHeader("content-disposition").split(";")) { 
+            if (cd.trim().startsWith("filename")) {  
+                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", ""); 
+                return  filename;
+            }
+        }
+            return null;
+    }    
     /*************************************************************************
      *  Ilmoituksen lisäämiseen liittyvät funktiot - loppuu
      *************************************************************************/
+    
+    /************************************************************************
+    *   Ilmoituksen muokkaamiseen liittyvät  funktiot - alkaa 
+     * @throws java.io.IOException
+    ************************************************************************/
+
+    // Muokkaa ilmoitusta
+    public void muokkaaIlmoitus() throws IOException {        
+        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenmuokkaus.xhtml");
+    }
+
+    /************************************************************************
+    *   Ilmoituksen muokkaamiseen liittyvät  funktiot - loppuu 
+    ************************************************************************/
     
     /*************************************************************************
      *  Ilmoituksen poistamiseen liittyvät funktiot - alkaa
      * @param ilmoitusId
      *************************************************************************/
-    
+    // Funktio lisää tai poista poistettavaksi valitun ilmoituksen poistolistalta. Fuktiota kutsutaan omasivu.xhtml:stä 
     public void poistolista(int ilmoitusId) {        
         if (isPoista() == true && !poistolista.contains(ilmoitusId)) {
             getPoistolista().add(ilmoitusId);
@@ -625,14 +692,29 @@ public class kirppisService implements Serializable {
             getPoistolista().remove(ilmoitusId);
         }
     }
-    
-    public void poistaIlmoitus() throws IOException {
-       
+    // Funktio poistaa ilmoituksen tietokannasta.
+    public void poistaIlmoitus() throws IOException { 
         try {
             System.out.println("Poistetaan ilmoitus kannasta");
             trans.begin();
             for (int poistettavaId : poistolista) {
                 Ilmoitus poistettavaIlmoitus = eManageri.find(Ilmoitus.class, poistettavaId);
+                
+                // Poistetaan ilmoitukseen liittyvät kuvat serveriltä!
+                String kuvat =  poistettavaIlmoitus.getKuvienpolku();
+                while(true){
+                    int i = kuvat.indexOf(" ");
+                    System.out.println("i=" + i);
+                    
+                    if(i == -1){
+                        poistaKuva(kuvat);
+                        break;
+                    }
+                    else{
+                        poistaKuva(kuvat.substring(0, i));
+                        kuvat = kuvat.substring(i + 1, kuvat.length() );
+                    }
+                }        
                 eManageri.remove(poistettavaIlmoitus);
             }
             trans.commit();
@@ -645,7 +727,21 @@ public class kirppisService implements Serializable {
         kayttajanIlmoituksetHaku();
         FacesContext.getCurrentInstance().getExternalContext().redirect("omasivu.xhtml");
     }
-    
+    // Poistaa kuvan serveriltä.   
+    public void poistaKuva(String kuvanNimi){
+        try{
+            File file = new File(kuvienPolkuServerilla + kuvanNimi);
+
+            if(file.delete()){
+                    System.out.println(file.getName() + " is deleted!");
+            }else{
+                    System.out.println(kuvanNimi + " Delete operation is failed.");
+            }
+
+        }catch(Exception e){
+            System.out.println("Virhe poistettaessa kuvaa!\n" + e);
+        }       
+    }   
     /*************************************************************************
      *  Ilmoituksen poistamiseen liittyvät funktiot - loppuu
      *************************************************************************/    
@@ -675,7 +771,7 @@ public class kirppisService implements Serializable {
             if(kayttajat.isEmpty()){ 
                 System.out.println("FacebookId:tä vastaavaa käyttäjää ei löytynyt!");
                 this.rekisterointiSivuNaytetaan = true;
-                FacesContext.getCurrentInstance().getExternalContext().redirect("http://localhost:8080/omaseutukirppis_projekti/faces/rekisterointi.xhtml");
+                FacesContext.getCurrentInstance().getExternalContext().redirect("rekisterointi.xhtml");
             }
             else{
                 System.out.println("FacebookId:tä vastaavaa käyttäjä löytyi tietokannasta!");
@@ -1198,18 +1294,33 @@ public class kirppisService implements Serializable {
     }
 
     /**
-     * @return the file1
+     * @param kuvaTiedosto the kuvaTiedosto to set
      */
-    public Part getFile1() {
-        return file1;
+    public void setKuvaTiedosto(Part kuvaTiedosto) {
+        this.kuvaTiedosto = kuvaTiedosto;
     }
 
     /**
-     * @param file1 the file1 to set
+     * @return the kuvaTiedostot
      */
-    public void setFile1(Part file1) {
-        this.file1 = file1;
+    public List<Part> getKuvaTiedostot() {
+        return kuvaTiedostot;
     }
+
+    /**
+     * @return the kuvaTiedosto
+     */
+    public Part getKuvaTiedosto() {
+        return kuvaTiedosto;
+    }
+
+    /**
+     * @return the lisattyjenKuvatiedostojenNimet
+     */
+    public List<String> getLisattyjenKuvatiedostojenNimet() {
+        return lisattyjenKuvatiedostojenNimet;
+    }
+
 }
     /*************************************************************************
      *  Getterit ja setterit - loppuu
