@@ -20,7 +20,7 @@
             
                 <h:dataTable id="kuviennimet" value="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet}" var="kuva">
                     <h:column> 
-                        <h:outputText value="#{kuva}"/>
+                        <p:graphicImage name="images/#{kuva}" style="height: 100px;"/>
                     </h:column>   
                 </h:dataTable>
             </h:panelGroup>
@@ -31,33 +31,31 @@
             
             <h:form id="uploadform" enctype="multipart/form-data" onsubmit="uploadFile()">             
 
-            <h:inputFile id="file" label="file" value="#{kirppisBean.kirppisService.kuvaTiedosto}" 
-                        style="height: 25px; width: 250px; margin-right: 5px; font-weight: bold;" required="true">
-                <f:validator validatorId="FileUploadValidator" />            
-            </h:inputFile>
-            
-             <!-- Primefaces commandButton ei toimi tässä! -->
-            <h:commandButton value="Lataa kuva" onclick="uploadFile()" style="height: 25px; width: 85px;">
-                <f:ajax event="click" listener="#{kirppisBean.kirppisService.lisaaKuva()}" render="uploadform kuviennimet" execute="file "/>
-            </h:commandButton>
-            
-            <div class = "content1" id = "content1"></div>
-           
-            <h:message style="color: red" for="file" /><br />
-             
-        </h:form>
-            
+                <h:inputFile id="file" label="file" value="#{kirppisBean.kirppisService.kuvaTiedosto}" 
+                            style="height: 25px; width: 250px; margin-right: 5px; font-weight: bold;" required="true">
+                    <f:validator validatorId="FileUploadValidator" />            
+                </h:inputFile>
+
+                 <!-- Primefaces commandButton ei toimi tässä! -->
+                <h:commandButton value="Lataa kuva" onclick="uploadFile()" style="height: 25px; width: 85px;">
+                    <f:ajax event="click" listener="#{kirppisBean.kirppisService.lisaaKuva()}" render="uploadform kuviennimet" execute="file "/>
+                </h:commandButton>
+                <br />Kuvat voivat olla jpg-, png-, tai gif-muotoa.    
+                <!-- Tähän upload.gif animaatio! -->
+                <div class = "content1" id = "content1"></div>
+                <!-- Tähän tulostetaan virheviestit FileUploadValidatorista! -->
+                <h:message style="color: red" for="file" /><br />   
+            </h:form>
+         
         <p:button value="Esikatselu" outcome="ilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
         
         <script>          
             function uploadFile() {
                 document.getElementById("content1").innerHTML = ('<img src="javax.faces.resource/images/upload.gif" style="height: 50px; width: 50px;" /><br/><b>Kuvaa ladataan serverille!</b>');
             }
-
         </script>
 
         </ui:define>
-
         </ui:composition>
     </h:body>
 </html>

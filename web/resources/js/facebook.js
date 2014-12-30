@@ -15,76 +15,40 @@
     CheckLoginStatus();
 };
 
-(function (doc) {
-    var js;
-    var id = 'facebook-jssdk';
-    var ref = doc.getElementsByTagName('script')[0];
-    if (doc.getElementById(id)) {
-      return;
-    }
-    js = doc.createElement('script');
-    js.id = id;
-    js.async = true;
-    js.src = "///connect.facebook.net/fi_FI/all.js";
-    ref.parentNode.insertBefore(js, ref);
-}(document));
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/fi_FI/sdk.js#xfbml=1&appId=856102604401590&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
 function CheckLoginStatus(){
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
             console.log("Olet kirjautunut!");
-            console.log(onkoKirjautunut);
-            console.log(rekisterointi);
             if(onkoKirjautunut === "false" && rekisterointi === "false"){
-                console.log("HaeFace!");
                 haeface();
-                //alert(document.getElementById('facebookid:hiddenFacebookID').value);
-                var delay=400;//0.1 seconds
+                var delay=700;//0.7 seconds
                 setTimeout(function(){
                     facebookid();
                     facebooknimi();
-                    kirjauduJS();
-                    //your code to be executed after 1 seconds
+                    kirjaudu();
+                    //your code to be executed after 0.7 seconds
                 },delay);  
             }
         }
         else {
             console.log("Et ole kirjautunut!");
-            console.log(onkoKirjautunut);
-            console.log(rekisterointi);
             if(onkoKirjautunut === "true" || rekisterointi === "true"){
-                console.log("Nollaa Face!");
                 document.getElementById('facebookid:hiddenFacebookID').value = "0";
                 document.getElementById('facebooknimi:hiddenNimi').value = "";
                 facebookid();
                 facebooknimi();
-                kirjauduUlosJS();           
+                kirjauduUlos();          
             }
         }
     });
-}
-
-function kirjauduJS(){
-    console.log("kirjauduJS");
-    kirjaudu();
-    console.log(onkoKirjautunut);
-    var delay=100;//0.1 seconds
-    setTimeout(function(){
-        //location.reload(); 
-        //your code to be executed after 1 seconds
-    },delay);      
-}
-
-function kirjauduUlosJS(){
-    console.log("kirjauduUlosJS");
-    kirjauduUlos();
-    
-    var delay=100;//0.1 seconds
-    setTimeout(function(){
-         //location.reload();
-        //your code to be executed after 1 seconds
-    },delay);  
-    
 }
 
 function haeface() {
@@ -95,8 +59,6 @@ function haeface() {
 
     var kokonimi = response.first_name + " " + response.last_name;
     document.getElementById('facebooknimi:hiddenNimi').value = kokonimi;
-    //alert(document.getElementById('facebooknimi:hiddenNimi').value);
-    console.log(document.getElementById('facebooknimi:hiddenNimi').value);
     });
 
 }

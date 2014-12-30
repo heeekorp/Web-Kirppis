@@ -13,6 +13,7 @@
     <h:body>
         <ui:composition template="templates/omaseutuTemplate.xhtml">
             <ui:define name="content">
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
                 <h:form style="margin-left: 3%; width: 95%">
                     <table style="width: 100%">
                         <tr>
@@ -80,7 +81,7 @@
                                     <br />
                                    
                                     <h:panelGroup rendered="#{kirppisBean.kirppisService.lukemattomienViestienMaara > 0}">  
-                                        <h:outputText value="Ilmoituksella on uusia viestejä(#{kirppisBean.kirppisService.lukemattomienViestienMaara})" style="color: black;"/>                   
+                                        <h:outputText value="Ilmoituksella on uusia viestejä(#{kirppisBean.kirppisService.lukemattomienViestienMaara})" style="font-weight: bold; color: black;"/>                   
                                     </h:panelGroup>
                                 </p:panelGrid>
                             </p:outputPanel>
@@ -89,6 +90,12 @@
                     </p:dataScroller>
                     
                 </h:form>
+                </h:panelGroup>
+                <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+                Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
+                <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
+                </h:panelGroup>
             </ui:define>
         </ui:composition>       
     </h:body>

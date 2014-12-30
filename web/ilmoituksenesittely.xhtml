@@ -72,16 +72,16 @@
                             <td>Kirjaudu sisään nähdäksesi myyjän tiedot.</td>
                         </tr>
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaPuhelin == true}">  
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumeronaytetaan == 1}">  
                         <tr>
                             <td><b>Myyjän puh:</b></td>
-                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.puhelinnumeroToString()}</td>
+                            <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumeroToString()}</td>
                         </tr>
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaSahkoposti == true}">
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.sahkopostinaytetaan == 1}">
                         <tr>
                             <td><b>Myyjän sähköposti:</b></td>
-                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.sahkoposti}</td>
+                            <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.sahkoposti}</td>
                         </tr>
                     </h:panelGroup>
                 </table>

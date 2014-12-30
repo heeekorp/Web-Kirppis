@@ -51,5 +51,5 @@ public class kirppisServiceFactory implements Serializable {
             return kirppisService;
         }
     }
-    
+
 }

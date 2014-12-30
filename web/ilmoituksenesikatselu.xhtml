@@ -12,11 +12,32 @@
 
         <ui:define name="content">            
             
-            <div style="padding-left: 5%;">
-            
-                <h2>#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}</h2>
+             <div style="padding-left: 10%; width: 50%; min-width: 500px;">
+                 <h2>#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}</h2>
 
-                <table>
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() > 0}">
+                    <p:galleria value="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet}" var="image" autoPlay="false" showCaption="false" style="text-align: center;  margin-left: auto; margin-right: auto;" panelWidth="530" panelHeight="300">
+                    <h:outputLink value="javax.faces.resource/images/#{image}" title="#{image}" target="blank"> 
+                    [Näytä kuva täysikokoisena]<br />
+                     </h:outputLink>
+
+                    <h:graphicImage name="images/#{image}" style="
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    height: 95%;"
+                    alt="Image Description for #{image}" title="#{image}"  onclick="chooseImage('#{image}')" />
+                    </p:galleria>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() == 0}">
+                    <p>Ei lisättyjä kuvia.</p>
+                </h:panelGroup>
+                 
+                <table style="background: #f5f5f5; margin-top: 1%; width: 100%;">
+                    <tr>
+                        <td style="width: 25%;"><b>Ilmoitus jätetty:</b></td>
+                        <td>#{kirppisBean.kirppisService.uusiIlmoitus.ilmoitusjatettyPvmToString()}</td>
+                    </tr>
                     <tr>
                         <td><b>Hinta:</b></td>
                         <td>#{kirppisBean.kirppisService.uusiIlmoitus.hintaToString()} €</td>
@@ -29,38 +50,34 @@
                         <td><b>Kuvaus:</b></td>
                         <td>#{kirppisBean.kirppisService.uusiIlmoitus.kuvaus}</td>
                     </tr>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.uusiIlmoitus.lisatieto != null}"> 
-                        <tr>
-                            <td><b>Lisätietoja:</b></td>
-                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.lisatieto}</td>
-                        </tr>
-                    </h:panelGroup>
                     <tr>
                         <td><b>Tuotteen kunto:</b></td>
-                        <td>#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkuntoToString(kirppisBean.kirppisService.uusiIlmoitus.tuotteenkunto)}</td>
+                        <td>#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkuntoToString(tuotteenkunto)}</td>
                     </tr>
                     <tr>
                         <td><b>Ilmoitus jätetty: </b></td>
-                        <td>#{kirppisBean.kirppisService.paivamaaraTanaan}</td>
+                        <td>#{kirppisBean.kirppisService.uusiIlmoitus.ilmoitusjatettyPvmToString()}</td>
                     </tr>
+                    
                     <tr>
                         <td><b>Myyjä:</b></td>
                         <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.facebooknimi}</td>
                     </tr>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaPuhelin == true}">  
+                    
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.puhelinnumeronaytetaan == 1}">  
                         <tr>
                             <td><b>Myyjän puh:</b></td>
-                            <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.puhelinnumeroToString()}</td>
+                            <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumeroToString()}</td>
                         </tr>
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.naytaSahkoposti == true}">
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.sahkopostinaytetaan == 1}">
                         <tr>
                             <td><b>Myyjän sähköposti:</b></td>
                             <td>#{kirppisBean.kirppisService.uusiIlmoitus.myyjanId.sahkoposti}</td>
                         </tr>
                     </h:panelGroup>
                 </table>
-                
+                          
                 <h:form>
                     <h:panelGrid columns="3">
                         <p:button value="Muokkaa" outcome="ilmoituksenlisays" />
