@@ -11,7 +11,9 @@
     <h:body>
         <ui:composition template="templates/omaseutuTemplate.xhtml">
 
-        <ui:define name="content">  
+        <ui:define name="content">
+            
+        <div style="margin-left: 21%">
             
             <h2>Lisää kuvat ilmoitukseen</h2>
             
@@ -45,9 +47,12 @@
                 <div class = "content1" id = "content1"></div>
                 <!-- Tähän tulostetaan virheviestit FileUploadValidatorista! -->
                 <h:message style="color: red" for="file" /><br />   
+                
             </h:form>
          
         <p:button value="Esikatselu" outcome="ilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
+        
+        </div>
         
         <script>          
             function uploadFile() {

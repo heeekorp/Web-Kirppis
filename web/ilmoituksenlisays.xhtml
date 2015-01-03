@@ -14,20 +14,20 @@
 
         <ui:define name="content">            
         
-        <div style="padding-left: 25px;">   
+        <div style="margin-left: 21%">   
                
             <h:form>             
             
             <h2>Luo uusi ilmoitus</h2> 
             <br></br>
 
-            <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText><br />
             <p:inputText style="width: 500px;" value="#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}" ></p:inputText> 
 
             <br></br>
             <br></br>
 
-            <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText><br />
             <h:panelGrid columns="2">
                 <p:inputText value="#{kirppisBean.kirppisService.uusiIlmoitus.hinta}" style="width: 150px;"></p:inputText>
                 <h:outputText value="€" style="font-weight: bold"></h:outputText>
@@ -36,13 +36,13 @@
             <br></br>
             <br></br>
 
-            <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText><br />
             <p:inputTextarea value="#{kirppisBean.kirppisService.uusiIlmoitus.kuvaus}" style="height: 300px;width: 500px;"/>
 
             <br></br>
             <br></br>
 
-            <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText><br />
             <p:selectOneMenu id="Paamenu" value = "#{kirppisBean.kirppisService.valittuPaakategoriaID}" style="min-width: 200px;">
                 <f:selectItem itemLabel="Valitse..." itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" itemValue="#{paa.paakategoriaId}" itemLabel="#{paa.paakategoriannimi}" />
@@ -84,13 +84,13 @@
             <br></br>    
             <br></br>
 
-            <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText><br />
             <p:inputTextarea style="height: 100px;width: 500px;" value="#{kirppisBean.kirppisService.uusiIlmoitus.lisatieto}" />
 
             <br></br>
             <br></br>       
 
-            <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText><br />
             <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.uusiIlmoitus.tuotteenkunto}">
                 <f:selectItem itemLabel="Valitse..." itemValue="" />
                 <f:selectItem itemLabel="Uusi" itemValue="4" />

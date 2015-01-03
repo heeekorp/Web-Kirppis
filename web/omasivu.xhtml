@@ -14,25 +14,16 @@
         <ui:composition template="templates/omaseutuTemplate.xhtml">
             <ui:define name="content">
                 <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-                <h:form style="margin-left: 3%; width: 95%">
-                    <table style="width: 100%">
-                        <tr>
-                            <td>
-                                <h2>Omat sivut</h2>
-                            </td>
-                            <td>
-                                <p:commandButton value="Muuta omia tietoja ja asetuksia" action="muutatietoja.xhtml?faces-redirect=true" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p:commandButton value="Poista valitut" action="#{kirppisBean.kirppisService.poistaIlmoitus()}" style="float: left" />
-                            </td>
-                            <td>
-                                <h3>Omat ilmoitukset:</h3>
-                            </td>
-                        </tr>
-                    </table>
+                <h:form style="width: 50%; margin-left: auto; margin-right: auto">
+                    
+                    <h2>Omat sivut</h2>
+                    
+                    <p:commandButton value="Poista valitut" action="#{kirppisBean.kirppisService.poistaIlmoitus()}" style="float: left" />
+                    
+                    <p:commandButton value="Muuta omia tietoja ja asetuksia" action="muutatietoja.xhtml?faces-redirect=true" style="float: right" /><br /><br /><br />                   
+                    
+                    <h3>Omat ilmoitukset:</h3>
+
                     #{kirppisBean.kirppisService.kayttajanIlmoituksetHaku()}
                     
                     <b style="font-size: 15px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
@@ -45,7 +36,7 @@
                     
                     <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
                            #{kirppisBean.kirppisService.asetaLukemattomienViestienMaara(item.ilmoitusId)}
-                        <h:panelGrid columns="4" cellpadding="15" >
+                        <h:panelGrid columns="4" style="width: 100%" columnClasses="col1,col2,col3,col4">
                             
                             <p:outputPanel style="width: 50px">
                                 <h:selectBooleanCheckbox value="#{kirppisBean.kirppisService.poista}">

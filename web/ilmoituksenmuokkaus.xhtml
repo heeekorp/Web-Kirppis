@@ -14,26 +14,26 @@
 
         <ui:define name="content">            
         
-        <div style="padding-left: 25px;">   
+        <div style="margin-left: 21%">   
                
             <h:form enctype="multipart/form-data">             
             
             <h2>Muokkaa ilmoitusta</h2> 
             <br></br>
 
-            <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Otsikko:" style="font-weight: bold"></h:outputText><br />
             <p:inputText style="width: 500px;" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}" ></p:inputText> 
 
             <br></br>
             <br></br>
 
-            <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="Kuva:" style="font-weight: bold"></h:outputText><br />
             <h:inputFile value="#{kirppisBean.kirppisService.kuvaTiedosto}" />
 
             <br></br>
             <br></br>
 
-            <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Hinta:" style="font-weight: bold"></h:outputText><br />
             <h:panelGrid columns="2">
                 <p:inputText value="#{kirppisBean.kirppisService.naytettavaIlmoitus.hinta}" style="width: 150px;"></p:inputText>
                 <h:outputText value="€" style="font-weight: bold"></h:outputText>
@@ -42,13 +42,13 @@
             <br></br>
             <br></br>
 
-            <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Kuvausteksti:" style="font-weight: bold"></h:outputText><br />
             <p:inputTextarea value="#{kirppisBean.kirppisService.naytettavaIlmoitus.kuvaus}" style="height: 300px;width: 500px;"/>
 
             <br></br>
             <br></br>
 
-            <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Kategoria:" style="font-weight: bold"></h:outputText><br />
             <h:selectOneMenu id="Paamenu" value = "#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId.paakategoriaId}" style="min-width: 200px;">
                 <f:selectItem itemLabel="#{kirppisBean.kirppisService.naytettavaIlmoitus.alakategoriaId.valikategoriaId.paakategoriaId.paakategoriannimi}" itemValue="#{null}" noSelectionOption="true" />
                 <f:selectItems value="#{kirppisBean.kirppisService.paakategoriat}" var="paa" itemValue="#{paa.paakategoriaId}" itemLabel="#{paa.paakategoriannimi}" />
@@ -92,13 +92,13 @@
             <br></br>    
             <br></br>
 
-            <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="Lisätietoja:" style="font-weight: bold"></h:outputText><br />
             <p:inputTextarea value="#{kirppisBean.kirppisService.naytettavaIlmoitus.lisatieto}" style="height: 100px;width: 500px;" />
 
             <br></br>
             <br></br>       
 
-            <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText>
+            <h:outputText value="*Tuotteen kunto:" style="font-weight: bold"></h:outputText><br />
             <p:selectOneMenu id="kunto" value="#{kirppisBean.kirppisService.naytettavaIlmoitus.tuotteenkunto}">
                 <f:selectItem itemLabel="Valitse..." itemValue="" />
                 <f:selectItem itemLabel="Uusi" itemValue="4" />

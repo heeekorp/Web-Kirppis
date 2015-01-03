@@ -15,7 +15,7 @@
         <ui:define name="content">            
         
         <!--Tulosten listaaminen ilmoitus kerrallaan-->
-        <h:form  style="margin-left: 3%; width: 95%">
+        <h:form  style="width: 50%; margin-left: auto; margin-right: auto">
             <b style="font-size: 15px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
             <p:selectOneMenu id="listanJarjestys" value="#{kirppisBean.kirppisService.ilmoitusListanJarjestys}">
                 <f:selectItem itemLabel="Uusin ensin" itemValue="1"/>
@@ -26,7 +26,7 @@
             
             <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
                  
-                <h:panelGrid columns="3" cellpadding="15">
+                <h:panelGrid columns="3" columnClasses="col2,col3,col4">
                     <p:outputPanel style="width: 120px;">
                         <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
                             <p:graphicImage name="images/#{kirppisBean.kirppisService.haeIlmoituksenOletuskuva(item.ilmoitusId)}" style="height: 80px;" />

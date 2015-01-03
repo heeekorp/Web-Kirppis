@@ -6,13 +6,12 @@
       xmlns:p="http://primefaces.org/ui">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="./css/default.css"/>
-        <h:outputStylesheet name="./css/cssLayout.css"/>
     </h:head>
     <h:body>
         <ui:composition template="templates/omaseutuTemplate.xhtml">
+            
             <ui:define name="content" class="left_content">            
-            <h:form style="margin-left: 3%; width: 95%">
+            <h:form style="margin-left: 21%;">
                 <h2>Rekisteröinti</h2>  
                 <br /><br />
                 <h:panelGroup rendered="#{kirppisBean.kirppisService.rekisterointiSivuNaytetaan == true}">
@@ -20,24 +19,20 @@
                 <br /><br />
                 <table>
                     <tr>
-                        <td>Facebook Id:</td>
-                        <td><p:inputText type="text" style="width: 130px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.facebookid}" /><br /></td>
-                    </tr>
-                    <tr>
                         <td>Nimi:</td>
-                        <td><p:inputText type="text" style="width: 130px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}" /><br /></td>
+                        <td><p:inputText type="text" style="width: 200px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}" /><br /></td>
                     </tr>                    
                     <tr>
                         <td>Email:</td>
-                        <td><p:inputText type="text" style="width: 130px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.sahkoposti}" /><br /></td>
+                        <td><p:inputText type="text" style="width: 200px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.sahkoposti}" /><br /></td>
                     </tr>
                     <tr>
                         <td>Postinumero:</td>
-                        <td><p:inputText type="text" style="width: 130px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.postinumero}" /><br /></td>
+                        <td><p:inputText type="text" style="width: 200px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.postinumero}" /><br /></td>
                     </tr>
                     <tr>
                         <td>Puhelinnumero:</td>
-                        <td><p:inputText type="text" style="width: 130px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.puhelinnumero}" /><br /></td>
+                        <td><p:inputText type="text" style="width: 200px" value="#{kirppisBean.kirppisService.kirjautunutKayttaja.puhelinnumero}" /><br /></td>
                     </tr>
                     <tr>
                         <td>Näytä sähköposti:</td>
