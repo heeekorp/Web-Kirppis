@@ -44,11 +44,11 @@
             <div id="header">
                 
                 <div id="header_left" class="h_left_content">
-                    <form id="search" method="post">
-                        <p:commandButton value="Hae" action="#{kirppisBean.kirppisService.toteutaHaku()}" />
+                    <h:form id="search">
+                        <p:commandButton value="Hae" ajax="false" action="#{kirppisBean.kirppisService.toteutaHaku()}" />
                         <span><p:inputText type="text" id="searchbox" value="#{kirppisBean.kirppisService.hakusana}" /></span>                
                         <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
-                    </form>
+                    </h:form>
                 </div><!--Closing Header_Left-->
                 
                 <a href="index.xhtml">
