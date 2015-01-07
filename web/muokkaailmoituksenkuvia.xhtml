@@ -3,11 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-   
+        <title>Facelet Title</title>
     </h:head>
+    
     <h:body>
         <ui:composition template="templates/omaseutuTemplate.xhtml">
 
@@ -15,7 +16,7 @@
             
         <div style="margin-left: 21%">
             
-            <h2>Lisää kuvat ilmoitukseen</h2>
+            <h2>Muokkaa ilmoituksen kuvia</h2>
             
             <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() != 0}">
             <h3>Lisätyt kuvat:</h3>
@@ -61,7 +62,7 @@
                 <h:message style="color: red" for="file" /><br />   
             </h:form>
          
-        <p:button value="Esikatselu" outcome="ilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
+        <p:button value="Esikatselu" outcome="muokatunilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
         
         </div>
         
@@ -75,3 +76,4 @@
         </ui:composition>
     </h:body>
 </html>
+

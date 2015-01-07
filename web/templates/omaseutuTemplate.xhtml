@@ -44,11 +44,11 @@
             <div id="header">
                 
                 <div id="header_left" class="h_left_content">
-                    <form id="search" method="post">
-                        <p:commandButton value="Hae" action="#{kirppisBean.kirppisService.toteutaHaku()}" />
+                    <h:form id="search">
+                        <p:commandButton value="Hae" action="#{kirppisBean.kirppisService.haeHakusanalla()}" />
                         <span><p:inputText type="text" id="searchbox" value="#{kirppisBean.kirppisService.hakusana}" /></span>                
                         <p:button value="Tarkennettu haku" outcome="/haku" style="width: 100%;" />
-                    </form>
+                    </h:form>
                 </div><!--Closing Header_Left-->
                 
                 <a href="index.xhtml">
@@ -62,8 +62,14 @@
                     
                     <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
                         <b onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b><br />
-                        <p:button value="Viestit" class="p_button"></p:button><br />
-                        <p:button outcome="/ilmoituksenlisays" value="Lisää Ilmoitus" class="p_button"></p:button>
+                        #{kirppisBean.kirppisService.asetaKayttajanUudetViestit()}
+                        <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanUusienViestienMaara == 0}">
+                            <b style="float: left; color: #4F4F4F;">Sinulla ei ole uusia viestejä!</b>
+                        </h:panelGroup>    
+                        <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanUusienViestienMaara != 0}">
+                            <b style="float: left; color: black">Sinulla on uusia viestejä(#{kirppisBean.kirppisService.kayttajanUusienViestienMaara})</b>
+                        </h:panelGroup> 
+                        <p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" class="p_button"></p:button>
                     </h:panelGroup>
                     </h:form>
                 

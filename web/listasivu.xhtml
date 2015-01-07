@@ -35,7 +35,7 @@
                         <h:outputText value="Hinta: #{item.hintaToString()} €" style="font-weight: bold" />
                     </p:outputPanel>
                     <p:outputPanel>
-                        <p:panelGrid style="width: 550px;">
+                        <p:panelGrid style="width: auto;">
                             <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
                                 <h:outputText value="#{item.otsikko}" />
                             </h:commandLink>

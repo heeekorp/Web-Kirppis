@@ -241,7 +241,7 @@ public class kirppisService implements Serializable {
      Hakee käyttäjän ilmoitukset. Funktiota kutsutaaan omasivu.xhtml:stä
      * @return
      */
-        public String kayttajanIlmoituksetHaku(){
+    public String kayttajanIlmoituksetHaku(){
         System.out.println("Näytetetään ilmoitukset käyttäjälle: " + kirjautunutKayttaja.getKayttajaId());
         // Tyhjennetään haun tulokset lista!
         haunTuloksetLista.clear();
@@ -306,7 +306,7 @@ public class kirppisService implements Serializable {
         // Hakukenttiin on lisätty jotain hakukriteerejä ja muodostetaan niistä SQL-kysely lähetettäväksi kantaan
         else {  
             if(!"".equals(hakusana)) {
-                hakuosat += " i.otsikko LIKE '%" + hakusana + "%' OR i.kuvaus LIKE '%" + hakusana + "%'";
+                hakuosat += " (i.otsikko LIKE '%" + hakusana + "%' OR i.kuvaus LIKE '%" + hakusana + "%')";
             }
             if(postinumero != 0) {
                 taulunlinkki += " LEFT OUTER JOIN i.myyjanId k";
@@ -349,6 +349,18 @@ public class kirppisService implements Serializable {
             }
             if(ilmoituksetAjalta != 0) {
                 // Määritetään miltä ajalta ilmoitukset haetaan
+                // Nykyinen päiväys
+                Date pvmNyt = new Date( );
+                // Haun alkupäivämäärä.
+                int dayInMs = 1000 * 60 * 60 * 24 * ilmoituksetAjalta;
+                Date alkuPvm = new Date(pvmNyt.getTime() - dayInMs);
+                // Päivämäärä formaatti
+                SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+                
+                if(!hakuosat.equals(""))
+                    hakuosat += " AND";
+                
+                hakuosat += " i.ilmoitusjatettyPvm BETWEEN '" + ft.format(alkuPvm) + "' AND '" + ft.format(pvmNyt) + "'";
             }
             if(kunto != 0) {
                 if(hakuosat.equals("")) {
@@ -387,6 +399,18 @@ public class kirppisService implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().redirect("listasivu.xhtml");
         }
     }
+    public void haeHakusanalla() throws IOException{
+        System.out.println("Tänne!");
+        this.postinumero=0;
+        this.etaisyys=0;
+        this.valittuPaakategoriaID=0;
+        this.valittuAlakategoriaID=0;
+        this.valittuValikategoriaID=0;
+        this.ilmoituksetAjalta=0;
+        this.kunto=0;
+        toteutaHaku();
+    }
+    
     // Tyhjennä hakusivu
     public void tyhjennaHaku() throws IOException {
         this.hakusana="";
@@ -585,7 +609,30 @@ public class kirppisService implements Serializable {
         saveScaledImage(kuvienPolkuServerilla+haeTiedostonNimi(kuvaTiedosto), haeTiedostontyyppi(kuvaTiedosto));
         
         kuvaTiedosto = null;
-        FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+        //Latataan sivu uudelleen.
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+    
+    // Funktio poistaa kuvan ilmoituksesta.
+    public void poistaKuvaIlmoituksesta(String kuvanNimi) throws IOException{
+        lisattyjenKuvatiedostojenNimet.remove(kuvanNimi);
+        poistaKuva(kuvanNimi);
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+        //Latataan sivu uudelleen.
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+    
+    // Funktio asettaa kuvan ensimmäseksi kuvalistalla
+    public void asetaKuvaEnsimmaiseksi(String kuvanNimi) throws IOException{
+        lisattyjenKuvatiedostojenNimet.remove(kuvanNimi);
+        lisattyjenKuvatiedostojenNimet.add(0, kuvanNimi);
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+        //Latataan sivu uudelleen.
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
     
     public void tallennaUusiIlmoitusLuonnos() {
@@ -719,10 +766,80 @@ public class kirppisService implements Serializable {
     *   Ilmoituksen muokkaamiseen liittyvät  funktiot - alkaa 
      * @throws java.io.IOException
     ************************************************************************/
-
-    // Muokkaa ilmoitusta
-    public void muokkaaIlmoitus() throws IOException {        
-        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenmuokkaus.xhtml");
+    public void ohjaaIlmoituksenmuokkaussivulle() throws IOException{
+        valittuAlakategoriaID = naytettavaIlmoitus.getAlakategoriaId().getAlakategoriaId();
+        valittuValikategoriaID = naytettavaIlmoitus.getAlakategoriaId().getValikategoriaId().getValikategoriaId();
+        valittuPaakategoriaID = naytettavaIlmoitus.getAlakategoriaId().getValikategoriaId().getPaakategoriaId().getPaakategoriaId();
+        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenmuokkaus.xhtml"); 
+        lisattyjenKuvatiedostojenNimet = getIlmoituksenKuvat();
+    }
+    
+    public void lueIlmoituksenMuutokset() throws IOException { 
+        System.out.println("Luetaan muutokset ilmoituksen tietoihin!");
+       
+        for(Alakategoria a : valittuAlakategoriaLista) {
+            if(a.getAlakategoriaId().equals(valittuAlakategoriaID)) {
+                naytettavaIlmoitus.setAlakategoriaId(a);
+                break;
+            }
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect("muokkaailmoituksenkuvia.xhtml");
+    }
+    
+    public void tallennaMuokattuIlmoitus() throws IOException{
+        if(lisattyjenKuvatiedostojenNimet.isEmpty()){ // Mikäli käyttäjä ei ladannut yhtään kuvaa!
+            naytettavaIlmoitus.setKuvienpolku("default-picture.jpg");
+        }
+        else{                                         // Tallennataan kuvat serverille ja päivitetään kuvienpolku!
+            String polku = "";
+            int kuvaNro = lisattyjenKuvatiedostojenNimet.size();
+            // Käydään läpi lisattyjenKuvatiedostojenNimet lista. 
+            //Lisätään kuvan nimi kuvienpolku kenttään muodossa "ilmoitusId"-"kuvan järjestysnumero"."kuvan tiedostotyyppi", ja loppuun tyhjä väli.
+            
+            for(String kuvaNimi : lisattyjenKuvatiedostojenNimet){
+                if(getIlmoituksenKuvat().contains(kuvaNimi)){
+                    polku = polku + kuvaNimi + " ";
+                }
+                else{
+                    polku = polku + uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
+                    nimeaTiedostoUudelleen(kuvaNimi, uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
+                    kuvaNro++;
+                }
+            }
+            
+            naytettavaIlmoitus.setKuvienpolku(polku);
+        }
+        
+        try {
+            System.out.println("Tallennetaam muokattu ilmoitus!");
+            Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, naytettavaIlmoitus.getIlmoitusId());
+            trans.begin();
+            muokattavaIlmoitus.setAlakategoriaId(naytettavaIlmoitus.getAlakategoriaId());
+            muokattavaIlmoitus.setHinta(naytettavaIlmoitus.getHinta());
+            muokattavaIlmoitus.setKuvaus(naytettavaIlmoitus.getKuvaus());
+            muokattavaIlmoitus.setKuvienpolku(naytettavaIlmoitus.getKuvienpolku());
+            muokattavaIlmoitus.setLisatieto(naytettavaIlmoitus.getLisatieto());
+            muokattavaIlmoitus.setOtsikko(naytettavaIlmoitus.getOtsikko());
+            muokattavaIlmoitus.setTuotteenkunto(naytettavaIlmoitus.getTuotteenkunto());
+            muokattavaIlmoitus.setKuvienpolku(naytettavaIlmoitus.getKuvienpolku());
+            eManageri.merge(muokattavaIlmoitus);
+            
+            trans.commit();
+            System.out.println("Ilmoituksen muutokset tallennettu onnistuneesti!");
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+      
+        // nollataan muuttujat;
+        this.valittuPaakategoriaID = 0;
+        this.valittuValikategoriaID = 0;
+        this.valittuAlakategoriaID = 0;
+        kuvaTiedosto = null;
+        lisattyjenKuvatiedostojenNimet = new ArrayList<>();
+        this.uusiIlmoitus = new Ilmoitus();
+        
+        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenesittely.xhtml");       
     }
 
     /************************************************************************
@@ -741,6 +858,12 @@ public class kirppisService implements Serializable {
         else {
             poistolista.remove(new Integer(ilmoitusId));
         }
+    }
+    // Funktio poistaa yhden ilmoituksen, kusutaan ilmoituksenesittely.xhtml sivulta.
+    public void poistaYksiIlmoitus(int ilmoitusId) throws IOException{
+        poistolista.clear();
+        poistolista.add(ilmoitusId);
+        poistaIlmoitus();
     }
     // Funktio poistaa ilmoituksen tietokannasta.
     public void poistaIlmoitus() throws IOException { 
