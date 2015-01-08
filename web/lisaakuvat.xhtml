@@ -52,7 +52,7 @@
 
                  <!-- Primefaces commandButton ei toimi tässä! -->
                 <h:commandButton value="Lataa kuva" onclick="uploadFile()" style="height: 25px; width: 85px;">
-                    <f:ajax event="click" listener="#{kirppisBean.kirppisService.lisaaKuva()}" render="uploadform kuviennimet" execute="file "/>
+                    <f:ajax event="click" listener="#{kirppisBean.kirppisService.lisaaKuva()}" render="uploadform kuviennimet" execute="file"/>
                 </h:commandButton>
                 <br />Kuvat voivat olla jpg-, png-, tai gif-muotoa.    
                 <!-- Tähän upload.gif animaatio! -->

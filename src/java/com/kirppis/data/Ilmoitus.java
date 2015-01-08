@@ -206,14 +206,15 @@ public class Ilmoitus implements Serializable {
     }
    
     
-    public String tuotteenkuntoToString(int kunto) {
-        if(kunto == 1) {
+    public String tuotteenkuntoToString() {
+        
+        if(this.tuotteenkunto == 1) {
             return "Tyydyttävä";
         }
-        else if(kunto == 2) {
+        else if(this.tuotteenkunto == 2) {
             return "Hyvä";
         }
-        else if(kunto == 3) {
+        else if(this.tuotteenkunto == 3) {
             return "Erinomainen";
         }
         else {

@@ -25,7 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -602,14 +604,16 @@ public class kirppisService implements Serializable {
     }
     
     // Funktio lisää käyttäjän lataaman kuvatiedoston listaan. 
-    public void lisaaKuva() throws IOException {        
+    public void lisaaKuva() throws IOException {
+        // Ladattu kuva kuvatiedostojen nimet listaan.
         lisattyjenKuvatiedostojenNimet.add(haeTiedostonNimi(kuvaTiedosto));
-        
+        // Tallennetaan kuva serverille.
         tallennaKuva(kuvaTiedosto, haeTiedostonNimi(kuvaTiedosto));            
+        // Skaalataan kuva 1000 pikseliä leveäksi. (Mikäli kuva tätä leveämpi) 
         saveScaledImage(kuvienPolkuServerilla+haeTiedostonNimi(kuvaTiedosto), haeTiedostontyyppi(kuvaTiedosto));
         
         kuvaTiedosto = null;
-        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+        
         //Latataan sivu uudelleen.
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -619,7 +623,7 @@ public class kirppisService implements Serializable {
     public void poistaKuvaIlmoituksesta(String kuvanNimi) throws IOException{
         lisattyjenKuvatiedostojenNimet.remove(kuvanNimi);
         poistaKuva(kuvanNimi);
-        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+      
         //Latataan sivu uudelleen.
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -629,7 +633,7 @@ public class kirppisService implements Serializable {
     public void asetaKuvaEnsimmaiseksi(String kuvanNimi) throws IOException{
         lisattyjenKuvatiedostojenNimet.remove(kuvanNimi);
         lisattyjenKuvatiedostojenNimet.add(0, kuvanNimi);
-        //FacesContext.getCurrentInstance().getExternalContext().redirect("lisaakuvat.xhtml");
+       
         //Latataan sivu uudelleen.
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -687,7 +691,7 @@ public class kirppisService implements Serializable {
         try ( 
             InputStream inputStream = kuvaTiedosto.getInputStream(); 
             FileOutputStream outputStream = new FileOutputStream(kuvienPolkuServerilla + kuvannimi)) {
-
+            
             byte[] buffer = new byte[4096];
             int bytesRead = 0;
           
@@ -733,6 +737,11 @@ public class kirppisService implements Serializable {
         for (String cd : tiedosto.getHeader("content-disposition").split(";")) { 
             if (cd.trim().startsWith("filename")) {  
                 String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", ""); 
+                // Jos tiedotoheaderissa on koko tiedoston polku, (Internet Explorer), erotetaan nimi polusta. 
+                int i = filename.lastIndexOf('\\');
+                if(i != -1)
+                    return filename.substring(i+1);
+                            
                 return  filename;
             }
         }
@@ -796,11 +805,18 @@ public class kirppisService implements Serializable {
             // Käydään läpi lisattyjenKuvatiedostojenNimet lista. 
             //Lisätään kuvan nimi kuvienpolku kenttään muodossa "ilmoitusId"-"kuvan järjestysnumero"."kuvan tiedostotyyppi", ja loppuun tyhjä väli.
             
-            for(String kuvaNimi : lisattyjenKuvatiedostojenNimet){
+            Iterator<String> flavoursIter = lisattyjenKuvatiedostojenNimet.iterator();
+            
+            
+            while (flavoursIter.hasNext()){
+                String kuvaNimi = flavoursIter.next();
+                System.out.println("Kuva: " + kuvaNimi);
                 if(getIlmoituksenKuvat().contains(kuvaNimi)){
+                    System.out.println("vanha");
                     polku = polku + kuvaNimi + " ";
                 }
                 else{
+                    System.out.println("uusi");
                     polku = polku + uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
                     nimeaTiedostoUudelleen(kuvaNimi, uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
                     kuvaNro++;
