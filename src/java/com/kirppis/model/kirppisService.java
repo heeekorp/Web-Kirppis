@@ -604,16 +604,22 @@ public class kirppisService implements Serializable {
     
     // Funktio lisää käyttäjän lataaman kuvatiedoston listaan. 
     public void lisaaKuva() throws IOException {
+        // Generoidaan kuvalle nimi, muotoa "päivämäärä millisekunteina" + "." +  "kuvanyyppi"; 
+        Calendar cal = Calendar.getInstance();
+        String generoituKuvanNimi = cal.getTimeInMillis() + "." + haeTiedostontyyppi(kuvaTiedosto);
+        
         // Ladattu kuva kuvatiedostojen nimet listaan.
-        lisattyjenKuvatiedostojenNimet.add(haeTiedostonNimi(kuvaTiedosto));
+        lisattyjenKuvatiedostojenNimet.add(generoituKuvanNimi);
+        
         // Tallennetaan kuva serverille.
-        tallennaKuva(kuvaTiedosto, haeTiedostonNimi(kuvaTiedosto));            
+        tallennaKuva(kuvaTiedosto, generoituKuvanNimi);            
+        
         // Skaalataan kuva 1000 pikseliä leveäksi. (Mikäli kuva tätä leveämpi) 
-        saveScaledImage(kuvienPolkuServerilla+haeTiedostonNimi(kuvaTiedosto), haeTiedostontyyppi(kuvaTiedosto));
+        saveScaledImage(kuvienPolkuServerilla+generoituKuvanNimi, haeTiedostontyyppi(kuvaTiedosto));
         
         kuvaTiedosto = null;
         
-        //Latataan sivu uudelleen.
+        //Ladataan sivu uudelleen.
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
@@ -657,12 +663,7 @@ public class kirppisService implements Serializable {
                 String polku = "";
                 
                 for(String kuvaNimi : lisattyjenKuvatiedostojenNimet){
-                    // Kuvan nimi on muotoa, "päivämäärämillisekunteina" + "kuvantyyppi"
-                    Calendar cal = Calendar.getInstance();
-                    long dateMillis = cal.getTimeInMillis();
-                    polku += dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
-                    nimeaTiedostoUudelleen(kuvaNimi, dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
-                    System.out.println(polku);
+                    polku += kuvaNimi + " ";
                 }
                 // Päivitetään kuvienpolku tietokantaan.
                 Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, uusiIlmoitus.getIlmoitusId());
@@ -731,22 +732,7 @@ public class kirppisService implements Serializable {
         }  
         return null;  
     }
-    // Funktio hakee kuvatiedoston nimen tiedoston headerista. 
-    private static  String haeTiedostonNimi(Part tiedosto){
-        for (String cd : tiedosto.getHeader("content-disposition").split(";")) { 
-            if (cd.trim().startsWith("filename")) {  
-                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", ""); 
-                // Jos tiedotoheaderissa on koko tiedoston polku, (Internet Explorer), erotetaan nimi polusta. 
-                int i = filename.lastIndexOf('\\');
-                if(i != -1)
-                    return filename.substring(i+1);
-                            
-                return  filename;
-            }
-        }
-            return null;
-    }    
-    
+  
     // Funktio skaalaa kuvan siten, että kuvan leveys on 1000 pikseliä.
     public void saveScaledImage(String filePath,String filetType){
     try {         
@@ -800,27 +786,13 @@ public class kirppisService implements Serializable {
     }
     
     public void tallennaMuokattuIlmoitus() throws IOException{
-        List<String>lista = new ArrayList<>();
-        
-        for(String k : lisattyjenKuvatiedostojenNimet){
-            lista.add(k);
-        }
-        
         if(lisattyjenKuvatiedostojenNimet.isEmpty()){ // Mikäli käyttäjä ei ladannut yhtään kuvaa!
             naytettavaIlmoitus.setKuvienpolku("default-picture.jpg");
         }
         else{
             String polku ="";
      
-            for(String kuvaNimi : lista){           // Pivitetään kuvien nimet serverille ja kuvienpolku kenttään!
-                if(!getIlmoituksenKuvat().contains(kuvaNimi)){
-                    // Kuvan nimi on muotoa, "päivämäärämillisekunteina" + "kuvantyyppi"
-                    Calendar cal = Calendar.getInstance();
-                    long dateMillis = cal.getTimeInMillis();
-                    polku += dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
-                    nimeaTiedostoUudelleen(kuvaNimi, dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
-                }
-                else
+            for(String kuvaNimi : lisattyjenKuvatiedostojenNimet){           // Pivitetään kuvien nimet serverille ja kuvienpolku kenttään!
                     polku += kuvaNimi + " "; 
             }
             naytettavaIlmoitus.setKuvienpolku(polku);
