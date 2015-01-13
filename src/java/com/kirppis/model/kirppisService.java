@@ -23,11 +23,10 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -96,7 +95,7 @@ public class kirppisService implements Serializable {
     private Part kuvaTiedosto;
     private List<String> lisattyjenKuvatiedostojenNimet = new ArrayList<>();
     private String kuvienPolkuServerilla;
-    
+    private final static int kuvanLeveys = 1000; // Ilmoitukseen lisättävien kuvien max leveys pikseleinä.
     /*************************************************************************
      *  Konstruktorit - alkaa
      *************************************************************************/
@@ -656,13 +655,14 @@ public class kirppisService implements Serializable {
             
             if(!lisattyjenKuvatiedostojenNimet.isEmpty()){ // Mikäli käyttäjä latasi kuvia, aseteaan kuvien polku tietokantaan.
                 String polku = "";
-                int kuvaNro = 0;
-                // Käydään läpi lisattyjenKuvatiedostojenNimet lista. 
-                //Lisätään kuvan nimi kuvienpolku kenttään muodossa "ilmoitusId"-"kuvan järjestysnumero"."kuvan tiedostotyyppi", ja loppuun tyhjä väli.
+                
                 for(String kuvaNimi : lisattyjenKuvatiedostojenNimet){
-                    kuvaNro++;
-                    polku = polku + uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
-                    nimeaTiedostoUudelleen(kuvaNimi, uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
+                    // Kuvan nimi on muotoa, "päivämäärämillisekunteina" + "kuvantyyppi"
+                    Calendar cal = Calendar.getInstance();
+                    long dateMillis = cal.getTimeInMillis();
+                    polku += dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
+                    nimeaTiedostoUudelleen(kuvaNimi, dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
+                    System.out.println(polku);
                 }
                 // Päivitetään kuvienpolku tietokantaan.
                 Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, uusiIlmoitus.getIlmoitusId());
@@ -704,7 +704,6 @@ public class kirppisService implements Serializable {
                     break;
                 }
             }
-            System.out.println(kuvannimi + " tallennettu serverille!");
         }
     }
     
@@ -714,9 +713,9 @@ public class kirppisService implements Serializable {
         File newfile =new File(kuvienPolkuServerilla + uusiNimi);
 
         if(oldfile.renameTo(newfile)){
-                System.out.println("Rename succesful");
+                //System.out.println("Rename succesful");
         }else{
-                System.out.println("Rename failed");
+                System.out.println("Tiedoston uudelleen nimeäminen epäonnistui!");
         }
     }
     
@@ -752,14 +751,14 @@ public class kirppisService implements Serializable {
     public void saveScaledImage(String filePath,String filetType){
     try {         
         BufferedImage sourceImage = ImageIO.read(new File(filePath));
-        if(sourceImage.getWidth() <= 1000)
+        if(sourceImage.getWidth() <= kuvanLeveys)
             return;
         
         float ratio = (float)sourceImage.getWidth()/(float)sourceImage.getHeight();
-        float percentHight = 1000/ratio;
+        float percentHight = kuvanLeveys/ratio;
         
-        BufferedImage img = new BufferedImage(1000, (int)percentHight, BufferedImage.TYPE_INT_RGB);
-        Image scaledImage = sourceImage.getScaledInstance(1000,(int)percentHight, Image.SCALE_DEFAULT);
+        BufferedImage img = new BufferedImage(kuvanLeveys, (int)percentHight, BufferedImage.TYPE_INT_RGB);
+        Image scaledImage = sourceImage.getScaledInstance(kuvanLeveys,(int)percentHight, Image.SCALE_DEFAULT);
         img.createGraphics().drawImage(scaledImage, 0, 0, null);
        
         ImageIO.write(img, filetType, new File(filePath));
@@ -779,8 +778,8 @@ public class kirppisService implements Serializable {
         valittuAlakategoriaID = naytettavaIlmoitus.getAlakategoriaId().getAlakategoriaId();
         valittuValikategoriaID = naytettavaIlmoitus.getAlakategoriaId().getValikategoriaId().getValikategoriaId();
         valittuPaakategoriaID = naytettavaIlmoitus.getAlakategoriaId().getValikategoriaId().getPaakategoriaId().getPaakategoriaId();
-        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenmuokkaus.xhtml"); 
-        lisattyjenKuvatiedostojenNimet = getIlmoituksenKuvat();
+       
+        FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenmuokkaus.xhtml");    
     }
     
     public void lueIlmoituksenMuutokset() throws IOException { 
@@ -792,41 +791,47 @@ public class kirppisService implements Serializable {
                 break;
             }
         }
+        lisattyjenKuvatiedostojenNimet = getIlmoituksenKuvat();
+        // Oletuskuvaa ei näytetä muokkaailmoituksenkuvia.xhtml -sivulla! 
+        if(lisattyjenKuvatiedostojenNimet.contains("default-picture.jpg"))
+            lisattyjenKuvatiedostojenNimet.clear();
+            
         FacesContext.getCurrentInstance().getExternalContext().redirect("muokkaailmoituksenkuvia.xhtml");
     }
     
     public void tallennaMuokattuIlmoitus() throws IOException{
+        List<String>lista = new ArrayList<>();
+        
+        for(String k : lisattyjenKuvatiedostojenNimet){
+            lista.add(k);
+        }
+        
         if(lisattyjenKuvatiedostojenNimet.isEmpty()){ // Mikäli käyttäjä ei ladannut yhtään kuvaa!
             naytettavaIlmoitus.setKuvienpolku("default-picture.jpg");
         }
-        else{                                         // Tallennataan kuvat serverille ja päivitetään kuvienpolku!
-            String polku = "";
-            int kuvaNro = lisattyjenKuvatiedostojenNimet.size();
-            // Käydään läpi lisattyjenKuvatiedostojenNimet lista. 
-            //Lisätään kuvan nimi kuvienpolku kenttään muodossa "ilmoitusId"-"kuvan järjestysnumero"."kuvan tiedostotyyppi", ja loppuun tyhjä väli.
-            
-            Iterator<String> flavoursIter = lisattyjenKuvatiedostojenNimet.iterator();
-            
-            
-            while (flavoursIter.hasNext()){
-                String kuvaNimi = flavoursIter.next();
-                System.out.println("Kuva: " + kuvaNimi);
-                if(getIlmoituksenKuvat().contains(kuvaNimi)){
-                    System.out.println("vanha");
-                    polku = polku + kuvaNimi + " ";
+        else{
+            String polku ="";
+     
+            for(String kuvaNimi : lista){           // Pivitetään kuvien nimet serverille ja kuvienpolku kenttään!
+                if(!getIlmoituksenKuvat().contains(kuvaNimi)){
+                    // Kuvan nimi on muotoa, "päivämäärämillisekunteina" + "kuvantyyppi"
+                    Calendar cal = Calendar.getInstance();
+                    long dateMillis = cal.getTimeInMillis();
+                    polku += dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
+                    nimeaTiedostoUudelleen(kuvaNimi, dateMillis + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
                 }
-                else{
-                    System.out.println("uusi");
-                    polku = polku + uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1) + " ";
-                    nimeaTiedostoUudelleen(kuvaNimi, uusiIlmoitus.getIlmoitusId() +"-" + kuvaNro + "." + kuvaNimi.substring(kuvaNimi.lastIndexOf('.')+1));
-                    kuvaNro++;
-                }
+                else
+                    polku += kuvaNimi + " "; 
             }
-            
             naytettavaIlmoitus.setKuvienpolku(polku);
         }
-        
-        try {
+        // Poistetaan kuvat, jotka eivät enää kuulu ilmoitukseen, serveriltä! 
+        for(String kuva : getIlmoituksenKuvat()){
+            if(!lisattyjenKuvatiedostojenNimet.contains(kuva))
+               poistaKuvaIlmoituksesta(kuva);
+        }
+                    
+        try { // Päivietään ilmoitus tietokantaan
             System.out.println("Tallennetaam muokattu ilmoitus!");
             Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, naytettavaIlmoitus.getIlmoitusId());
             trans.begin();
@@ -853,7 +858,6 @@ public class kirppisService implements Serializable {
         this.valittuAlakategoriaID = 0;
         kuvaTiedosto = null;
         lisattyjenKuvatiedostojenNimet = new ArrayList<>();
-        this.uusiIlmoitus = new Ilmoitus();
         
         FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenesittely.xhtml");       
     }

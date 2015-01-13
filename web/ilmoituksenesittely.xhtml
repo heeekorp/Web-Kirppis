@@ -17,7 +17,7 @@
             <div style="width: 50%; margin-left: auto; margin-right: auto">
             
                 <h:panelGroup rendered="#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.kayttajaId == kirppisBean.kirppisService.kirjautunutKayttaja.kayttajaId}">
-                    <p:commandButton value="Muokkaa ilmoitusta(Ei toimi vielä!)" action="#{kirppisBean.kirppisService.ohjaaIlmoituksenmuokkaussivulle()}" />
+                    <p:commandButton value="Muokkaa ilmoitusta" action="#{kirppisBean.kirppisService.ohjaaIlmoituksenmuokkaussivulle()}" />
                     <p:commandButton value="Poista ilmoitus" action="#{kirppisBean.kirppisService.poistaYksiIlmoitus(kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusId)}" />
                 </h:panelGroup>
                 <h2>#{kirppisBean.kirppisService.naytettavaIlmoitus.otsikko}</h2>
