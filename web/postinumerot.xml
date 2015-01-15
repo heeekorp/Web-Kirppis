@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <markers>
+        <marker country="Salo" lng="23.1480886" lat="60.3800649" id="24100"/>
+        <marker country="Salo" lng="23.1308894" lat="60.3317484" id="24130"/>
+        <marker country="Salo" lng="23.1076829" lat="60.425089" id="24240"/>
+        <marker country="Salo" lng="23.1787482" lat="60.4476889" id="24260"/>
+        <marker country="Salo" lng="23.2050273" lat="60.410521" id="24280"/>
+        <marker country="Salo" lng="23.0116386" lat="60.3990497" id="24800"/>
+        <marker country="Salo" lng="23.0100294" lat="60.4157393" id="24910"/>
+        <marker country="Salo" lng="23.4327457" lat="60.3699586" id="25110"/>
+        <marker country="Salo" lng="23.2884414" lat="60.3502749" id="25130"/>
+        <marker country="Salo" lng="23.2774209" lat="60.2860511" id="25160"/>
+        <marker country="Salo" lng="23.1456377" lat="60.299834" id="25170"/>
+        <marker country="Salo" lng="23.3557577" lat="60.4069299" id="25180"/>
+        <marker country="Salo" lng="23.2703935" lat="60.4239129" id="25190"/>
+        <marker country="Salo" lng="23.017875" lat="60.3338192" id="25210"/>
+        <marker country="Salo" lng="22.9196201" lat="60.3131225" id="25230"/>
+        <marker country="Salo" lng="22.8978558" lat="60.4079224" id="25240"/>
+        <marker country="Salo" lng="23.0486745" lat="60.448164" id="25250"/>
+        <marker country="Salo" lng="22.9877965" lat="60.5024773" id="25260"/>
+        <marker country="Salo" lng="23.1324398" lat="60.5433676" id="25320"/>
+        <marker country="Salo" lng="23.2109519" lat="60.5383072" id="25330"/>
+        <marker country="Salo" lng="23.2988644" lat="60.5537735" id="25340"/>
+        <marker country="Salo" lng="23.2503827" lat="60.466446" id="25360"/>
+        <marker country="Salo" lng="23.339668" lat="60.4760977" id="25370"/>
+        <marker country="Salo" lng="23.4480436" lat="60.5043415" id="25380"/>
+        <marker country="Salo" lng="23.5873571" lat="60.4552265" id="25390"/>
+        <marker country="Salo" lng="23.6138246" lat="60.3516131" id="25410"/>
+        <marker country="Salo" lng="23.723904" lat="60.3792006" id="25420"/>
+        <marker country="Salo" lng="23.7307726" lat="60.4196304" id="25430"/>
+        <marker country="Salo" lng="23.4517615" lat="60.2681476" id="25460"/>
+        <marker country="Salo" lng="23.5191458" lat="60.2413064" id="25470"/>
+        <marker country="Salo" lng="23.117433" lat="60.1592879" id="25500"/>
+        <marker country="Salo" lng="23.1371538" lat="60.2558628" id="25520"/>
+        <marker country="Salo" lng="23.2738208" lat="60.2432983" id="25540"/>
+        <marker country="Salo" lng="23.374189" lat="60.1840597" id="25550"/>
+        <marker country="Salo" lng="23.299668" lat="60.1746504" id="25560"/>
+        <marker country="Salo" lng="22.9895582" lat="60.2622463" id="25570"/>
+        <marker country="Salo" lng="22.9707082" lat="60.1555307" id="25610"/>
+        <marker country="Salo" lng="22.9262535" lat="60.1039138" id="25630"/>
+        <marker country="Salo" lng="22.9082618" lat="60.0569186" id="25640"/>
+        <marker country="Salo" lng="22.9276287" lat="60.2158988" id="25660"/>        
+    </markers>
+</root>
