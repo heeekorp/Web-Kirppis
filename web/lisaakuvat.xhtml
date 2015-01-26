@@ -14,6 +14,8 @@
         <ui:define name="content">
             
         <div style="margin-left: 21%">
+         
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
             
             <h2>Lisää kuvat ilmoitukseen</h2>
             
@@ -63,6 +65,14 @@
          
         <p:button value="Esikatselu" outcome="ilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
         
+        </h:panelGroup>
+        
+        <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+        Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
+        <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div>     
+        </h:panelGroup>   
+       
         </div>
         
         <script>          

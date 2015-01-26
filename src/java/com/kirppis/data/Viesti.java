@@ -40,6 +40,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Viesti.findByViestinrunko", query = "SELECT v FROM Viesti v WHERE v.viestinrunko = :viestinrunko"),
     @NamedQuery(name = "Viesti.findByJulkinenviesti", query = "SELECT v FROM Viesti v WHERE v.julkinenviesti = :julkinenviesti")})
 public class Viesti implements Serializable {
+    @JoinColumn(name = "vastaanottajaId", referencedColumnName = "kayttajaId")
+    @ManyToOne
+    private Kayttaja vastaanottajaId;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -173,4 +176,19 @@ public class Viesti implements Serializable {
         return new SimpleDateFormat("dd.MM.yyyy HH:mm").format(lahetysaika);
     }
     
+    public String viestiRunkoesikatselu() {
+        if(viestinrunko.length() < 38)
+            return viestinrunko;
+        else
+            return viestinrunko.substring(0, 34) + "...";
+    }
+    
+    public Kayttaja getVastaanottajaId() {
+        return vastaanottajaId;
+    }
+
+    public void setVastaanottajaId(Kayttaja vastaanottajaId) {
+        this.vastaanottajaId = vastaanottajaId;
+    }
+
 }

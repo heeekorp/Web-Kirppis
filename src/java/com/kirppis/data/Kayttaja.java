@@ -6,7 +6,9 @@
 package com.kirppis.data;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,10 +16,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -37,6 +41,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Kayttaja.findByPuhelinnumero", query = "SELECT k FROM Kayttaja k WHERE k.puhelinnumero = :puhelinnumero"),
     @NamedQuery(name = "Kayttaja.findByFacebookid", query = "SELECT k FROM Kayttaja k WHERE k.facebookid = :facebookid")})
 public class Kayttaja implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "myyjanId")
+    private Collection<Ilmoitus> ilmoitusCollection;
+    @OneToMany(mappedBy = "vastaanottajaId")
+    private Collection<Viesti> viestiCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lahettajaId")
+    private Collection<Viesti> viestiCollection1;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -175,6 +185,33 @@ public class Kayttaja implements Serializable {
     
     public String puhelinnumeroToString() {
         return "+358" + this.puhelinnumero;
+    }
+
+    @XmlTransient
+    public Collection<Ilmoitus> getIlmoitusCollection() {
+        return ilmoitusCollection;
+    }
+
+    public void setIlmoitusCollection(Collection<Ilmoitus> ilmoitusCollection) {
+        this.ilmoitusCollection = ilmoitusCollection;
+    }
+
+    @XmlTransient
+    public Collection<Viesti> getViestiCollection() {
+        return viestiCollection;
+    }
+
+    public void setViestiCollection(Collection<Viesti> viestiCollection) {
+        this.viestiCollection = viestiCollection;
+    }
+
+    @XmlTransient
+    public Collection<Viesti> getViestiCollection1() {
+        return viestiCollection1;
+    }
+
+    public void setViestiCollection1(Collection<Viesti> viestiCollection1) {
+        this.viestiCollection1 = viestiCollection1;
     }
     
 }

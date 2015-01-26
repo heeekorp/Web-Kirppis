@@ -13,9 +13,10 @@
         <ui:composition template="templates/omaseutuTemplate.xhtml">
             <ui:define name="content" class="left_content">            
             
-            <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-               
             <h:form style="margin-left: 21%">
+                
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+              
                 <h2>Muuta omia tietoja</h2>  
                 <br /><br />
                 
@@ -48,10 +49,9 @@
                         <td><h:selectBooleanCheckbox value="#{kirppisBean.kirppisService.naytaPuhelin}" /><br /></td>
                     </tr>
                     <tr><td /><td style="float: right">
-                            <p:commandButton action="#{kirppisBean.kirppisService.muutaTietoja()}" process="@form" type="submit" value="Muuta" />
+                            <p:commandButton action="#{kirppisBean.kirppisService.muutaTietoja()}" process="@form" type="submit" value="Tallenna" />
                         </td></tr>
                 </table>
-                 </h:form>
                 
                 </h:panelGroup>
                 
@@ -60,7 +60,8 @@
                 Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
                 <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
                 </h:panelGroup>
-                    
+                
+                </h:form>
            
             </ui:define>            
         </ui:composition>

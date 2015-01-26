@@ -6,7 +6,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-   
+ 
     </h:head>
     <h:body>
         
@@ -60,18 +60,10 @@
                         <td><b>Ilmoitus jätetty: </b></td>
                         <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.ilmoitusjatettyPvmToString()}</td>
                     </tr>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-                        <tr>
-                            <td><b>Myyjä:</b></td>
-                            <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.facebooknimi}</td>
-                        </tr>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
-                        <tr>
-                            <td><b>Myyjä:</b></td>
-                            <td>Kirjaudu sisään nähdäksesi myyjän tiedot.</td>
-                        </tr>
-                    </h:panelGroup>
+                    <tr>
+                        <td><b>Myyjä:</b></td>
+                        <td>#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.facebooknimi}</td>
+                    </tr>
                     <h:panelGroup rendered="#{kirppisBean.kirppisService.naytettavaIlmoitus.myyjanId.puhelinnumeronaytetaan == 1}">  
                         <tr>
                             <td><b>Myyjän puh:</b></td>
@@ -90,49 +82,97 @@
                     </tr>
                 </table>
                 
-                <h:form> 
-                    <b><a id="ViestitAnkkuri">Viestit</a></b>
+                <!-- ================ Julkiset viestit alkaa! ==================== -->
+                <br/>
+                <b>Julkiset viestit:</b>
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.ilmoituksenViestitLista.size() > 0}">
                     <h:dataTable style="width: 100%;" value="#{kirppisBean.kirppisService.ilmoituksenViestitLista}" var="viesti">
-                    <h:column>
-                        <h:panelGroup rendered="#{kirppisBean.kirppisService.naytetaankoViesti(viesti) == true}">    
-                        <p:outputPanel style="background: #bbbbbb; margin-top: 10px; padding: 3px;">
-                            <b style="font-weight: bold;">#{viesti.lahettajaId.facebooknimi}</b>
-                            <jee style="float: right;">#{viesti.viestilahetysaikaToString()}</jee></p:outputPanel>
-                        <p:outputPanel style="background: #dddddd; padding: 10px;">#{viesti.viestinrunko}</p:outputPanel>
-                    </h:panelGroup>
-                    </h:column>
+                        <h:column>
+                            <p:outputPanel style="background: #bbbbbb; margin-top: 10px; padding: 3px;">
+                                <b style="font-weight: bold;">#{viesti.lahettajaId.facebooknimi}</b>
+                                <jee style="float: right;">#{viesti.viestilahetysaikaToString()}</jee></p:outputPanel>
+                            <p:outputPanel style="background: #dddddd; padding: 10px;">#{viesti.viestinrunko}</p:outputPanel>
+                        </h:column>
                     </h:dataTable>
-                    
-                    <br />
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-                        Lähetä viesti ilmoittajalle
+                </h:panelGroup>
+                
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.ilmoituksenViestitLista.size() == 0}">
+                     <br/><br/><p>Ei julkisia viestejä.</p> <br/>
+                </h:panelGroup>
+                
+              
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                    Lähetä julkinen viesti.
+                    <h:form>
                         <p:inputTextarea id="viestinRunko" value="#{kirppisBean.kirppisService.uusiViesti.viestinrunko}" style="width: 97%;" autoResize="true" required="true" label="viestinRunko">
                             <f:validateLength minimum="1" />
                         </p:inputTextarea>
                         <p:message for="viestinRunko" display="icon" />
-                        <br /><br />
+                        <br />
+                        <p:commandButton value="Lähetä julkinen viesti" action="#{kirppisBean.kirppisService.lisaaViesti(1)}" style="float: left; margin-left: 2px;" />
+                    </h:form>
+                </h:panelGroup>
 
-                        <p:selectOneMenu id="onkoViestiJulkinen" value="#{kirppisBean.kirppisService.uusiViesti.julkinenviesti}" style="float: left; margin: 1px;" required="true">
-                            <f:selectItem itemLabel="- Valitse vietin tyyppi -" itemValue="#{null}"/>
-                            <f:selectItem itemLabel="vain ilmoittajalle" itemValue="0"/>
-                            <f:selectItem itemLabel="julkinen" itemValue="1" />
-                            <f:validateRequired  />
-                        </p:selectOneMenu>
-                         <p:message for="onkoViestiJulkinen" display="icon" />
-                        <p:commandButton value="Lähetä viesti" action="#{kirppisBean.kirppisService.lisaaViesti()}" style="float: left; margin-left: 2px;" />
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+                    Voidaksesi lähettää viestin ilmoittajalle,
+                    sinun täytyy kirjautua omaseutukirppis.fi palveluun!<br /><br />
+                    Kirjaudu käyttämällä Facebook-tunnuksiasi.<br /><br />
+                    <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
+                </h:panelGroup>
+                
+                <!-- ================ Julkiset viestit loppuu ============== --> 
+                
+                <!-- ================ Yksityiset viestit alkaa ============== -->
+                
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                    <br /><br />
+                    <hr />
+                    <br />
+                    <b>Yksityiset viestit:</b>
+                    
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.yksityisetViestit.size() > 0}">
+                        <h:dataTable style="width: 100%;" value="#{kirppisBean.kirppisService.yksityisetViestit}" var="yksityinenViesti">
+                            <h:column>
+                                <h:panelGroup rendered="#{kirppisBean.kirppisService.naytetaankoViesti(yksityinenViesti) == true}">
+                                    <p:outputPanel style="background: #bbbbbb; margin-top: 10px; padding: 3px;">
+                                    <b style="font-weight: bold;">#{yksityinenViesti.lahettajaId.facebooknimi}</b>
+                                    <jee style="float: right;">#{yksityinenViesti.viestilahetysaikaToString()}</jee></p:outputPanel>
+                                    <p:outputPanel style="background: #dddddd; padding: 10px;">#{yksityinenViesti.viestinrunko}</p:outputPanel>   
+                                </h:panelGroup>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.yksityisetViestit.size() == 0}">
+                          <br/><br/><p>Ei yksityisviestejä.</p>
                     </h:panelGroup>
                     
-                    <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
-                        Voidaksesi lähettää viestin ilmoittajalle,
-                        sinun täytyy kirjautua omaseutukirppis.fi palveluun!<br /><br />
-                        Kirjaudu käyttämällä Facebook-tunnuksiasi.<br /><br />
-                        <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
+                    <br /><br/>
+                    
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.yksityistenViestienVastaanottajat.size() > 0}">
+                    Lähetä yksityinen viesti.
+                        <h:form>
+                            <p:inputTextarea id="yviestinRunko" value="#{kirppisBean.kirppisService.uusiViesti.viestinrunko}" style="width: 97%;" autoResize="true" required="true" label="viestinRunko">
+                                <f:validateLength minimum="1" />
+                            </p:inputTextarea>
+                            <p:message for="yviestinRunko" display="icon" />
+                            <br /><br />
+
+                            <p:selectOneMenu id="vastaanottaja" value="#{kirppisBean.kirppisService.yksityisenViestinVastaanottajaId}" style="float: left; margin: 1px;" required="true">
+                                <f:selectItem itemLabel="- Valitse käyttäjä -" itemValue="#{null}"/>
+                                <f:selectItems value="#{kirppisBean.kirppisService.yksityistenViestienVastaanottajat}" var="vastaanottaja" itemValue="#{vastaanottaja.kayttajaId}" itemLabel="#{vastaanottaja.facebooknimi}"/>
+                                <f:validateRequired  />
+                            </p:selectOneMenu>
+                            <p:message for="vastaanottaja" display="icon" />
+                            <p:commandButton value="Lähetä yksityinen viesti käyttäjälle" action="#{kirppisBean.kirppisService.lisaaViesti(0)}" style="float: left; margin-left: 2px;" />
+                        </h:form>
                     </h:panelGroup>
-                </h:form>
-           </div>
-
+                </h:panelGroup> 
+                       
+                <!-- ================ Yksityiset viestit loppuu ============== -->
+                
+               
+            </div>
         </ui:define>
-
         </ui:composition>
 
     </h:body>

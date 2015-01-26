@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title></title>
+    </h:head>
+    <h:body>
+    <ui:composition template="templates/omaseutuTemplate.xhtml">
+    <ui:define name="content">    
+       
+        <div style="margin-left: auto; margin-right: auto; width: 50%;">
+
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+            
+            <h3>Saapuneet viestit</h3>
+
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanSaapuneetViestit.size() > 0}">
+                <h:form>
+                <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.kayttajanSaapuneetViestit}" var="viesti" chunkSize="10" >
+                    <table style="border-bottom-style: groove; border-bottom-width: 1px;">
+                        <tr>
+                            <td style = "width: 120px;">
+                                <p:commandLink value="Näytä ilmoitus" action="#{kirppisBean.kirppisService.NaytaIlmoitus(viesti.ilmoitusId.ilmoitusId)}" />
+                            </td>
+                            <h:panelGroup rendered="#{viesti.viestiluettu == 1}">
+                                <td style = "width: 170px;"><h:outputText value="#{viesti.lahettajaId.facebooknimi}" /></td>
+                                <td style = "width: 245px; "><h:outputText value="#{viesti.viestiRunkoesikatselu()}" /></td>
+                                <td style = "width: 110px;"><h:outputText value="#{viesti.viestilahetysaikaToString()}" /></td>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{viesti.viestiluettu == 0}">
+                                <td style = "width: 170px; color: black; font-weight: bold;"><h:outputText value="#{viesti.lahettajaId.facebooknimi}" /></td>
+                                <td style = "width: 245px; color: black; font-weight: bold; float: left;"><h:outputText value="#{viesti.viestiRunkoesikatselu()}" /></td>
+                                <td style = "width: 110px; color: black; font-weight: bold;"><h:outputText value="#{viesti.viestilahetysaikaToString()}" /></td>
+                            </h:panelGroup>
+                        </tr>
+                    </table>
+                </p:dataScroller>
+                </h:form>
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanSaapuneetViestit.size() == 0}"> 
+                <p>Ei saapuneita viestejä.</p>
+            </h:panelGroup>    
+     
+        </h:panelGroup>
+        
+        <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+            Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
+            <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div>     
+        </h:panelGroup>
+        
+        </div>
+    </ui:define>
+    </ui:composition>
+    </h:body>
+</html>
+

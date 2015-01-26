@@ -12,7 +12,10 @@
 
         <ui:define name="content">            
             
-             <div style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div style="width: 50%; margin-left: auto; margin-right: auto;">
+                 
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                 
                 <h2>#{kirppisBean.kirppisService.uusiIlmoitus.otsikko}</h2>
 
                 <h:panelGroup rendered="#{kirppisBean.kirppisService.lisattyjenKuvatiedostojenNimet.size() > 0}">
@@ -87,12 +90,19 @@
                 <h:form>
                     <h:panelGrid columns="3">
                         <p:button value="Muokkaa" outcome="ilmoituksenlisays" />
-                        <p:commandButton value="Tallenna luonnos" action="#{kirppisBean.kirppisService.tallennaUusiIlmoitusLuonnos()}" />
                         <p:commandButton value="Julkaise ilmoitus" action="#{kirppisBean.kirppisService.julkaiseUusiIlmoitus()}" />
                     </h:panelGrid>
                 </h:form>
+            
+            </h:panelGroup>
+            
+            <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
+            <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+            Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
+            <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div>     
+            </h:panelGroup>     
                 
-           </div>
+            </div>
 
         </ui:define>
 

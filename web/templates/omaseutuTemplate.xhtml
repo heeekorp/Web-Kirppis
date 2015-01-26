@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -41,15 +42,23 @@
                     <div class="fb-login-button" onlogin="CheckLoginStatus();" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true"></div><br />
                     
                     <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
-                        <b onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b><br />
+                        <b class="linkki" onclick="location.href='omasivu.xhtml'">Tervetuloa, #{kirppisBean.kirppisService.kirjautunutKayttaja.facebooknimi}</b><br />
                         #{kirppisBean.kirppisService.asetaKayttajanUudetViestit()}
                         <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanUusienViestienMaara == 0}">
-                            <b style="float: left; color: #4F4F4F;">Sinulla ei ole uusia viestejä!</b>
+                            <b onclick="location.href='saapuneetviestit.xhtml'" style="float: left; color: #4F4F4F; cursor: pointer;">Sinulla ei ole uusia viestejä!</b>
                         </h:panelGroup>    
                         <h:panelGroup rendered="#{kirppisBean.kirppisService.kayttajanUusienViestienMaara != 0}">
-                            <b style="float: left; color: black">Sinulla on uusia viestejä(#{kirppisBean.kirppisService.kayttajanUusienViestienMaara})</b>
+                            <b onclick="location.href='saapuneetviestit.xhtml'" style="float: left; color: black; cursor: pointer;">Sinulla on uusia viestejä(#{kirppisBean.kirppisService.kayttajanUusienViestienMaara})</b>
                         </h:panelGroup> 
-                        <p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" class="p_button"></p:button>
+                        <!--<p:button outcome="ilmoituksenlisays" value="Lisää Ilmoitus" class="p_button"></p:button>-->
+                        <p:selectOneMenu onchange="window.location =this.options[this.selectedIndex].value">                      
+                            <f:selectItem itemLabel="-- Pikavalinat --" />
+                            <f:selectItem itemValue="omasivu.xhtml" itemLabel="Omasivu" />
+                            <f:selectItem itemValue="muutatietoja.xhtml" itemLabel="Muuta omia tietoja" />
+                            <f:selectItem itemValue="saapuneetviestit.xhtml" itemLabel="Saapuneet viestit" />
+                            <f:selectItem itemValue="ilmoituksenlisays.xhtml" itemLabel="Lisää uusi ilmoitus" />
+                            <p:ajax event="change" />
+                        </p:selectOneMenu>
                     </h:panelGroup>
                     </h:form>
                 
@@ -91,7 +100,10 @@
                             
                         </ui:insert>
                     </div><!--Closing Left_Panel-->
-                    
+                   
+                    <ui:insert name="top_menu">
+                        <div id="top_menu"><h3>Hello world</h3></div>
+                    </ui:insert>
                     <ui:insert name="content">
                     </ui:insert>
             </div><!--Closing Content-->

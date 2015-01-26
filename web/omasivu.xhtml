@@ -13,8 +13,10 @@
     <h:body>
         <ui:composition template="templates/omaseutuTemplate.xhtml">
             <ui:define name="content">
-                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
+                
                 <h:form style="width: 50%; margin-left: auto; margin-right: auto">
+                
+                <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">    
                     
                     <h2>Omat sivut</h2>
                     
@@ -26,17 +28,17 @@
 
                     #{kirppisBean.kirppisService.kayttajanIlmoituksetHaku()}
                     
-                    <b style="font-size: 15px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
+                    <b style="font-size: 13px; position: relative; bottom: 8px; padding-right: 10px;">Järjestä ilmoitukset</b>
                     <p:selectOneMenu id="listanJarjestys" value="#{kirppisBean.kirppisService.ilmoitusListanJarjestys}">
                         <f:selectItem itemLabel="Uusin ensin" itemValue="1"/>
                         <f:selectItem itemLabel="Edullisin ensin" itemValue="2" />
                         <f:selectItem itemLabel="Kallein ensin" itemValue="3" />
                         <f:ajax event="change" render="Ilmoituslista" execute="listanJarjestys" listener="#{kirppisBean.kirppisService.jarjestaHauntulokseLista()}"></f:ajax>
                     </p:selectOneMenu>
-                    
+                    <br/><br/>
                     <p:dataScroller id="Ilmoituslista" value="#{kirppisBean.kirppisService.haunTuloksetLista}" var="item" chunkSize="10" >
-                           #{kirppisBean.kirppisService.asetaLukemattomienViestienMaara(item.ilmoitusId)}
-                        <h:panelGrid columns="4" style="width: 100%" columnClasses="col1,col2,col3,col4">
+                           
+                        <h:panelGrid columns="4" style="width: 100%;" columnClasses="col1,col2,col3,col4">
                             
                             <p:outputPanel style="width: 50px">
                                 <h:selectBooleanCheckbox value="#{kirppisBean.kirppisService.poista}">
@@ -59,9 +61,6 @@
                                     </h:commandLink>
                                     <br />
                                     <br />
-                                    <h:outputText value="Kuvaus: #{item.kuvaus}" />
-                                    <br />
-                                    <br />
                                     <h:outputText value="Kategoria: #{item.alakategoriaId.alakategorianimi}"></h:outputText>
                                 </p:panelGrid>
                             </p:outputPanel>
@@ -70,23 +69,68 @@
                                 <p:panelGrid>
                                     <h:outputText value="#{item.ilmoitusjatettyPvmToString()}" style="font-weight: bold" />
                                     <br />
-                                   
-                                    <h:panelGroup rendered="#{kirppisBean.kirppisService.lukemattomienViestienMaara > 0}">  
-                                        <h:outputText value="Ilmoituksella on uusia viestejä(#{kirppisBean.kirppisService.lukemattomienViestienMaara})" style="font-weight: bold; color: black;"/>                   
-                                    </h:panelGroup>
                                 </p:panelGrid>
                             </p:outputPanel>
                             
                         </h:panelGrid>
                     </p:dataScroller>
+                
+                    <h3>Muistilista:</h3>
                     
-                </h:form>
-                </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.muistilistanIlmoitukset.size() > 0}">
+                    
+                        <p:dataScroller id="Muistilista" value="#{kirppisBean.kirppisService.muistilistanIlmoitukset}" var="item" chunkSize="10" >
+
+                            <h:panelGrid columns="4" style="width: 100%;" columnClasses="col1,col2,col3,col4">
+
+                                <p:outputPanel style="width: 100px">
+                                    <p:commandLink value="Poista muistilistalta" action="#{kirppisBean.kirppisService.poistaIlmoitusMuistilistalta(item)}"/>
+                                </p:outputPanel>
+
+                                <p:outputPanel style="width: 120px;">
+                                    <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
+                                        <p:graphicImage name="images/#{kirppisBean.kirppisService.haeIlmoituksenOletuskuvaMuistilistaan(item.ilmoitusId)}" style="height: 80px;" />
+                                    </h:commandLink>
+                                    <br />
+                                    <h:outputText value="Hinta: #{item.hintaToString()} €" style="font-weight: bold" />
+                                </p:outputPanel>
+
+                                <p:outputPanel>
+                                    <p:panelGrid style="width: auto;">
+                                        <h:commandLink action="#{kirppisBean.kirppisService.NaytaIlmoitus(item.ilmoitusId)}">
+                                            <h:outputText value="#{item.otsikko}" />
+                                        </h:commandLink>
+                                        <br /><br />
+                                        <h:outputText value="Kategoria: #{item.alakategoriaId.alakategorianimi}"></h:outputText>
+                                    </p:panelGrid>
+                                </p:outputPanel>
+
+                                <p:outputPanel>
+                                    <p:panelGrid>
+                                        <h:outputText value="#{item.ilmoitusjatettyPvmToString()}" style="font-weight: bold" />
+                                        <br />
+                                    </p:panelGrid>
+                                </p:outputPanel>
+
+                            </h:panelGrid>
+                        </p:dataScroller>
+                    
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{kirppisBean.kirppisService.muistilistanIlmoitukset.size() == 0}">
+                        <br />Muistilistalla ei ole ilmoituksia
+                    </h:panelGroup>
+                        
+                        
+                </h:panelGroup>                
+                
                 <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
                 <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
                 Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
                 <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div> 
-                </h:panelGroup>
+                </h:panelGroup>    
+                    
+                </h:form>
+               
             </ui:define>
         </ui:composition>       
     </h:body>

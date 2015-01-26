@@ -8,6 +8,7 @@ package com.kirppis.model;
 import com.kirppis.data.Alakategoria;
 import com.kirppis.data.Ilmoitus;
 import com.kirppis.data.Kayttaja;
+import com.kirppis.data.Muistilista;
 import com.kirppis.data.Paakategoria;
 import com.kirppis.data.Valikategoria;
 import com.kirppis.data.Viesti;
@@ -53,20 +54,26 @@ public class kirppisService implements Serializable {
     UserTransaction trans;
     EntityManager eManageri;
     
-    private Kayttaja kirjautunutKayttaja;
-    private String facebookIdString;
-    private boolean onkoKayttajaKirjautunut;
-    private boolean rekisterointiSivuNaytetaan;
+    private Kayttaja kirjautunutKayttaja = new Kayttaja();
+    private String facebookIdString = "0";
+    private boolean onkoKayttajaKirjautunut = false;
+    private boolean rekisterointiSivuNaytetaan = false;
     private boolean naytaSahkoposti = false;
     private boolean naytaPuhelin = false;
     
-    private String paivamaaraTanaan;
+    private List<Ilmoitus> muistilistanIlmoitukset = new ArrayList<>();
+    
     private Ilmoitus naytettavaIlmoitus;
     private Ilmoitus uusiIlmoitus = new Ilmoitus();
-    private Viesti uusiViesti = new Viesti();
-    private long lukemattomienViestienMaara;
-    private int kayttajanUusienViestienMaara;
     
+    private Viesti uusiViesti = new Viesti();
+    private String vastausViestinRunko;
+    private List<Viesti> yksityisetViestit = new ArrayList<>();
+    private int yksityisenViestinVastaanottajaId;
+    private List<Kayttaja> yksityistenViestienVastaanottajat = new ArrayList<>();
+    private long kayttajanUusienViestienMaara;
+    private List<Viesti> kayttajanSaapuneetViestit = new ArrayList<>();
+      
     private String hakusana;
     private int postinumero;
     private int etaisyys;
@@ -76,7 +83,6 @@ public class kirppisService implements Serializable {
     
     private List<Ilmoitus>haunTuloksetLista = new ArrayList<>();
     private int ilmoitusListanJarjestys = 1;
-    private List<Ilmoitus>ilmoitusLuonnosLista = new ArrayList<>();
     private List<String> ilmoituksenKuvat = new ArrayList<>();
     private List<Viesti> ilmoituksenViestitLista = new ArrayList();
     
@@ -105,7 +111,6 @@ public class kirppisService implements Serializable {
      * Creates a new instance of kirppisService
      */
     public kirppisService() {
-     
     }
 
     /**
@@ -116,11 +121,6 @@ public class kirppisService implements Serializable {
     public kirppisService(UserTransaction trans, EntityManager eManageri) {
         this.trans = trans;
         this.eManageri = eManageri;
-        
-        kirjautunutKayttaja = new Kayttaja();
-        onkoKayttajaKirjautunut = false;
-        rekisterointiSivuNaytetaan = false;
-        facebookIdString = "0";
         
         ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         kuvienPolkuServerilla = ctx.getRealPath("/") + "resources\\images\\";
@@ -134,9 +134,6 @@ public class kirppisService implements Serializable {
             alakategoriatLista = eManageri.createQuery("Select ala from Alakategoria ala").getResultList();
             trans.commit();
             System.out.println("Kategoriat haettu onnistuneesti!");
-            
-            // Haetaan kuluva päivämäärä
-            paivamaaraTanaan = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -278,8 +275,7 @@ public class kirppisService implements Serializable {
             Collections.reverse(haunTuloksetLista);
         }
     }
-
-        
+      
     /*************************************************************************
      *  Ilmoitusten hakemiseen liittyvät funktiot alkaa!
      *************************************************************************/          
@@ -378,7 +374,7 @@ public class kirppisService implements Serializable {
             kysely = "SELECT i FROM Ilmoitus i" + taulunlinkki + " WHERE" + hakuosat;
         }
                
-        //Suorita tietokanta haku annetuilla hakukriteereillä ilmoituksista
+        //Suorittaa tietokantahaun annetuilla hakukriteereillä ilmoituksista
         try {
             System.out.println("Haetaan ilmoitukset kannasta, kyselyllä: ");
             System.out.println(kysely);
@@ -400,8 +396,9 @@ public class kirppisService implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().redirect("listasivu.xhtml");
         }
     }
+    
+    // Hauetaan pelkällä hakusanalla.
     public void haeHakusanalla() throws IOException{
-        System.out.println("Tänne!");
         this.postinumero=0;
         this.etaisyys=0;
         this.valittuPaakategoriaID=0;
@@ -441,21 +438,62 @@ public class kirppisService implements Serializable {
         try {
             System.out.println("Haetaan näytttävä ilmoitus/viestit tietokannasta!");
             eManageri.getEntityManagerFactory().getCache().evictAll();
-            trans.begin();  
+            trans.begin();
+            // Viestin tiedot!
             setNaytettavaIlmoitus((Ilmoitus)eManageri.createQuery("Select i from Ilmoitus i WHERE i.ilmoitusId = " + NaytettavanIlmoituksenID).getSingleResult());
-            this.ilmoituksenViestitLista = eManageri.createQuery("Select v from Viesti v WHERE v.ilmoitusId.ilmoitusId = " + naytettavaIlmoitus.getIlmoitusId() + " ORDER BY v.lahetysaika").getResultList();
+            // Viestiin liittyvät julkiset viestit.
+            ilmoituksenViestitLista = eManageri.createQuery("Select v from Viesti v WHERE v.julkinenviesti=1 AND v.ilmoitusId.ilmoitusId = " + naytettavaIlmoitus.getIlmoitusId() + " ORDER BY v.lahetysaika").getResultList();
+            // Viestiin liittyvät yksityisviestit.
+            yksityisetViestit = eManageri.createQuery("Select v from Viesti v WHERE v.julkinenviesti=0 AND v.ilmoitusId.ilmoitusId = " + naytettavaIlmoitus.getIlmoitusId() + " ORDER BY v.lahetysaika").getResultList();
+            
             trans.commit();
             System.out.println("Tiedot haettu onnistuneesti!");
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("Näytetään ilmoitus: " + NaytettavanIlmoituksenID);
+       
+        // Asetataan julkiset viestit luetuksi.
+        for(Viesti v : ilmoituksenViestitLista){
+            // Mikäli viestiä ei ole asetettu luetuksi ja kirjautunut käyttäjä on sama kuin myyjä.
+            if(v.getViestiluettu() == 0 && kirjautunutKayttaja.equals(naytettavaIlmoitus.getMyyjanId()))
+                asetaViestiLuetuksi(v);
+        }
+        
+        // Asetetaan yksitysviestit luetuksi ja päivitetään yksityistenViestienVastaanottajat -lista.
+        yksityistenViestienVastaanottajat.clear();
+        for(Viesti v : yksityisetViestit){
+            // Mikäli viestiä ei ole asetettu luetuksi ja kirjautunut käyttäjä on viestin vastaanottaja.
+            if(v.getViestiluettu() == 0 && kirjautunutKayttaja.equals(v.getVastaanottajaId()))
+                asetaViestiLuetuksi(v);
+            // Mikäli kirjautunut käyttäjä on sama kuin ilmoittaja.
+            if(kirjautunutKayttaja.equals(naytettavaIlmoitus.getMyyjanId()) && !kirjautunutKayttaja.equals(v.getLahettajaId())){
+                // Lisätään yksityisen viestin lähettäjä yv.vastaanottajat listaan, mikäli se ei siellä jo ole.
+                if(!yksityistenViestienVastaanottajat.contains(v.getLahettajaId()))
+                    yksityistenViestienVastaanottajat.add(v.getLahettajaId());
+            }
+        }
+        // Mikäli kirjautunut käyttäjä eri kuin myyjä, lisätään myyjä yv:n vastaanottajiin.
+        if(!kirjautunutKayttaja.equals(naytettavaIlmoitus.getMyyjanId()))
+            yksityistenViestienVastaanottajat.add(naytettavaIlmoitus.getMyyjanId());
+            
         FacesContext.getCurrentInstance().getExternalContext().redirect("ilmoituksenesittely.xhtml");              
     }
     
+    // Funktio hakee ilmoituksen oletuskuvan listasivulle. 
     public String haeIlmoituksenOletuskuva(int id) {
         for(Ilmoitus i : haunTuloksetLista) {
+            if(i.getIlmoitusId().equals(id)) {
+                String kuvat = i.getKuvienpolku();
+                String oletuskuva[]= kuvat.split("\\s+");
+                return oletuskuva[0];
+            }
+        }
+        return "default-picture.jpg";
+    }
+    // Funktio hakee ilmoituksen oletuskuvan muistilistaan. 
+    public String haeIlmoituksenOletuskuvaMuistilistaan(int id) {
+        for(Ilmoitus i : muistilistanIlmoitukset) {
             if(i.getIlmoitusId().equals(id)) {
                 String kuvat = i.getKuvienpolku();
                 String oletuskuva[]= kuvat.split("\\s+");
@@ -476,15 +514,13 @@ public class kirppisService implements Serializable {
     //************************************************************************
 	 
     // Funktio tarkistaa näytetäänkö viesti. Kutsutaan ilmoituksenesittely.xhtml:stä	 
-    public boolean naytetaankoViesti(Viesti viesti){
-        if(kirjautunutKayttaja.equals(naytettavaIlmoitus.getMyyjanId()) && viesti.getViestiluettu() == 0){
-            asetaViestiLuetuksi(viesti);
-        }       
-        //  Jos kirjautunut käyttäjä on sama kuin viestin lähettäjä -> viesti näytetään.
-        if(this.kirjautunutKayttaja.equals(viesti.getLahettajaId())){
-            // Mikäli viestiä ei ole merkattu luetuksti -> Asetetaan viesti luetuksi.
+    public boolean naytetaankoViesti(Viesti viesti){      
+        //  Jos kirjautunutkäyttäjä on sama kuin viestin lähettäjä -> viesti näytetään.
+        if(this.kirjautunutKayttaja.equals(viesti.getLahettajaId()))
             return true;
-        }
+        // Jos kirjautunutkäyttäjä on sama kuin viestin vastaanottaja -> viesti näytetään.
+        if(this.kirjautunutKayttaja.equals(viesti.getVastaanottajaId()))
+            return true;
         // Julkinen viesti näytetään kaikille.
         if(viesti.getJulkinenviesti() == 1)
             return true;
@@ -499,7 +535,7 @@ public class kirppisService implements Serializable {
     // Funktio päivittää viestin luetuksi tietokantaan.
     public void asetaViestiLuetuksi(Viesti muokattavaViesti){
         try {
-               System.out.println("Asetetaan viesti luetuksi tietokantaan!");
+               System.out.println("Asetetaan viesti luetuksi tietokantaan! ->" + muokattavaViesti.getViestinrunko());
                Viesti v = eManageri.find(Viesti.class, muokattavaViesti.getViestiId());
                trans.begin();
                v.setViestiluettu(1);
@@ -512,53 +548,48 @@ public class kirppisService implements Serializable {
        }
     }
     
-    // Funktio hakee ilmoitukseen liittyvien lukemattomien viestien määrän!
-    public void asetaLukemattomienViestienMaara(int ilmoitusId){
-        try {
-            trans.begin();
-            Query query = eManageri.createQuery("Select Count(v.viestiId) from Viesti v WHERE v.ilmoitusId.ilmoitusId = " + ilmoitusId + " and  v.viestiluettu = 0");
-            this.lukemattomienViestienMaara = (long)query.getSingleResult();
-            trans.commit();      
-        }
-        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    // Funktio palauttaa kayttäjän uusien viestien määrän.
+    // Funktio asettaa uusien viestien määrän ja kayttajanSaapuneetViestit -listan.
     public void asetaKayttajanUudetViestit(){
-        List<Ilmoitus>kayttajanIlmoitukset = new ArrayList<>();
         try {
             eManageri.getEntityManagerFactory().getCache().evictAll();
-            trans.begin();  
-            kayttajanIlmoitukset = eManageri.createQuery("Select i from Ilmoitus i WHERE i.myyjanId.kayttajaId = " + kirjautunutKayttaja.getKayttajaId()).getResultList();
+            trans.begin();              
+            Query query = eManageri.createQuery("Select Count(v.viestiId) from Viesti v WHERE v.viestiluettu = 0 AND ((v.ilmoitusId.myyjanId.kayttajaId = " + kirjautunutKayttaja.getKayttajaId() + " AND v.julkinenviesti = 1) OR v.vastaanottajaId.kayttajaId = " + kirjautunutKayttaja.getKayttajaId() + ")");
+            kayttajanUusienViestienMaara = (long)query.getSingleResult();
+            kayttajanSaapuneetViestit.clear();
+            kayttajanSaapuneetViestit = eManageri.createQuery("Select v FROM Viesti v WHERE (v.julkinenviesti = 1 AND v.lahettajaId.kayttajaId != " + kirjautunutKayttaja.getKayttajaId() + ") OR (v.julkinenviesti = 0 AND v.vastaanottajaId.kayttajaId = " + kirjautunutKayttaja.getKayttajaId() + ") ORDER BY v.lahetysaika DESC").getResultList();
             trans.commit();
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             System.out.println(e.getMessage());
         }
-        // haetaan käyttäjän uudet viestit!
-        kayttajanUusienViestienMaara = 0;
-        for(Ilmoitus i : kayttajanIlmoitukset){
-            asetaLukemattomienViestienMaara(i.getIlmoitusId());
-            kayttajanUusienViestienMaara += lukemattomienViestienMaara;
-        }
     }
 	 
      /*************************************************************************
+     * @param viestintyyppi
      * @throws java.io.IOException 
      *************************************************************************/
-    // Funktio lisaa uuden viestin tietokantaan. Ohjaa takaisin ilmoituksenesittely -sivulle.
-    public void lisaaViesti() throws IOException{
-        getUusiViesti().setLahettajaId(kirjautunutKayttaja);
-        getUusiViesti().setIlmoitusId(naytettavaIlmoitus);
-        getUusiViesti().setLahetysaika(new Date());
-
-        // Jos viestin lähettäjä on sama kuin ilmoituksen jättäjä,
-        // Merkataan viesti luetuksi (=1). Muuten merkataan vieti lukemattomaksi(=0).
-        if(uusiViesti.getIlmoitusId().getMyyjanId().equals(kirjautunutKayttaja))
-                getUusiViesti().setViestiluettu(1);
+    // Funktio lisää uuden viestin tietokantaan (viestintyypi 0 = yksityinen, 1 = julkinen). 
+    public void lisaaViesti(int viestintyyppi) throws IOException{
+        uusiViesti.setLahettajaId(kirjautunutKayttaja);
+        uusiViesti.setIlmoitusId(naytettavaIlmoitus);
+        uusiViesti.setLahetysaika(new Date());
+        uusiViesti.setJulkinenviesti(viestintyyppi);
+        
+        if(viestintyyppi == 0){
+            for(Kayttaja k : yksityistenViestienVastaanottajat){
+                if(k.getKayttajaId() == yksityisenViestinVastaanottajaId){
+                    uusiViesti.setVastaanottajaId(k);
+                    break;
+                }
+            }
+            yksityisenViestinVastaanottajaId = -1;
+        }
+        // Jos viestin lähettäjä on sama kuin ilmoituksen jättäjä ja viesti on julkinen,
+        // merkataan viesti luetuksi (=1). Muuten merkataan vieti lukemattomaksi(=0).
+        if(uusiViesti.getIlmoitusId().getMyyjanId().equals(kirjautunutKayttaja) && uusiViesti.getJulkinenviesti() == 1)
+                uusiViesti.setViestiluettu(1);
         else
-                getUusiViesti().setViestiluettu(0);
+                uusiViesti.setViestiluettu(0);
         
         try {
             System.out.println("Lisätään uusi viesti kantaan!");
@@ -578,9 +609,9 @@ public class kirppisService implements Serializable {
         NaytaIlmoitus(naytettavaIlmoitus.getIlmoitusId());
     }
     
-     /*************************************************************************
-     *  Viestin lisäämiseen/näyttämiseen liittyvät funktiot - loppuu
-     *************************************************************************/    
+    /*************************************************************************
+    *  Viestin lisäämiseen/näyttämiseen liittyvät funktiot - loppuu
+    *************************************************************************/    
     
     /*************************************************************************
      *  Ilmoituksen lisäämiseen liittyvät funktiot - alkaa
@@ -644,11 +675,6 @@ public class kirppisService implements Serializable {
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
     
-    public void tallennaUusiIlmoitusLuonnos() {
-        ilmoitusLuonnosLista.add(uusiIlmoitus);
-        // ilmoitusId = null
-        // Luo uusi luonnokset taulu kantaan!!
-    }
     // Funktio tallentaa uuden ilmoituksen tietokantaan. Käyttäjän lataamat kuvat tallennetaan serverille.
     public void julkaiseUusiIlmoitus() throws IOException {
         if(lisattyjenKuvatiedostojenNimet.isEmpty()){ // mikäli käyttäjä ei ladannut yhtään kuvaa!
@@ -707,19 +733,7 @@ public class kirppisService implements Serializable {
             }
         }
     }
-    
-    // Funktio nimeä tiedoston uudellee!
-    private void nimeaTiedostoUudelleen(String vanhaNimi, String uusiNimi){
-        File oldfile =new File(kuvienPolkuServerilla + vanhaNimi);
-        File newfile =new File(kuvienPolkuServerilla + uusiNimi);
-
-        if(oldfile.renameTo(newfile)){
-                //System.out.println("Rename succesful");
-        }else{
-                System.out.println("Tiedoston uudelleen nimeäminen epäonnistui!");
-        }
-    }
-    
+      
     // Funktio hakee kuvan tiedostotyypin kuvatiedoston headerista.
     private static String haeTiedostontyyppi(Part tiedosto) {  
         for (String cd : tiedosto.getHeader("content-disposition").split(";")) { 
@@ -802,27 +816,6 @@ public class kirppisService implements Serializable {
             if(!lisattyjenKuvatiedostojenNimet.contains(kuva))
                poistaKuvaIlmoituksesta(kuva);
         }
-                    
-        try { // Päivietään ilmoitus tietokantaan
-            System.out.println("Tallennetaam muokattu ilmoitus!");
-            Ilmoitus muokattavaIlmoitus = eManageri.find(Ilmoitus.class, naytettavaIlmoitus.getIlmoitusId());
-            trans.begin();
-            muokattavaIlmoitus.setAlakategoriaId(naytettavaIlmoitus.getAlakategoriaId());
-            muokattavaIlmoitus.setHinta(naytettavaIlmoitus.getHinta());
-            muokattavaIlmoitus.setKuvaus(naytettavaIlmoitus.getKuvaus());
-            muokattavaIlmoitus.setKuvienpolku(naytettavaIlmoitus.getKuvienpolku());
-            muokattavaIlmoitus.setLisatieto(naytettavaIlmoitus.getLisatieto());
-            muokattavaIlmoitus.setOtsikko(naytettavaIlmoitus.getOtsikko());
-            muokattavaIlmoitus.setTuotteenkunto(naytettavaIlmoitus.getTuotteenkunto());
-            muokattavaIlmoitus.setKuvienpolku(naytettavaIlmoitus.getKuvienpolku());
-            eManageri.merge(muokattavaIlmoitus);
-            
-            trans.commit();
-            System.out.println("Ilmoituksen muutokset tallennettu onnistuneesti!");
-        }
-        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
       
         // nollataan muuttujat;
         this.valittuPaakategoriaID = 0;
@@ -842,7 +835,7 @@ public class kirppisService implements Serializable {
      *  Ilmoituksen poistamiseen liittyvät funktiot - alkaa
      * @param ilmoitusId
      *************************************************************************/
-    // Funktio lisää tai poista poistettavaksi valitun ilmoituksen poistolistalta. Fuktiota kutsutaan omasivu.xhtml:stä 
+    // Funktio lisää tai poistaa poistettavaksi valitun ilmoituksen poistolistaan. Fuktiota kutsutaan omasivu.xhtml:stä 
     public void poistolista(int ilmoitusId) {        
         if (isPoista() == true && !poistolista.contains(ilmoitusId)) {
            poistolista.add(ilmoitusId);
@@ -878,9 +871,13 @@ public class kirppisService implements Serializable {
                         poistaKuva(kuvat.substring(0, i));
                         kuvat = kuvat.substring(i + 1, kuvat.length() );
                     }
-                }        
+                }
+                // Poistetaan ilmoitus muistilistalta.
+                muistilistanIlmoitukset.remove(poistettavaIlmoitus);
+                eManageri.createQuery("DELETE FROM Muistilista m WHERE m.ilmoitusId = " + poistettavaId).executeUpdate();
                 eManageri.remove(poistettavaIlmoitus);
             }
+           
             trans.commit();
         }
         catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
@@ -949,7 +946,18 @@ public class kirppisService implements Serializable {
                 System.out.println("FacebookId:tä vastaavaa käyttäjä löytyi tietokannasta!");
                 this.onkoKayttajaKirjautunut = true;
                 kirjautunutKayttaja = kayttajat.get(0);
-    
+                
+                List<Muistilista>mlista = new ArrayList<>();
+                trans.begin();
+                mlista = eManageri.createQuery("Select m from Muistilista m WHERE m.kayttajaId = " + kirjautunutKayttaja.getKayttajaId()).getResultList();
+                trans.commit();
+                
+                for(Muistilista m: mlista){
+                    trans.begin();
+                    muistilistanIlmoitukset.add((Ilmoitus)eManageri.createQuery("Select i from Ilmoitus i WHERE i.ilmoitusId = " + m.getIlmoitusId()).getSingleResult());
+                    trans.commit();
+                }
+                
                 ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
                 ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
             }   
@@ -1051,6 +1059,64 @@ public class kirppisService implements Serializable {
     **************************************************************************/
     
     /*************************************************************************
+    *   Muistilistan funktiot - alkaa
+    **************************************************************************/
+    
+    /**
+     * Muistilistan funktiot - alkaa
+     * @param ilmoitus
+     * @throws java.io.IOException
+     */
+    public void lisaaIlmoitusMuistilistalle(Ilmoitus ilmoitus) throws IOException{
+        muistilistanIlmoitukset.add(ilmoitus);
+        
+        Muistilista uusiMuistilistaIlmoitus = new Muistilista();
+        uusiMuistilistaIlmoitus.setIlmoitusId(ilmoitus.getIlmoitusId());
+        uusiMuistilistaIlmoitus.setKayttajaId(kirjautunutKayttaja.getKayttajaId());
+        
+        try { // Päivietään ilmoitus tietokantaan
+            trans.begin();
+            eManageri.persist(uusiMuistilistaIlmoitus);
+            trans.commit();
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        //Ladataan sivu uudelleen.
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+    
+    public void poistaIlmoitusMuistilistalta(Ilmoitus ilmoitus) throws IOException{
+        muistilistanIlmoitukset.remove(ilmoitus);
+  
+        try { // Poistetaan ilmoitus tietokannasta
+            trans.begin();
+            Muistilista m = (Muistilista)eManageri.createQuery("Select i from Muistilista i WHERE i.ilmoitusId = " + ilmoitus.getIlmoitusId() + " AND i.kayttajaId = " + kirjautunutKayttaja.getKayttajaId()).getSingleResult();
+            
+            Muistilista poistettavaIlmoitus = eManageri.find(Muistilista.class, m.getMuistilistaId());
+            eManageri.remove(poistettavaIlmoitus);
+            trans.commit();
+        }
+        catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        //Ladataan sivu uudelleen.
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+    
+    public boolean onkoIlmoitusMuistilistalla(Ilmoitus ilmoitus){
+        return muistilistanIlmoitukset.contains(ilmoitus);
+    }
+    
+    /*************************************************************************
+    *   Muistilistan funktiot - loppuu
+    **************************************************************************/
+   
+    /*************************************************************************
      *  Getterit ja setterit - alkaa
      *************************************************************************/
     /**
@@ -1107,20 +1173,6 @@ public class kirppisService implements Serializable {
      */
     public void setValittuPaakategoriaID(int valittuPaakategoriaID) {
         this.valittuPaakategoriaID = valittuPaakategoriaID;
-    }
-
-    /**
-     * @return the ilmoitusLuonnosLista
-     */
-    public List<Ilmoitus> getIlmoitusLuonnosLista() {
-        return ilmoitusLuonnosLista;
-    }
-
-    /**
-     * @param IlmoitusLuonnosLista the ilmoitusLuonnosLista to set
-     */
-    public void setIlmoitusLuonnosLista(List<Ilmoitus> IlmoitusLuonnosLista) {
-        this.ilmoitusLuonnosLista = IlmoitusLuonnosLista;
     }
 
     /**
@@ -1197,20 +1249,6 @@ public class kirppisService implements Serializable {
      */
     public void setValittuAlakategoriaID(int valittuAlakategoriaID) {
         this.valittuAlakategoriaID = valittuAlakategoriaID;
-    }
-
-    /**
-     * @return the paivamaaraTanaan
-     */
-    public String getPaivamaaraTanaan() {
-        return paivamaaraTanaan;
-    }
-
-    /**
-     * @param paivamaaraTanaan the paivamaaraTanaan to set
-     */
-    public void setPaivamaaraTanaan(String paivamaaraTanaan) {
-        this.paivamaaraTanaan = paivamaaraTanaan;
     }
 
     /**
@@ -1458,13 +1496,6 @@ public class kirppisService implements Serializable {
     }
 
     /**
-     * @return the lukemattomienViestienMaara
-     */
-    public long getLukemattomienViestienMaara() {
-        return lukemattomienViestienMaara;
-    }
-
-    /**
      * @return the ilmoitusListanJarjestys
      */
     public int getIlmoitusListanJarjestys() {
@@ -1502,10 +1533,65 @@ public class kirppisService implements Serializable {
     /**
      * @return the kayttajanUusienViestienMaara
      */
-    public int getKayttajanUusienViestienMaara() {
+    public long getKayttajanUusienViestienMaara() {
         return kayttajanUusienViestienMaara;
     }
 
+    /**
+     * @param vastausViestinRunko the vastausViestinRunko to set
+     */
+    public void setVastausViestinRunko(String vastausViestinRunko) {
+        this.vastausViestinRunko = vastausViestinRunko;
+    }
+
+    /**
+     * @return the vastausViestinRunko
+     */
+    public String getVastausViestinRunko() {
+        return vastausViestinRunko;
+    }
+
+    /**
+     * @return the vastaukset
+     */
+    public List<Viesti> getYksityisetViestit() {
+        return yksityisetViestit;
+    }
+
+    /**
+     * @return the yksityistenViestienLahettajat
+     */
+    public List<Kayttaja> getYksityistenViestienVastaanottajat() {
+        return yksityistenViestienVastaanottajat;
+    }
+
+    /**
+     * @return the yksityisenViestinVastaanottajaId
+     */
+    public int getYksityisenViestinVastaanottajaId() {
+        return yksityisenViestinVastaanottajaId;
+    }
+
+    /**
+     * @param yksityisenViestinVastaanottajaId the yksityisenViestinVastaanottajaId to set
+     */
+    public void setYksityisenViestinVastaanottajaId(int yksityisenViestinVastaanottajaId) {
+        this.yksityisenViestinVastaanottajaId = yksityisenViestinVastaanottajaId;
+    }
+
+    /**
+     * @return the kayttajanSaapuneetViestit
+     */
+    public List<Viesti> getKayttajanSaapuneetViestit() {
+        return kayttajanSaapuneetViestit;
+    }
+
+    /**
+     * @return the muistilistanIlmoitukset
+     */
+    public List<Ilmoitus> getMuistilistanIlmoitukset() {
+        return muistilistanIlmoitukset;
+    }   
 }
     /*************************************************************************
      *  Getterit ja setterit - loppuu

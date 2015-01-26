@@ -13,8 +13,10 @@
         <ui:composition template="templates/omaseutuTemplate.xhtml">
 
         <ui:define name="content">
-            
+        
         <div style="margin-left: 21%">
+            
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == true}">
             
             <h2>Muokkaa ilmoituksen kuvia</h2>
             
@@ -64,14 +66,21 @@
          
         <p:button value="Esikatselu" outcome="muokatunilmoituksenesikatselu" style="float: left; position: relative; top: 50px;" />
         
-        </div>
-        
         <script>          
             function uploadFile() {
                 document.getElementById("content1").innerHTML = ('<img src="javax.faces.resource/images/upload.gif" style="height: 50px; width: 50px;" /><br/><b>Kuvaa ladataan serverille!</b>');
             }
         </script>
 
+        </h:panelGroup>
+        
+        <!-- Mikäli käyttäjä ei ole kirjautunut -> näytetään facebook kirjautumis nappi!  -->
+        <h:panelGroup rendered="#{kirppisBean.kirppisService.onkoKayttajaKirjautunut == false}">
+            Reskisteroidy omaseutukirppis.fi -palveluun facebook tunnuksillasi.<br /> 
+            <div class="fb-login-button" onlogin="CheckLoginStatus();"  data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" style="width: 132px !important;"></div>     
+        </h:panelGroup>
+          
+        </div>
         </ui:define>
         </ui:composition>
     </h:body>
